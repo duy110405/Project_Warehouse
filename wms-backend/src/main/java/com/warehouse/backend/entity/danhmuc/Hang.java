@@ -5,6 +5,7 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -33,6 +34,6 @@ public class Hang {
     LoaiHang loaiHang;
 
     // Dòng này giúp Spring Boot tự động móc sang bảng NL_H để lấy nguyên liệu
-    @OneToMany(mappedBy = "hang", fetch = FetchType.EAGER)
-    List<NL_H> chiTietNguyenLieu;
+    @OneToMany(mappedBy = "hang", fetch = FetchType.LAZY)
+    List<NL_H> chiTietNguyenLieu = new ArrayList<>();
 }

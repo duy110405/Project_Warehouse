@@ -3,10 +3,12 @@ package com.warehouse.backend.service.impl;
 import com.warehouse.backend.dto.request.HangRequest;
 import com.warehouse.backend.dto.response.HangResponse;
 import com.warehouse.backend.entity.danhmuc.Hang;
+import com.warehouse.backend.entity.danhmuc.LoaiHang;
 import com.warehouse.backend.entity.danhmuc.NL_H;
 import com.warehouse.backend.entity.danhmuc.NguyenLieu;
 import com.warehouse.backend.mapper.HangMapper;
 import com.warehouse.backend.repository.HangRepository;
+import com.warehouse.backend.repository.LoaiHangRepository;
 import com.warehouse.backend.repository.NL_HRepository;
 import com.warehouse.backend.repository.NguyenLieuRepository;
 import com.warehouse.backend.service.IHangService;
@@ -21,15 +23,17 @@ public class HangServiceImpl implements IHangService {
     private final HangRepository hangRepository;
     private final NguyenLieuRepository nguyenLieuRepository;
     private final NL_HRepository nlHRepository;
+    private final LoaiHangRepository loaiHangRepository;
     private final HangMapper hangMapper ;
 
 
     public HangServiceImpl(HangRepository hangRepository,
                            NguyenLieuRepository nguyenLieuRepository,
-                           NL_HRepository nlHRepository, HangMapper hangMapper) {
+                           NL_HRepository nlHRepository, LoaiHangRepository loaiHangRepository, HangMapper hangMapper) {
         this.hangRepository = hangRepository;
         this.nguyenLieuRepository = nguyenLieuRepository;
         this.nlHRepository = nlHRepository;
+        this.loaiHangRepository = loaiHangRepository;
         this.hangMapper = hangMapper;
     }
 
@@ -57,9 +61,16 @@ public class HangServiceImpl implements IHangService {
         Hang hang = hangMapper.toHangEntity(hangRequest);
         // tự sinh mã
         hang.setMah(generateNextMaH());
+        //  Xử lý tìm và gán Loại Hàng trước khi lưu
+        if (hangRequest.getMaloai() != null) {
+            LoaiHang loaiHang = loaiHangRepository.findById(hangRequest.getMaloai())
+                    .orElseThrow(() -> new RuntimeException("Không tìm thấy loại hàng với mã: " + hangRequest.getMaloai()));
+            // Gán vào Entity Hàng
+            hang.setLoaiHang(loaiHang);
+        }
         // lưu xuống db
         Hang savedHang = hangRepository.save(hang);
-        // 2. Xử lý lưu bảng NL_H
+        // Xử lý lưu bảng NL_H
         if (hangRequest.getDanhSachMaNL() != null && !hangRequest.getDanhSachMaNL().isEmpty()) {
             for (String manl : hangRequest.getDanhSachMaNL()) {
                 NguyenLieu nl = nguyenLieuRepository.findById(manl).orElseThrow();
@@ -67,11 +78,11 @@ public class HangServiceImpl implements IHangService {
                 nlh.setHang(savedHang);
                 nlh.setNguyenLieu(nl);
                 nlHRepository.save(nlh);
+                savedHang.getChiTietNguyenLieu().add(nlh);
             }
         }
         // Trả về response
-        Hang finalHang  = hangRepository.findById(savedHang.getMah()).get();
-        return hangMapper.toHangResponse(finalHang);
+        return hangMapper.toHangResponse(savedHang);
     }
 
     @Override
@@ -84,9 +95,16 @@ public class HangServiceImpl implements IHangService {
 
         // dùng mapper cập nhật thông tin
         hangMapper.updateHangFromRequset(hangRequest , existingHang);
+        //Cập nhật Loại Hàng nếu có thay đổi
+        if (hangRequest.getMaloai() != null) {
+            LoaiHang loaiHang = loaiHangRepository.findById(hangRequest.getMaloai())
+                    .orElseThrow(() -> new RuntimeException("Không tìm thấy loại hàng với mã: " + hangRequest.getMaloai()));
+            existingHang.setLoaiHang(loaiHang);
+        }
+
         Hang updatedHang = hangRepository.save(existingHang);
 
-        // 2. Xóa NL cũ - Thêm NL mới (Logic cũ của bạn)
+        //Xóa NL cũ - Thêm NL mới
         if (hangRequest.getDanhSachMaNL() != null) {
             nlHRepository.deleteByHang_Mah(mah);
             for (String manl : hangRequest.getDanhSachMaNL()) {

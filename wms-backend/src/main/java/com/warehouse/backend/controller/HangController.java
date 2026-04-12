@@ -15,11 +15,9 @@ import java.util.List;
 public class HangController {
 
     private final IHangService hangService ;
-    private final HangMapper hangMapper;
 
     public HangController(IHangService hangService, HangMapper hangMapper) {
         this.hangService = hangService;
-        this.hangMapper = hangMapper;
     }
 
     @GetMapping
