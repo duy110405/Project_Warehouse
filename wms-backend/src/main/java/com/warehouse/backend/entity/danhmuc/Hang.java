@@ -30,7 +30,7 @@ public class Hang {
     BigDecimal gia; // Dùng BigDecimal cho DECIMAL(18,2)
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "MaLH" , referencedColumnName = "MaLH" , columnDefinition = "varchar(20)") // Tên cột khóa ngoại
+    @JoinColumn(name = "MaLH" , referencedColumnName = "id_category" , columnDefinition = "varchar(20)") // Tên cột khóa ngoại
     LoaiHang loaiHang;
 
     // Dòng này giúp Spring Boot tự động móc sang bảng NL_H để lấy nguyên liệu

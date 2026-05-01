@@ -37,7 +37,7 @@ public class HangServiceImpl implements IHangService {
         this.hangMapper = hangMapper;
     }
 
-    public Hang findHangById(String mah){
+    private Hang findHangById(String mah){
         return hangRepository.findById(mah)
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy hàng với mã : " + mah));
     }

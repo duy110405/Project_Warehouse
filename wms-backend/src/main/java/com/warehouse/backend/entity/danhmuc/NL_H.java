@@ -19,7 +19,7 @@ public class NL_H {
     @Id
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "MaH" , referencedColumnName = "MaH" , columnDefinition = "varchar(20)")
-    @JsonIgnore // THÊM DÒNG NÀY: Báo cho thằng tạo JSON biết là "Đừng in thằng Hang này ra nữa, cắt đứt vòng lặp đi"
+    @JsonIgnore // Báo cho thằng tạo JSON biết là "Đừng in thằng Hang này ra nữa, cắt đứt vòng lặp đi"
     private Hang hang;
 
     @Id
