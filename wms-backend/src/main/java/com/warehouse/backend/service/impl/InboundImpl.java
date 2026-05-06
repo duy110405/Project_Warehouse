@@ -5,13 +5,11 @@ import com.warehouse.backend.dto.request.InboundReceiptRequest;
 import com.warehouse.backend.dto.response.InboundReceiptResponse;
 import com.warehouse.backend.entity.danhmuc.Product;
 import com.warehouse.backend.entity.danhmuc.Supplier;
+import com.warehouse.backend.entity.hethong.User;
 import com.warehouse.backend.entity.nghiepvu.ReceiptDetail;
 import com.warehouse.backend.entity.nghiepvu.InboundReceipt;
 import com.warehouse.backend.mapper.InboundMapper;
-import com.warehouse.backend.repository.ReceiptDetailRepository;
-import com.warehouse.backend.repository.ProductRepository;
-import com.warehouse.backend.repository.InboundReceiptRepository;
-import com.warehouse.backend.repository.SupplierRepository;
+import com.warehouse.backend.repository.*;
 import com.warehouse.backend.service.IInboundService;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
@@ -25,15 +23,15 @@ import java.util.List;
 public class InboundImpl implements IInboundService {
     private final InboundMapper inboundMapper;
     private final InboundReceiptRepository inboundReceiptRepository;
-    private final ReceiptDetailRepository receiptDetailRepository;
+    private final UserRepository userRepository;
     private final ProductRepository productRepository;
     private final SupplierRepository supplierRepository;
 
 
-    public InboundImpl(InboundMapper inboundMapper, InboundReceiptRepository inboundReceiptRepository, ReceiptDetailRepository receiptDetailRepository, ProductRepository productRepository, SupplierRepository supplierRepository) {
+    public InboundImpl(InboundMapper inboundMapper, InboundReceiptRepository inboundReceiptRepository, ReceiptDetailRepository receiptDetailRepository, UserRepository userRepository, ProductRepository productRepository, SupplierRepository supplierRepository) {
         this.inboundMapper = inboundMapper;
         this.inboundReceiptRepository = inboundReceiptRepository;
-        this.receiptDetailRepository = receiptDetailRepository;
+        this.userRepository = userRepository;
         this.productRepository = productRepository;
         this.supplierRepository = supplierRepository;
     }
@@ -74,13 +72,14 @@ public class InboundImpl implements IInboundService {
         inboundReceipt.setReceiptId(generateNextReceiptId());
         inboundReceipt.setReceiptDate(LocalDate.now());
 
-        // Mock Data người dùng (Sau này thay bằng Spring Security)
-        inboundReceipt.setCreatedBy("Admin Lập Phiếu");
-        inboundReceipt.setPosition("Quan lý kho A");
+        //Tìm User từ Database và gán vào Phiếu
+        User user = userRepository.findById(inboundReceiptRequest.getUserId())
+                .orElseThrow(() -> new RuntimeException("User not found with ID: " + inboundReceiptRequest.getUserId()));
+        inboundReceipt.setUser(user);
 
         // Tìm Xưởng và gán vào Phiếu
         Supplier supplier = supplierRepository.findById(inboundReceiptRequest.getSupplierId())
-                .orElseThrow(() -> new RuntimeException("Không tìm thấy Xưởng!"));
+                .orElseThrow(() -> new RuntimeException("Supplier not found!"));
         inboundReceipt.setSupplier(supplier);
 
         // xử lý Chi tiết nhập kho
@@ -179,13 +178,14 @@ public class InboundImpl implements IInboundService {
 
     @Transactional
     @Override
-    public void deleteInboundReceipt(String receiptId) {
+    public InboundReceiptResponse cancelInboundReceipt(String receiptId) {
         // tìm phiếu nhập
-        InboundReceipt inboundReceipt = inboundReceiptRepository.findById(receiptId)
-                .orElseThrow(() -> new RuntimeException("Không tìm thấy phiếu nhập với mã: " + receiptId));
+       InboundReceipt inboundReceipt = findInboundReceiptById(receiptId);
         if(inboundReceipt.getStatus() != 0 ){
             throw new RuntimeException("Phiếu nhập đã được duyệt, không thể xóa!");
         }
-        inboundReceiptRepository.delete(inboundReceipt);
+        inboundReceipt.setStatus(-1);
+        InboundReceipt canceledInboundReceipt = inboundReceiptRepository.save(inboundReceipt);
+        return inboundMapper.toInboundResponse(canceledInboundReceipt);
     }
 }

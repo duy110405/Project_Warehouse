@@ -44,7 +44,7 @@ public class InboundController {
                 .data(inboundService.saveInboundReceipt(inboundReceiptRequest))
                 .build();
     }
-    @PutMapping("/{receiptId}")
+    @PutMapping("/{receiptId}/approve")
     public ApiResponse<InboundReceiptResponse> approveInboundReceipt(@PathVariable String receiptId ){
         return ApiResponse.<InboundReceiptResponse>builder()
                 .code(200)
@@ -53,13 +53,12 @@ public class InboundController {
                 .build();
     }
 
-    @DeleteMapping
-    public ApiResponse<InboundReceiptResponse> deleteInboundReceipt(@PathVariable String receiptId){
-        inboundService.deleteInboundReceipt(receiptId);
+    @PutMapping("/{receiptId}/cancel")
+    public ApiResponse<InboundReceiptResponse> cancelInboundReceipt(@PathVariable String receiptId){
         return ApiResponse.<InboundReceiptResponse>builder()
                 .code(200)
-                .message("Xóa phiếu nhập thành công!")
-                .data(null)
+                .message("Hủy phiếu thành công ")
+                .data(inboundService.cancelInboundReceipt(receiptId))
                 .build();
     }
     @PutMapping("/{receiptId}")

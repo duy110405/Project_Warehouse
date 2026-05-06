@@ -34,7 +34,7 @@ public class InvoiceDetail {
     private int quantity;
 
     @Transient // Tính Thành Tiền ảo để dùng trong code/React
-    public BigDecimal getThanhTien() {
+    public BigDecimal getSubTotal() {
         if (price != null) {
             return price.multiply(new BigDecimal(quantity));
         }

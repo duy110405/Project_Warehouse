@@ -1,15 +1,14 @@
 package com.warehouse.backend.dto.request;
+
 import lombok.AccessLevel;
 import lombok.Data;
 import lombok.experimental.FieldDefaults;
 
-import java.util.List;
-
+import java.math.BigDecimal;
 @Data
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class InboundReceiptRequest {
-    String supplierId;
-    String userId;
-    Integer status;
-    List<ReceiptDetailRequest> receiptDetails;
+public class InvoiceDetailRequest {
+    String productId;
+    BigDecimal price;
+    int quantity;
 }

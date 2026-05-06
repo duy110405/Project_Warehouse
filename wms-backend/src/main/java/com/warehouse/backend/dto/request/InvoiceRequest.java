@@ -1,15 +1,17 @@
 package com.warehouse.backend.dto.request;
+
+import com.warehouse.backend.dto.response.InvoiceDetailResponse;
 import lombok.AccessLevel;
 import lombok.Data;
 import lombok.experimental.FieldDefaults;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Data
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class InboundReceiptRequest {
-    String supplierId;
+public class InvoiceRequest {
+    String customerId;
     String userId;
-    Integer status;
-    List<ReceiptDetailRequest> receiptDetails;
+    List<InvoiceDetailRequest> invoiceDetails;
 }

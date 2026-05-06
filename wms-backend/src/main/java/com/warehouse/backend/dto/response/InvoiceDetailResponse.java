@@ -8,11 +8,10 @@ import java.math.BigDecimal;
 
 @Data
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class IssueDetailResponse {
+public class InvoiceDetailResponse {
     String productId;
     String productName;
     BigDecimal price;
     int quantity;
     BigDecimal subTotal;
-
 }

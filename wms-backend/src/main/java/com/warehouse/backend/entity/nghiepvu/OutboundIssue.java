@@ -1,8 +1,10 @@
 package com.warehouse.backend.entity.nghiepvu;
 
+import com.warehouse.backend.entity.hethong.User;
 import jakarta.persistence.*;
 import lombok.Data;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -17,15 +19,14 @@ public class OutboundIssue {
     @Column(name = "MaPxuat", length = 20)
     private String issueId;
 
-    @Column(name = "TenNgXuat", length = 20)
-    private String issuedBy;
-
-    @Column(name = "ChucVu", length = 50)
-    private String position;
-
     @Column(name = "NgayXuat")
     @Temporal(TemporalType.DATE) // Để lưu đúng định dạng ngày trong SQL
-    private Date issueDate;
+    private LocalDate issueDate;
+
+    // Kết nối với Người dùng (IDND)
+    @ManyToOne
+    @JoinColumn(name = "IDND" ,  referencedColumnName ="IDND" , columnDefinition = "varchar(20)")
+    private User user;
 
     // Một Phếu Xuất kho có nhiều dòng chi tiết
     @OneToMany(mappedBy = "outboundIssue", cascade = CascadeType.ALL)

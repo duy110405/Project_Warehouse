@@ -12,6 +12,5 @@ public interface IInboundService {
     InboundReceiptResponse saveInboundReceipt(InboundReceiptRequest inboundReceiptRequest);
     InboundReceiptResponse approveInboundReceipt(String mapnhap);
     InboundReceiptResponse updateInboundReceipt(String mapnhap , InboundReceiptRequest inboundReceiptRequest);
-    void deleteInboundReceipt(String mapnhap);
-
+    InboundReceiptResponse cancelInboundReceipt(String mapnhap);
 }

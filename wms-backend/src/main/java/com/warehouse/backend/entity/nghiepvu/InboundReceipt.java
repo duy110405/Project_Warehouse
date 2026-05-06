@@ -1,6 +1,7 @@
 package com.warehouse.backend.entity.nghiepvu;
 
 import com.warehouse.backend.entity.danhmuc.Supplier;
+import com.warehouse.backend.entity.hethong.User;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -19,12 +20,6 @@ public class InboundReceipt {
     @Column(name = "MaPnhap", length = 20)
     private String receiptId;
 
-    @Column(name = "TenNgNhap", length = 50)
-    private String createdBy;
-
-    @Column(name = "ChucVu", length = 50)
-    private String position;
-
     @Column(name = "NgayNh")
     private LocalDate receiptDate;
 
@@ -34,6 +29,10 @@ public class InboundReceipt {
     @Column(name = "TrangThai")
     private Integer status = 0;
 // Quy ước ngầm: 0 = Nháp/Chờ duyệt, 1 = Đã hoàn thành, -1 = Đã hủy
+// Kết nối với Người dùng (IDND)
+@ManyToOne
+@JoinColumn(name = "IDND" ,  referencedColumnName ="IDND" , columnDefinition = "varchar(20)")
+private User user;
 
     @ManyToOne
     @JoinColumn(name = "MaXuong", referencedColumnName = "MaXuong" , columnDefinition = "varchar(20)")

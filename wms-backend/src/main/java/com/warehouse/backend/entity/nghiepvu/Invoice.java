@@ -5,6 +5,7 @@ import com.warehouse.backend.entity.hethong.User;
 import jakarta.persistence.*;
 import lombok.Data;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -20,6 +21,12 @@ public class Invoice {
 
     @Column(name = "NgayL")
     private LocalDate invoiceDate;
+
+    @Column(name = "TongTien", precision = 15, scale = 2)
+    private BigDecimal totalAmount;
+
+    @Column(name = "Status")
+    private Integer status = 0;
 
     // Kết nối với Khách hàng
     @ManyToOne
