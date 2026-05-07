@@ -25,8 +25,7 @@ public class Material_Product {
     @JoinColumn(name = "MaNL" , referencedColumnName = "MaNL" , columnDefinition = "varchar(20)")
     private Material material;
 
-    // Thêm số lượng nguyên liệu cần thiết để tạo ra 1 đơn vị sản phẩm
-    // Tùy vào DVT (đơn vị tính) mà bạn chọn kiểu int (Cái/Chiếc) hoặc double (Kg/Lít)
+    // số lượng nguyên liệu cần thiết để tạo ra 1 đơn vị sản phẩm
     @Column(name = "SoLuongDinhMuc")
     private double requiredQuantity;
 

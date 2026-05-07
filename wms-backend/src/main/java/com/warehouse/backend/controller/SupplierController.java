@@ -57,6 +57,7 @@ public class SupplierController {
 
     @DeleteMapping("/{supplierId}")
     public ApiResponse<SupplierResponse> deleteSupplier(@PathVariable String supplierId){
+        supplierService.deleteSupplier(supplierId);
         return ApiResponse.<SupplierResponse>builder()
                 .code(200)
                 .message("Xóa xưởng thành công ")

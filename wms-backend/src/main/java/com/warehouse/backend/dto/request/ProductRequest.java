@@ -14,6 +14,6 @@ public class ProductRequest {
      BigDecimal price;
      String zoneId;
      String categoryId;
-     List<String> materialIds; // Chứa mảng ["NL001", "NL002"]
+     List<MaterialNormRequest> materialIds; // Chứa mảng mã nguyên liệu và định mức số lượng của nguyên liệu
 
 }

@@ -12,11 +12,11 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
-public class ZoneImpl implements IZoneService {
+public class ZoneServiceImpl implements IZoneService {
     private final ZoneRepository zoneRepository;
     private final ZoneMapper zoneMapper;
 
-    public ZoneImpl(ZoneRepository zoneRepository, ZoneMapper zoneMapper) {
+    public ZoneServiceImpl(ZoneRepository zoneRepository, ZoneMapper zoneMapper) {
         this.zoneRepository = zoneRepository;
         this.zoneMapper = zoneMapper;
     }

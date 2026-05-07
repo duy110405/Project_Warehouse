@@ -25,4 +25,7 @@ public class Zone {
     @Column (name = "SucChua", length = 50)
     Integer capacity;
 
+    @Column (name = "LoaiKhu" , length = 50)
+    Integer zoneType ;  //  1 : khu vực thành phẩm , 2 : khu vực nguyên liệu
+
 }

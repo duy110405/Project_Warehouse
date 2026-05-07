@@ -6,9 +6,7 @@ import lombok.experimental.FieldDefaults;
 
 @Data
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class ZoneRespone {
-    String zoneId;
-    String zoneName;
-    Integer capacity;
-    Integer zoneType;
+public class VendorResponse {
+    String vendorId;
+    String vendorName;
 }

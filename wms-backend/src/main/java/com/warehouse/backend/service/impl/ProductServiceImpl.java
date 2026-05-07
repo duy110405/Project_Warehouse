@@ -1,16 +1,11 @@
 package com.warehouse.backend.service.impl;
 
+import com.warehouse.backend.dto.request.MaterialNormRequest;
 import com.warehouse.backend.dto.request.ProductRequest;
 import com.warehouse.backend.dto.response.ProductResponse;
-import com.warehouse.backend.entity.danhmuc.Category;
-import com.warehouse.backend.entity.danhmuc.Product;
-import com.warehouse.backend.entity.danhmuc.Material_Product;
-import com.warehouse.backend.entity.danhmuc.Material;
+import com.warehouse.backend.entity.danhmuc.*;
 import com.warehouse.backend.mapper.ProductMapper;
-import com.warehouse.backend.repository.ProductRepository;
-import com.warehouse.backend.repository.CategoryRepository;
-import com.warehouse.backend.repository.Material_ProductRepository;
-import com.warehouse.backend.repository.MaterialRepository;
+import com.warehouse.backend.repository.*;
 import com.warehouse.backend.service.IProductService;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
@@ -25,16 +20,18 @@ public class ProductServiceImpl implements IProductService {
     private final Material_ProductRepository nlHRepository;
     private final CategoryRepository categoryRepository;
     private final ProductMapper productMapper;
+    private final ZoneRepository zoneRepository;
 
 
     public ProductServiceImpl(ProductRepository productRepository,
                               MaterialRepository materialRepository,
-                              Material_ProductRepository nlHRepository, CategoryRepository categoryRepository, ProductMapper productMapper) {
+                              Material_ProductRepository nlHRepository, CategoryRepository categoryRepository, ProductMapper productMapper, ZoneRepository zoneRepository) {
         this.productRepository = productRepository;
         this.materialRepository = materialRepository;
         this.nlHRepository = nlHRepository;
         this.categoryRepository = categoryRepository;
         this.productMapper = productMapper;
+        this.zoneRepository = zoneRepository;
     }
 
     private Product findProductById(String productId){
@@ -61,6 +58,22 @@ public class ProductServiceImpl implements IProductService {
         Product product = productMapper.toProductEntity(productRequest);
         // tự sinh mã
         product.setProductId(generateNextProductId());
+        product.setQuantity(0); // Tồn kho ban đầu luôn bằng 0
+
+        // XỬ LÝ KHU VỰC & KIỂM TRA ZONETYPE (Fail-Fast)
+        if (productRequest.getZoneId() != null) {
+            Zone zone = zoneRepository.findById(productRequest.getZoneId())
+                    .orElseThrow(() -> new RuntimeException("Không tìm thấy Khu vực lưu trữ!"));
+
+            // Ép buộc phải là Khu Thành Phẩm ( 1 = Thành Phẩm, 2 = Nguyên Liệu)
+            if (zone.getZoneType() != 1) {
+                throw new RuntimeException("Lỗi: Không thể cất Thành Phẩm vào Khu Nguyên Liệu. Vui lòng chọn đúng Khu Thành Phẩm!");
+            }
+            product.setZone(zone);
+        } else {
+            throw new RuntimeException("Bắt buộc phải chọn Khu vực lưu trữ cho sản phẩm!");
+        }
+
         //  Xử lý tìm và gán Loại Hàng trước khi lưu
         if (productRequest.getCategoryId() != null) {
             Category category = categoryRepository.findById(productRequest.getCategoryId())
@@ -72,11 +85,12 @@ public class ProductServiceImpl implements IProductService {
         Product savedProduct = productRepository.save(product);
         // Xử lý lưu bảng NL_H
         if (productRequest.getMaterialIds() != null && !productRequest.getMaterialIds().isEmpty()) {
-            for (String materialId : productRequest.getMaterialIds()) {
-                Material nl = materialRepository.findById(materialId).orElseThrow();
+            for (MaterialNormRequest normRequest : productRequest.getMaterialIds()) {
+                Material nl = materialRepository.findById(normRequest.getMaterialId()).orElseThrow();
                 Material_Product nlh = new Material_Product();
                 nlh.setProduct(savedProduct);
                 nlh.setMaterial(nl);
+                nlh.setRequiredQuantity(normRequest.getRequiredQuantity());
                 nlHRepository.save(nlh);
                 savedProduct.getMaterialProducts().add(nlh);
             }
@@ -95,6 +109,17 @@ public class ProductServiceImpl implements IProductService {
 
         // dùng mapper cập nhật thông tin
         productMapper.updateProductFromRequset(productRequest, existingProduct);
+
+        //Cập nhật và Validate Zone (Khu vực)
+        if (productRequest.getZoneId() != null) {
+            Zone zone = zoneRepository.findById(productRequest.getZoneId())
+                    .orElseThrow(() -> new RuntimeException("Không tìm thấy Khu vực lưu trữ!"));
+            if (zone.getZoneType() != 1) {
+                throw new RuntimeException("Lỗi: Không thể cất Thành Phẩm vào Khu Nguyên Liệu!");
+            }
+            existingProduct.setZone(zone);
+        }
+
         //Cập nhật Loại Hàng nếu có thay đổi
         if (productRequest.getCategoryId() != null) {
             Category category = categoryRepository.findById(productRequest.getCategoryId())
@@ -107,11 +132,12 @@ public class ProductServiceImpl implements IProductService {
         //Xóa NL cũ - Thêm NL mới
         if (productRequest.getMaterialIds() != null) {
             nlHRepository.deleteByProduct_ProductId(productId);
-            for (String materialId : productRequest.getMaterialIds()) {
-                Material nl = materialRepository.findById(materialId).orElseThrow();
+            for (MaterialNormRequest normRequest : productRequest.getMaterialIds()) {
+                Material nl = materialRepository.findById(normRequest.getMaterialId()).orElseThrow();
                 Material_Product nlh = new Material_Product();
                 nlh.setProduct(updatedProduct);
                 nlh.setMaterial(nl);
+                nlh.setRequiredQuantity(normRequest.getRequiredQuantity());
                 nlHRepository.save(nlh);
             }
         }

@@ -4,11 +4,16 @@ import lombok.AccessLevel;
 import lombok.Data;
 import lombok.experimental.FieldDefaults;
 
+import java.math.BigDecimal;
+
 @Data
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class ZoneRespone {
+public class MaterialReceiptDetailResponse {
+    String materialId;
+    String materialName;
+    int quantity;
+    BigDecimal price;
     String zoneId;
     String zoneName;
-    Integer capacity;
-    Integer zoneType;
+    BigDecimal subTotal;
 }
