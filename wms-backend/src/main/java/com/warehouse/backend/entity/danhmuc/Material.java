@@ -25,4 +25,13 @@ public class Material {
 
     @Column(name = "Gia")
     private BigDecimal price;
+
+    //  Số lượng tồn kho
+    @Column(name = "SoLg")
+    private int quantity;
+
+    //  Vị trí lưu trữ
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "MaKhu" , referencedColumnName = "MaKhu" , columnDefinition = "varchar(20)")
+    private Zone zone;
 }

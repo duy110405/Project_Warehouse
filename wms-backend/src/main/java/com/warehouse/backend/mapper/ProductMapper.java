@@ -35,7 +35,7 @@ public interface ProductMapper {
     @Mapping(target = "zoneName", source = "zone.zoneName")
     void updateProductFromRequset(ProductRequest productRequest, @MappingTarget Product product);
 
-    // Dạy MapStruct cách biến 1 dòng NL_H thành 1 dòng NguyenLieuRponse
+    // Dạy MapStruct cách biến 1 dòng NL_H thành 1 dòng NguyenLieuReponse
     default MaterialResponse mapMPToDTO(Material_Product mp) {
         if (mp == null || mp.getMaterial() == null) {
             return null;

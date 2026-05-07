@@ -11,7 +11,7 @@ import java.io.Serializable;
 @IdClass(Material_Product.Material_ProductId.class) // dùng khóa hỗn hợp(Trỏ vào class nằm bên trong)
 @Getter
 @Setter
-@ToString(exclude = "hang")
+@ToString(exclude = "product") // tránh loop vô tận khi in ra JSON
 
 public class Material_Product {
     @Id
@@ -24,6 +24,11 @@ public class Material_Product {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "MaNL" , referencedColumnName = "MaNL" , columnDefinition = "varchar(20)")
     private Material material;
+
+    // Thêm số lượng nguyên liệu cần thiết để tạo ra 1 đơn vị sản phẩm
+    // Tùy vào DVT (đơn vị tính) mà bạn chọn kiểu int (Cái/Chiếc) hoặc double (Kg/Lít)
+    @Column(name = "SoLuongDinhMuc")
+    private double requiredQuantity;
 
     @Getter
     @Setter

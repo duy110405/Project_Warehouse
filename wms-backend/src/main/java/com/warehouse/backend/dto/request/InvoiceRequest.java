@@ -13,5 +13,6 @@ import java.util.List;
 public class InvoiceRequest {
     String customerId;
     String userId;
+    String issueId;
     List<InvoiceDetailRequest> invoiceDetails;
 }

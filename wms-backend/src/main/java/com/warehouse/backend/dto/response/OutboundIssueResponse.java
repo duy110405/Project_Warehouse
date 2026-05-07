@@ -11,8 +11,9 @@ import java.util.List;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class OutboundIssueResponse {
     String issueId;
-    String issuedBy;
-    String position;
+    String userId;
+    String fullName;
     LocalDate issueDate;
     List<IssueDetailResponse> issueDetails;
+    List<String> invoiceIds; // Chỉ cần trả về danh sách Mã Hóa Đơn là đủ
 }

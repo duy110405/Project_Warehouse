@@ -171,9 +171,12 @@ public class InvoiceServiceImpl implements IInvoiceService {
          if(invoice.getStatus() != 0){
              throw new RuntimeException("Hóa đơn đã được duyệt, không thể hủy!");
          }
+         if(invoice.getOutboundIssue() != null){
+             invoice.setOutboundIssue(null);
+         }
          invoice.setStatus(-1);
-         Invoice canceledInvoice = invoiceRepository.save(invoice);
-         return invoiceMapper.toInvoiceResponse(canceledInvoice);
+         Invoice cancelledInvoice = invoiceRepository.save(invoice);
+         return invoiceMapper.toInvoiceResponse(cancelledInvoice);
      }
 
 }

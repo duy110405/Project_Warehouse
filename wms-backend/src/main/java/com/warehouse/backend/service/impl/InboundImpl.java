@@ -92,7 +92,7 @@ public class InboundImpl implements IInboundService {
             Product product = productRepository.findById(detailRequest.getProductId())
                     .orElseThrow(() -> new RuntimeException("Hàng hóa không tồn tại!"));
 
-            // TÌM ZONE LINH HOẠT VÀ FAIL-FAST BÊ TỪ UPDATE LÊN
+            // TÌM ZONE LINH HOẠT
             Zone zone = null;
             if (detailRequest.getZoneId() != null) {
                 zone = zoneRepository.findById(detailRequest.getZoneId())
