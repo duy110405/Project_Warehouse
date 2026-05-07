@@ -4,6 +4,9 @@ import com.warehouse.backend.entity.danhmuc.Customer;
 import com.warehouse.backend.entity.hethong.User;
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -12,8 +15,9 @@ import java.util.List;
 
 @Entity
 @Table(name = "HOADON")
-@Data
-
+@Getter
+@Setter
+@ToString(exclude = "invoiceDetails")// tránh loop
 public class Invoice {
     @Id
     @Column(name = "MaHD", length = 20)

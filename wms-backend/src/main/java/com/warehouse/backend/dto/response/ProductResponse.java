@@ -17,9 +17,12 @@ public class ProductResponse {
     Integer quantity;
     BigDecimal price;
 
+    String zoneId;
+    String zoneName;
+
     String categoryId;
     String categoryName;
 
-    List<MaterialResponse> materialIds;
+    List<MaterialResponse> materials;
 
 }

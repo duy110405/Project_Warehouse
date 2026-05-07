@@ -12,6 +12,8 @@ public class ProductRequest {
      String productName;
      Integer quantity;
      BigDecimal price;
+     String zoneId;
      String categoryId;
      List<String> materialIds; // Chứa mảng ["NL001", "NL002"]
+
 }

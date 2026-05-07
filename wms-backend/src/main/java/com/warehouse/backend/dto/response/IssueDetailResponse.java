@@ -13,6 +13,10 @@ public class IssueDetailResponse {
     String productName;
     BigDecimal price;
     int quantity;
+
+    String zoneId;
+    String zoneName;
+
     BigDecimal subTotal;
 
 }

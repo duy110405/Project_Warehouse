@@ -13,6 +13,7 @@ public class InboundReceiptResponse {
     String receiptId;
     String userId;
     String fullName;
+    String supplierId;
     String supplierName;
     LocalDate receiptDate;
     BigDecimal totalAmount;

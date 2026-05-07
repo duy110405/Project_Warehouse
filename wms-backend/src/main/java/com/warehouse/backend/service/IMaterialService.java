@@ -8,9 +8,9 @@ import java.util.List;
 public interface IMaterialService {
 
     List<MaterialResponse> getAllMaterial();
-    MaterialResponse getMaterialById(String manl);
+    MaterialResponse getMaterialById(String materialId);
     MaterialResponse saveMaterial(MaterialRequest materialRequest);
-    MaterialResponse updateMaterial(String manl , MaterialRequest materialRequest);
-    void deleteMaterial(String manl);
+    MaterialResponse updateMaterial(String materialId , MaterialRequest materialRequest);
+    void deleteMaterial(String materialId);
     String generateNextMaterialId();
 }

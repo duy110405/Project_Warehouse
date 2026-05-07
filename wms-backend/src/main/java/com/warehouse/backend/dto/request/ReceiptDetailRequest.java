@@ -11,4 +11,5 @@ public class ReceiptDetailRequest {
     String productId;
     int quantity;
     BigDecimal price;
+    String zoneId;
 }

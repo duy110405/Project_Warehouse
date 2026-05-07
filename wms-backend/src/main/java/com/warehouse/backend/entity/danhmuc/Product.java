@@ -12,7 +12,7 @@ import java.util.List;
 @Table(name = "HANG") // Tên bảng trong SQL Server
 @Getter
 @Setter// Tự động tạo Getter, Setter
-@ToString(exclude = "chiTietNguyenLieu")// tránh loop
+@ToString(exclude = "materialProducts")// tránh loop
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class Product {
 
@@ -30,8 +30,12 @@ public class Product {
     BigDecimal price; // Dùng BigDecimal cho DECIMAL(18,2)
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "MaLH" , referencedColumnName = "id_category" , columnDefinition = "varchar(20)") // Tên cột khóa ngoại
+    @JoinColumn(name = "MaLH" , referencedColumnName = "MaLH" , columnDefinition = "varchar(20)") // Tên cột khóa ngoại
     Category category;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "MaKhu" , referencedColumnName = "MaKhu" , columnDefinition = "varchar(20)") // Tên cột khóa ngoại
+    Zone zone;
 
     // Dòng này giúp Spring Boot tự động móc sang bảng NL_H để lấy nguyên liệu
     @OneToMany(mappedBy = "product", fetch = FetchType.LAZY)

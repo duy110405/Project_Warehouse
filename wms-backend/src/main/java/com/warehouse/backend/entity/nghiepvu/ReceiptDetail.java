@@ -1,6 +1,7 @@
 package com.warehouse.backend.entity.nghiepvu;
 
 import com.warehouse.backend.entity.danhmuc.Product;
+import com.warehouse.backend.entity.danhmuc.Zone;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -24,6 +25,12 @@ public class ReceiptDetail {
     @JoinColumn(name = "MaH" ,  referencedColumnName = "MaH" , columnDefinition = "varchar(20)")
     private Product product;
 
+    @Id
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "MaKhu" , referencedColumnName = "MaKhu" , columnDefinition = "varchar(20)") // Tên cột khóa ngoại
+    Zone zone;
+
+
     @Column(name = "Gia")
     private BigDecimal price;
 
@@ -44,5 +51,6 @@ public class ReceiptDetail {
     public static class ReceiptDetailId implements Serializable {
         private String inboundReceipt;
         private String product;
+        private String zone;
     }
 }

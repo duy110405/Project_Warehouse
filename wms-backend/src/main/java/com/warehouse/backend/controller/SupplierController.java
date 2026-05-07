@@ -1,6 +1,8 @@
 package com.warehouse.backend.controller;
 
+import com.warehouse.backend.dto.request.SupplierRequest;
 import com.warehouse.backend.dto.response.ApiResponse;
+import com.warehouse.backend.dto.response.SupplierResponse;
 import com.warehouse.backend.entity.danhmuc.Supplier;
 import com.warehouse.backend.service.ISupplierService;
 import org.springframework.web.bind.annotation.*;
@@ -18,8 +20,8 @@ public class SupplierController {
     }
 
     @GetMapping
-    public ApiResponse<List<Supplier>> getAllSupplier(){
-        return ApiResponse.<List<Supplier>>builder()
+    public ApiResponse<List<SupplierResponse>> getAllSupplier(){
+        return ApiResponse.<List<SupplierResponse>>builder()
                 .code(200)
                 .message("lấy danh sách xưởng thành công")
                 .data(supplierService.getAllSupplier())
@@ -27,8 +29,8 @@ public class SupplierController {
     }
 
     @GetMapping("/{supplierId}")
-    public ApiResponse<Supplier> getSupplierById(@PathVariable String supplierId){
-        return ApiResponse.<Supplier>builder()
+    public ApiResponse<SupplierResponse> getSupplierById(@PathVariable String supplierId){
+        return ApiResponse.<SupplierResponse>builder()
                 .code(200)
                 .message("Tìm thấy xưởng")
                 .data(supplierService.getSupplierById(supplierId))
@@ -36,26 +38,26 @@ public class SupplierController {
     }
 
     @PostMapping
-    public ApiResponse<Supplier> cretaSupplier(@RequestBody Supplier supplier){
-        return ApiResponse.<Supplier>builder()
+    public ApiResponse<SupplierResponse> cretaSupplier(@RequestBody SupplierRequest supplierRequest){
+        return ApiResponse.<SupplierResponse>builder()
                 .code(201)
                 .message("Thêm xưởng thành công ")
-                .data(supplierService.saveSupplier(supplier))
+                .data(supplierService.saveSupplier(supplierRequest))
                 .build();
     }
 
     @PutMapping("/{supplierId}")
-    public ApiResponse<Supplier> updateSupplier(@PathVariable String supplierId , @RequestBody Supplier supplier){
-        return ApiResponse.<Supplier>builder()
+    public ApiResponse<SupplierResponse> updateSupplier(@PathVariable String supplierId , @RequestBody SupplierRequest supplierRequest){
+        return ApiResponse.<SupplierResponse>builder()
                 .code(200)
                 .message("Cập nhật xưởng thành công ")
-                .data(supplierService.updateSupplier(supplierId , supplier))
+                .data(supplierService.updateSupplier(supplierId , supplierRequest))
                 .build();
     }
 
     @DeleteMapping("/{supplierId}")
-    public ApiResponse<Supplier> deleteSupplier(@PathVariable String supplierId){
-        return ApiResponse.<Supplier>builder()
+    public ApiResponse<SupplierResponse> deleteSupplier(@PathVariable String supplierId){
+        return ApiResponse.<SupplierResponse>builder()
                 .code(200)
                 .message("Xóa xưởng thành công ")
                 .data(null)

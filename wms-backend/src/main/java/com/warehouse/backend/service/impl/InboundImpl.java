@@ -5,6 +5,7 @@ import com.warehouse.backend.dto.request.InboundReceiptRequest;
 import com.warehouse.backend.dto.response.InboundReceiptResponse;
 import com.warehouse.backend.entity.danhmuc.Product;
 import com.warehouse.backend.entity.danhmuc.Supplier;
+import com.warehouse.backend.entity.danhmuc.Zone;
 import com.warehouse.backend.entity.hethong.User;
 import com.warehouse.backend.entity.nghiepvu.ReceiptDetail;
 import com.warehouse.backend.entity.nghiepvu.InboundReceipt;
@@ -26,14 +27,16 @@ public class InboundImpl implements IInboundService {
     private final UserRepository userRepository;
     private final ProductRepository productRepository;
     private final SupplierRepository supplierRepository;
+    private final ZoneRepository zoneRepository;
 
 
-    public InboundImpl(InboundMapper inboundMapper, InboundReceiptRepository inboundReceiptRepository, ReceiptDetailRepository receiptDetailRepository, UserRepository userRepository, ProductRepository productRepository, SupplierRepository supplierRepository) {
+    public InboundImpl(InboundMapper inboundMapper, InboundReceiptRepository inboundReceiptRepository, ReceiptDetailRepository receiptDetailRepository, UserRepository userRepository, ProductRepository productRepository, SupplierRepository supplierRepository, ZoneRepository zoneRepository) {
         this.inboundMapper = inboundMapper;
         this.inboundReceiptRepository = inboundReceiptRepository;
         this.userRepository = userRepository;
         this.productRepository = productRepository;
         this.supplierRepository = supplierRepository;
+        this.zoneRepository = zoneRepository;
     }
 
     public InboundReceipt findInboundReceiptById(String receiptId){
@@ -89,12 +92,34 @@ public class InboundImpl implements IInboundService {
             Product product = productRepository.findById(detailRequest.getProductId())
                     .orElseThrow(() -> new RuntimeException("Hàng hóa không tồn tại!"));
 
+            // TÌM ZONE LINH HOẠT VÀ FAIL-FAST BÊ TỪ UPDATE LÊN
+            Zone zone = null;
+            if (detailRequest.getZoneId() != null) {
+                zone = zoneRepository.findById(detailRequest.getZoneId())
+                        .orElseThrow(() -> new RuntimeException("Không tìm thấy Khu vực!"));
+            } else {
+                zone = product.getZone();
+            }
+
+            if (zone != null && zone.getCapacity() != null) {
+                int currentLoad = zoneRepository.getCurrentLoadOfZone(zone.getZoneId());
+                int amountToAdd = detailRequest.getQuantity();
+
+                if (currentLoad + amountToAdd > zone.getCapacity()) {
+                    throw new RuntimeException("Không thể lưu phiếu! Khu vực '" + zone.getZoneName() +
+                            "' sẽ bị quá tải. Sức chứa: " + zone.getCapacity() +
+                            ", Đang có: " + currentLoad +
+                            ", Chuẩn bị nhập: " + amountToAdd);
+                }
+            }
+
         // Tạo dòng chi tiết
             ReceiptDetail receiptDetail = new ReceiptDetail();
             receiptDetail.setInboundReceipt(inboundReceipt);
             receiptDetail.setProduct(product);
             receiptDetail.setQuantity(detailRequest.getQuantity());
             receiptDetail.setPrice(detailRequest.getPrice());
+            receiptDetail.setZone(zone);
 
        // tính tổng tiền
        BigDecimal SubTotal = receiptDetail.getSubTotal();
@@ -118,9 +143,26 @@ public class InboundImpl implements IInboundService {
         if(inboundReceipt.getStatus() != 0 ){
             throw new RuntimeException("Phiếu nhập đã được duyệt hoặc đã hủy, không thể duyệt lại!");
         }
+
             inboundReceipt.setStatus(1); // Cập nhật trạng thái thành "Đã duyệt"
             for (ReceiptDetail detail : inboundReceipt.getReceiptDetails()) {
                 Product product = detail.getProduct();
+                Zone zone = detail.getZone(); // Lấy khu vực của sản phẩm này
+
+                if (zone != null && zone.getCapacity() != null) {
+                    // Đếm xem khu này đang chứa bao nhiêu hàng rồi
+                    int currentLoad = zoneRepository.getCurrentLoadOfZone(zone.getZoneId());
+                    int amountToAdd = detail.getQuantity();
+
+                    // Nếu Hàng đang có + Hàng chuẩn bị nhập > Sức chứa -> BÁO LỖI CHẶN LẠI NGAY!
+                    if (currentLoad + amountToAdd > zone.getCapacity()) {
+                        throw new RuntimeException("Không thể duyệt phiếu! Khu vực " + zone.getZoneName() +
+                                " đã đầy. Sức chứa: " + zone.getCapacity() +
+                                ", Đang có: " + currentLoad +
+                                ", Chuẩn bị nhập thêm: " + amountToAdd);
+                    }
+                }
+
                 // Cộng dồn kho
                 int newQuantity = product.getQuantity() + detail.getQuantity();
                 product.setQuantity(newQuantity);
@@ -155,12 +197,34 @@ public class InboundImpl implements IInboundService {
                 for (ReceiptDetailRequest detailRequest : inboundReceiptRequest.getReceiptDetails()) {
                     Product product = productRepository.findById(detailRequest.getProductId())
                             .orElseThrow(() -> new RuntimeException("Không tìm thấy Hàng!"));
+
+                    Zone zone = null;
+                    if (detailRequest.getZoneId() != null) {
+                        zone = zoneRepository.findById(detailRequest.getZoneId())
+                                .orElseThrow(() -> new RuntimeException("Không tìm thấy Khu vực!"));
+                    } else {
+                        zone = product.getZone();
+                    }
+
+                    // --- LOGIC FAIL-FAST: Chặn ngay từ lúc sửa nháp nếu thấy số lượng vô lý ---
+                    if (zone != null && zone.getCapacity() != null) {
+                        int currentLoad = zoneRepository.getCurrentLoadOfZone(zone.getZoneId());
+                        int amountToAdd = detailRequest.getQuantity();
+
+                        if (currentLoad + amountToAdd > zone.getCapacity()) {
+                            throw new RuntimeException("Cannot save receipt! Zone '" + zone.getZoneName() +
+                                    "' will be overloaded. Capacity: " + zone.getCapacity() +
+                                    ", Current load: " + currentLoad +
+                                    ", Attempting to add: " + amountToAdd);
+                        }
+                    }
                     // Tạo chi tiết mới
                     ReceiptDetail receiptDetail = new ReceiptDetail();
                     receiptDetail.setInboundReceipt(existingInboundReceipt);
                     receiptDetail.setProduct(product);
                     receiptDetail.setQuantity(detailRequest.getQuantity());
                     receiptDetail.setPrice(detailRequest.getPrice());
+                    receiptDetail.setZone(zone);
                     // Tính tiền cộng dồn
                     BigDecimal subTotal = receiptDetail.getSubTotal();
                     totalAmount = totalAmount.add(subTotal);

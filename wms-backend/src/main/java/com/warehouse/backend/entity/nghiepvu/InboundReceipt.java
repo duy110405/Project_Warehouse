@@ -5,6 +5,7 @@ import com.warehouse.backend.entity.hethong.User;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -15,6 +16,7 @@ import java.util.List;
 @Table(name = "PHIEUNHAP")
 @Getter
 @Setter
+@ToString(exclude = "receiptDetails")// tránh loop
 public class InboundReceipt {
     @Id
     @Column(name = "MaPnhap", length = 20)

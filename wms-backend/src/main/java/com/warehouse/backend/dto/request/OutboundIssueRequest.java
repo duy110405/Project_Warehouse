@@ -11,8 +11,7 @@ import java.util.List;
 @Data
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class OutboundIssueRequest {
-    String issueBy;
-    String position;
+    String userId;
     LocalDate issueDate;
     List<IssueDetailRequest> issueDetails;
 }
