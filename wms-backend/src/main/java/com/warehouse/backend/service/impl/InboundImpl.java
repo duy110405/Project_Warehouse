@@ -100,7 +100,9 @@ public class InboundImpl implements IInboundService {
             } else {
                 zone = product.getZone();
             }
-
+            if (zone.getZoneType() != 2) {
+                throw new RuntimeException("Lỗi: Không thể cất thành phẩm vào Khu nguyên liệu (" + zone.getZoneName() + ")!");
+            }
             if (zone != null && zone.getCapacity() != null) {
                 int currentLoad = zoneRepository.getCurrentLoadOfZone(zone.getZoneId());
                 int amountToAdd = detailRequest.getQuantity();
@@ -204,6 +206,9 @@ public class InboundImpl implements IInboundService {
                                 .orElseThrow(() -> new RuntimeException("Không tìm thấy Khu vực!"));
                     } else {
                         zone = product.getZone();
+                    }
+                    if (zone.getZoneType() != 2) {
+                        throw new RuntimeException("Lỗi: Không thể cất thành phẩm vào Khu nguyên liệu (" + zone.getZoneName() + ")!");
                     }
 
                     // --- LOGIC FAIL-FAST: Chặn ngay từ lúc sửa nháp nếu thấy số lượng vô lý ---
