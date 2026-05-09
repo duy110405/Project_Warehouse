@@ -11,7 +11,6 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/category")
-@CrossOrigin("*") // Cho phép React gọi API
 public class CategoryController {
     private final ICategoryService categoryService;
 

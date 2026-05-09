@@ -16,9 +16,6 @@ public interface SystemMapper {
 
     // ========== ROLE MAPPINGS ==========
 
-    /**
-     * Chuyển đổi Role Entity -> RoleResponse
-     */
     RoleResponse toRoleResponse(Role role);
 
     /**

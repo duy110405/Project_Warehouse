@@ -12,7 +12,6 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/supplier")
-@CrossOrigin("*") // Cho phép React gọi API
 public class SupplierController {
 
     private final ISupplierService supplierService;

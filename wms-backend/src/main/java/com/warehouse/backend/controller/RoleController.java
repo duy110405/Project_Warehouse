@@ -11,7 +11,6 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/roles")
-@CrossOrigin("*") // Cho phép React/Frontend gọi API
 public class RoleController {
     private final IRoleService roleService;
 
@@ -19,9 +18,6 @@ public class RoleController {
         this.roleService = roleService;
     }
 
-    /**
-     * GET: Lấy danh sách tất cả nhóm
-     */
     @GetMapping
     public ApiResponse<List<RoleResponse>> getAllRoles() {
         return ApiResponse.<List<RoleResponse>>builder()
@@ -31,9 +27,6 @@ public class RoleController {
                 .build();
     }
 
-    /**
-     * GET: Lấy nhóm theo ID
-     */
     @GetMapping("/{groupId}")
     public ApiResponse<RoleResponse> getRoleById(@PathVariable String groupId) {
         return ApiResponse.<RoleResponse>builder()
@@ -43,23 +36,15 @@ public class RoleController {
                 .build();
     }
 
-    /**
-     * POST: Tạo nhóm mới
-     * @Valid kích hoạt validation các annotation @NotBlank, @Size, ...
-     */
     @PostMapping
     public ApiResponse<RoleResponse> createRole(@Valid @RequestBody RoleRequest roleRequest) {
         return ApiResponse.<RoleResponse>builder()
                 .code(201)
                 .message("Tạo nhóm thành công!")
-                .data(roleService.createRole(roleRequest))
+                .data(roleService.saveRole(roleRequest))
                 .build();
     }
 
-    /**
-     * PUT: Cập nhật nhóm
-     * @Valid kích hoạt validation
-     */
     @PutMapping("/{groupId}")
     public ApiResponse<RoleResponse> updateRole(
             @PathVariable String groupId,
@@ -71,9 +56,6 @@ public class RoleController {
                 .build();
     }
 
-    /**
-     * DELETE: Xóa nhóm
-     */
     @DeleteMapping("/{groupId}")
     public ApiResponse<Void> deleteRole(@PathVariable String groupId) {
         roleService.deleteRole(groupId);

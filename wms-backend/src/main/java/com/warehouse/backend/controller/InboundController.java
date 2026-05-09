@@ -11,7 +11,6 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/inbound")
-@CrossOrigin("*") // Cho phép React gọi API
 public class InboundController {
     private final IInboundService inboundService;
 

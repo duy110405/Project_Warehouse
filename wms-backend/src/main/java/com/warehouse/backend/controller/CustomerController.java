@@ -11,7 +11,6 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/customer")
-@CrossOrigin("*") // Cho phép React gọi API
 
 public class CustomerController {
 

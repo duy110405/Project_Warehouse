@@ -11,7 +11,6 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/outbound-material")
-@CrossOrigin("*") // Cho phép React gọi API
 public class OutboundMaterialController {
     private final IMaterialIssueService materialIssueService;
 

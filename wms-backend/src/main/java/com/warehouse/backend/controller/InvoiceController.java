@@ -11,7 +11,6 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/invoice")
-@CrossOrigin("*") // Cho phép React gọi API
 public class InvoiceController {
     private final IInvoiceService invoiceService;
 

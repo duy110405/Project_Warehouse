@@ -28,7 +28,6 @@ public class GlobalExceptionHandler {
         if (exception.getFieldError() != null) {
             errorMessage = exception.getFieldError().getDefaultMessage();
         }
-
         ApiResponse<Object> response = ApiResponse.builder()
                 .code(400)
                 .message(errorMessage)

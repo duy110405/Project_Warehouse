@@ -21,10 +21,6 @@ public class RoleServiceImpl implements IRoleService {
         this.systemMapper = systemMapper;
     }
 
-    /**
-     * Sinh mã ID tự động: ROLE01, ROLE02, ROLE03
-     * Format: ROLE + 2 chữ số (cắt từ vị trí 4)
-     */
     @Override
     public String generateNextRoleId() {
         String maxId = roleRepository.findMaxGroupId();
@@ -36,9 +32,6 @@ public class RoleServiceImpl implements IRoleService {
         return String.format("ROLE%02d", nextNumber);
     }
 
-    /**
-     * Lấy tất cả nhóm
-     */
     @Override
     public List<RoleResponse> getAllRoles() {
         return roleRepository.findAll()
@@ -46,10 +39,6 @@ public class RoleServiceImpl implements IRoleService {
                 .map(systemMapper::toRoleResponse)
                 .toList();
     }
-
-    /**
-     * Lấy nhóm theo ID
-     */
     @Override
     public RoleResponse getRoleById(String groupId) {
         Role role = roleRepository.findById(groupId)
@@ -57,14 +46,9 @@ public class RoleServiceImpl implements IRoleService {
         return systemMapper.toRoleResponse(role);
     }
 
-    /**
-     * Tạo nhóm mới
-     * - Tự sinh ID
-     * - Map từ request
-     */
     @Override
     @Transactional
-    public RoleResponse createRole(RoleRequest roleRequest) {
+    public RoleResponse saveRole(RoleRequest roleRequest) {
         // Tự sinh ID
         String newGroupId = generateNextRoleId();
 
@@ -77,29 +61,18 @@ public class RoleServiceImpl implements IRoleService {
         return systemMapper.toRoleResponse(savedRole);
     }
 
-    /**
-     * Cập nhật nhóm
-     * - Tìm nhóm cũ
-     * - Cập nhật từ request
-     * - Lưu lại
-     */
     @Override
     @Transactional
     public RoleResponse updateRole(String groupId, RoleRequest roleRequest) {
         Role existingRole = roleRepository.findById(groupId)
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy nhóm người dùng với ID: " + groupId));
-
         // Cập nhật từ request (groupId không bị thay đổi)
         systemMapper.updateRoleFromRequest(roleRequest, existingRole);
-
         // Lưu và trả về response
         Role updatedRole = roleRepository.save(existingRole);
         return systemMapper.toRoleResponse(updatedRole);
     }
 
-    /**
-     * Xóa nhóm
-     */
     @Override
     @Transactional
     public void deleteRole(String groupId) {

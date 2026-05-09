@@ -11,7 +11,6 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/material")
-@CrossOrigin("*")
 public class MaterialController {
     private final IMaterialService materialService;
 

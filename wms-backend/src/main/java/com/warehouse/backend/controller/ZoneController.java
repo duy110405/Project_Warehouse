@@ -11,7 +11,6 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/zone")
-@CrossOrigin("*") // Cho phép React gọi API
 public class ZoneController {
     private final IZoneService zoneService;
 

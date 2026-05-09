@@ -12,7 +12,6 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/product")
-@CrossOrigin("*") // Cho phép React gọi API
 public class ProductController {
 
     private final IProductService productService;

@@ -25,10 +25,6 @@ public class UserServiceImpl implements IUserService {
         this.systemMapper = systemMapper;
     }
 
-    /**
-     * Sinh mã ID tự động: ND001, ND002, ND003
-     * Format: ND + 3 chữ số (cắt từ vị trí 2)
-     */
     @Override
     public String generateNextUserId() {
         String maxId = userRepository.findMaxUserId();
@@ -40,9 +36,6 @@ public class UserServiceImpl implements IUserService {
         return String.format("ND%03d", nextNumber);
     }
 
-    /**
-     * Lấy tất cả người dùng
-     */
     @Override
     public List<UserResponse> getAllUsers() {
         return userRepository.findAll()
@@ -51,9 +44,6 @@ public class UserServiceImpl implements IUserService {
                 .toList();
     }
 
-    /**
-     * Lấy người dùng theo ID
-     */
     @Override
     public UserResponse getUserById(String userId) {
         User user = userRepository.findById(userId)
@@ -61,17 +51,9 @@ public class UserServiceImpl implements IUserService {
         return systemMapper.toUserResponse(user);
     }
 
-    /**
-     * Tạo người dùng mới
-     *
-     * BẮT BUỘC kiểm tra:
-     * 1. Tên đăng nhập không được trùng lặp (Fail-Fast)
-     * 2. Tìm Role từ Request để gán vào User
-     * 3. Tự sinh ID
-     */
     @Override
     @Transactional
-    public UserResponse createUser(UserRequest userRequest) {
+    public UserResponse saveUser(UserRequest userRequest) {
         // 1. Fail-Fast: Kiểm tra tên đăng nhập không trùng
         if (userRepository.existsByUsername(userRequest.getUsername())) {
             throw new RuntimeException("Tên đăng nhập '" + userRequest.getUsername() + "' đã tồn tại!");
@@ -98,14 +80,6 @@ public class UserServiceImpl implements IUserService {
         return systemMapper.toUserResponse(savedUser);
     }
 
-    /**
-     * Cập nhật người dùng
-     *
-     * Quy tắc:
-     * - Nếu request gửi password (không null/rỗng) -> cập nhật mật khẩu mới
-     * - Nếu request không gửi password (null/rỗng) -> giữ nguyên mật khẩu cũ
-     * - Không kiểm tra username khi update (hoặc nếu cần thì check trùng với người khác)
-     */
     @Override
     @Transactional
     public UserResponse updateUser(String userId, UserRequest userRequest) {
@@ -140,9 +114,6 @@ public class UserServiceImpl implements IUserService {
         return systemMapper.toUserResponse(updatedUser);
     }
 
-    /**
-     * Xóa người dùng
-     */
     @Override
     @Transactional
     public void deleteUser(String userId) {

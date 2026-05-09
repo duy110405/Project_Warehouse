@@ -13,7 +13,6 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/vendor")
-@CrossOrigin("*") // Cho phép React gọi API
 public class VendorController {
     private final IVendorService vendorService;
 
