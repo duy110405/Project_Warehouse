@@ -4,6 +4,7 @@ import com.warehouse.backend.dto.request.CategoryRequest;
 import com.warehouse.backend.dto.response.ApiResponse;
 import com.warehouse.backend.dto.response.CategoryResponse;
 import com.warehouse.backend.service.ICategoryService;
+import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -38,7 +39,7 @@ public class CategoryController {
     }
 
     @PostMapping
-    public ApiResponse<CategoryResponse> createCategory(@RequestBody CategoryRequest categoryRequest){
+    public ApiResponse<CategoryResponse> createCategory(@Valid @RequestBody CategoryRequest categoryRequest){
         return ApiResponse.<CategoryResponse>builder()
                 .code(201)
                 .message("thêm thành công ")
@@ -47,7 +48,7 @@ public class CategoryController {
     }
 
     @PutMapping("/{categoryId}")
-    public ApiResponse<CategoryResponse> updateCategory(@RequestBody CategoryRequest categoryRequest, @PathVariable String categoryId){
+    public ApiResponse<CategoryResponse> updateCategory(@Valid @RequestBody CategoryRequest categoryRequest, @PathVariable String categoryId){
         return ApiResponse.<CategoryResponse>builder()
                 .code(200)
                 .message("Cập nhật thành công")

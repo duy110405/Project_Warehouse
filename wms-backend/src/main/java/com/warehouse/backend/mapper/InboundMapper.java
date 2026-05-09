@@ -23,6 +23,7 @@ public interface InboundMapper {
     @Mapping(target = "productName", source = "product.productName")
     @Mapping(target = "zoneId", source = "zone.zoneId")
     @Mapping(target = "zoneName", source = "zone.zoneName")
+    @Mapping(target = "zoneType" , source = "zone.zoneType")
     ReceiptDetailResponse toReceiptDetailResponse(ReceiptDetail receiptDetail);
 
     // request sang entity

@@ -4,6 +4,7 @@ import com.warehouse.backend.dto.request.ZoneRequest;
 import com.warehouse.backend.dto.response.ApiResponse;
 import com.warehouse.backend.dto.response.ZoneRespone;
 import com.warehouse.backend.service.IZoneService;
+import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -37,7 +38,7 @@ public class ZoneController {
     }
 
     @PostMapping
-    public ApiResponse<ZoneRespone> createZone(@RequestBody ZoneRequest zoneRequest){
+    public ApiResponse<ZoneRespone> createZone(@Valid @RequestBody ZoneRequest zoneRequest){
         return ApiResponse.<ZoneRespone>builder()
                 .code(201)
                 .message("Thêm khu thành công ")
@@ -46,7 +47,7 @@ public class ZoneController {
     }
 
     @PutMapping("/{zoneId}")
-    public ApiResponse<ZoneRespone> updateZone(@PathVariable String zoneId , @RequestBody ZoneRequest zoneRequest) {
+    public ApiResponse<ZoneRespone> updateZone(@PathVariable String zoneId ,@Valid @RequestBody ZoneRequest zoneRequest) {
         return ApiResponse.<ZoneRespone>builder()
                 .code(200)
                 .message("Cập nhật khu thành công ")

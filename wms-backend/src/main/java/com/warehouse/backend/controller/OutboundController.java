@@ -4,6 +4,7 @@ import com.warehouse.backend.dto.request.OutboundIssueRequest;
 import com.warehouse.backend.dto.response.ApiResponse;
 import com.warehouse.backend.dto.response.OutboundIssueResponse;
 import com.warehouse.backend.service.IOutboundService;
+import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -36,7 +37,7 @@ public class OutboundController {
                 .build();
     }
     @PostMapping
-    public ApiResponse<OutboundIssueResponse> createOutboundIssue(@RequestBody OutboundIssueRequest outboundIssueRequest){
+    public ApiResponse<OutboundIssueResponse> createOutboundIssue(@Valid @RequestBody OutboundIssueRequest outboundIssueRequest){
         return ApiResponse.<OutboundIssueResponse>builder()
                 .code(201)
                 .message("Thêm phiếu xuất thành công!")
@@ -54,7 +55,7 @@ public class OutboundController {
     }
 
     @PutMapping("/{issueId}")
-    public ApiResponse<OutboundIssueResponse> updateOutboundIssue(@PathVariable String issueId , @RequestBody OutboundIssueRequest outboundIssueRequest){
+    public ApiResponse<OutboundIssueResponse> updateOutboundIssue(@PathVariable String issueId ,@Valid @RequestBody OutboundIssueRequest outboundIssueRequest){
         return ApiResponse.<OutboundIssueResponse>builder()
                 .code(200)
                 .message("Cập nhật phiếu xuất thành công!")

@@ -6,15 +6,14 @@ import lombok.experimental.FieldDefaults;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.Date;
 import java.util.List;
 
 @Data
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class OutboundIssueRequest {
+public class MaterialIssueRequest {
     String userId;
-    LocalDate issueDate;
+    LocalDate materialIssueDate;
     Integer status;
-    List<IssueDetailRequest> issueDetails;
-    List<String> invoiceIds;
+    String supplierId;
+    List<MaterialIssueDetailRequest> materialIssueDetails;
 }

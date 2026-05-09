@@ -3,10 +3,7 @@ package com.warehouse.backend.entity.nghiepvu;
 import com.warehouse.backend.entity.danhmuc.Product;
 import com.warehouse.backend.entity.danhmuc.Zone;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -14,8 +11,8 @@ import java.math.BigDecimal;
 @Entity
 @Table(name = "DXUATKHO")
 @IdClass(IssueDetail.IssueDetailId.class) // dùng khóa hỗn hợp(Trỏ vào class nằm bên trong)
-@Data
-
+@Getter
+@Setter
 public class IssueDetail {
     @Id
     @ManyToOne

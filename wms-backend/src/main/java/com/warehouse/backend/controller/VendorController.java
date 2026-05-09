@@ -6,6 +6,7 @@ import com.warehouse.backend.dto.response.ApiResponse;
 import com.warehouse.backend.dto.response.VendorResponse;
 import com.warehouse.backend.service.ISupplierService;
 import com.warehouse.backend.service.IVendorService;
+import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -40,7 +41,7 @@ public class VendorController {
     }
 
     @PostMapping
-    public ApiResponse<VendorResponse> cretaVendor(@RequestBody VendorRequest vendorRequest){
+    public ApiResponse<VendorResponse> cretaVendor(@Valid @RequestBody VendorRequest vendorRequest){
         return ApiResponse.<VendorResponse>builder()
                 .code(201)
                 .message("Thêm nhaf cung cấp thành công ")
@@ -49,7 +50,7 @@ public class VendorController {
     }
 
     @PutMapping("/{vendorId}")
-    public ApiResponse<VendorResponse> updateVendor(@PathVariable String vendorId , @RequestBody VendorRequest vendorRequest){
+    public ApiResponse<VendorResponse> updateVendor(@PathVariable String vendorId ,@Valid @RequestBody VendorRequest vendorRequest){
         return ApiResponse.<VendorResponse>builder()
                 .code(200)
                 .message("Cập nhật nhà cung cấp thành công ")

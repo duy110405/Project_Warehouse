@@ -4,6 +4,7 @@ import com.warehouse.backend.dto.request.InvoiceRequest;
 import com.warehouse.backend.dto.response.ApiResponse;
 import com.warehouse.backend.dto.response.InvoiceResponse;
 import com.warehouse.backend.service.IInvoiceService;
+import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -37,7 +38,7 @@ public class InvoiceController {
     }
 
     @PostMapping
-    public ApiResponse<InvoiceResponse> createInvoice(@RequestBody InvoiceRequest invoiceRequest) {
+    public ApiResponse<InvoiceResponse> createInvoice(@Valid @RequestBody InvoiceRequest invoiceRequest) {
         return ApiResponse.<InvoiceResponse>builder()
                 .code(201)
                 .message("Thêm hóa đơn thành công!")
@@ -64,7 +65,7 @@ public class InvoiceController {
     }
 
     @PutMapping("/{invoiceId}")
-    public ApiResponse<InvoiceResponse> updateInvoice(@PathVariable String invoiceId, @RequestBody InvoiceRequest invoiceRequest) {
+    public ApiResponse<InvoiceResponse> updateInvoice(@PathVariable String invoiceId,@Valid @RequestBody InvoiceRequest invoiceRequest) {
         return ApiResponse.<InvoiceResponse>builder()
                 .code(200)
                 .message("Cập nhật hóa đơn thành công!")

@@ -4,6 +4,7 @@ import com.warehouse.backend.dto.request.InboundReceiptRequest;
 import com.warehouse.backend.dto.response.ApiResponse;
 import com.warehouse.backend.dto.response.InboundReceiptResponse;
 import com.warehouse.backend.service.IInboundService;
+import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -37,7 +38,7 @@ public class InboundController {
     }
 
     @PostMapping
-    public ApiResponse<InboundReceiptResponse> createInboundReceipt(@RequestBody InboundReceiptRequest inboundReceiptRequest){
+    public ApiResponse<InboundReceiptResponse> createInboundReceipt(@Valid @RequestBody InboundReceiptRequest inboundReceiptRequest){
         return ApiResponse.<InboundReceiptResponse>builder()
                 .code(201)
                 .message("Thêm phiếu nhập thành công!")
@@ -62,7 +63,7 @@ public class InboundController {
                 .build();
     }
     @PutMapping("/{receiptId}")
-    public ApiResponse<InboundReceiptResponse> updateInboundReceipt(@PathVariable String receiptId, @RequestBody InboundReceiptRequest inboundReceiptRequest){
+    public ApiResponse<InboundReceiptResponse> updateInboundReceipt(@PathVariable String receiptId, @Valid @RequestBody InboundReceiptRequest inboundReceiptRequest){
         return ApiResponse.<InboundReceiptResponse>builder()
                 .code(200)
                 .message("Cập nhật phiếu nhập thành công!")

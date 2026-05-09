@@ -47,6 +47,6 @@ public class Invoice {
     private OutboundIssue outboundIssue;
 
     // Một hóa đơn có nhiều dòng chi tiết
-    @OneToMany(mappedBy = "invoice", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "invoice", cascade = CascadeType.ALL , orphanRemoval = true)
     private List<InvoiceDetail> invoiceDetails = new ArrayList<>();
 }

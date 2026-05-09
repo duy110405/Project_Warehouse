@@ -5,6 +5,7 @@ import com.warehouse.backend.dto.request.ProductRequest;
 import com.warehouse.backend.dto.response.ProductResponse;
 import com.warehouse.backend.mapper.ProductMapper;
 import com.warehouse.backend.service.IProductService;
+import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -39,7 +40,7 @@ public class ProductController {
     }
 
     @PostMapping
-    public ApiResponse<ProductResponse> createProduct(@RequestBody ProductRequest productRequest) {
+    public ApiResponse<ProductResponse> createProduct(@Valid @RequestBody ProductRequest productRequest) {
         return ApiResponse.<ProductResponse>builder()
                 .code(201)
                 .message("Thêm Hàng và Nguyên liệu thành công!")
@@ -48,7 +49,7 @@ public class ProductController {
     }
 
     @PutMapping("/{productId}")
-    public ApiResponse<ProductResponse> updateProduct(@PathVariable String productId, @RequestBody ProductRequest productRequest) {
+    public ApiResponse<ProductResponse> updateProduct(@PathVariable String productId,@Valid @RequestBody ProductRequest productRequest) {
         return ApiResponse.<ProductResponse>builder()
                 .code(200)
                 .message("Cập nhật Hàng và Nguyên liệu thành công!")

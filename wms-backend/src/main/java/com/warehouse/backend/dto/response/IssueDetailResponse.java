@@ -16,6 +16,7 @@ public class IssueDetailResponse {
 
     String zoneId;
     String zoneName;
+    Integer zoneType;
 
     BigDecimal subTotal;
 

@@ -25,16 +25,16 @@ public interface MaterialReceiptMapper {
     @Mapping(target = "materialName", source = "material.materialName")
     @Mapping(target = "zoneId", source = "zone.zoneId")
     @Mapping(target = "zoneName", source = "zone.zoneName")
+    @Mapping(target = "zoneType", source = "zone.zoneType")
     MaterialReceiptDetailResponse toMaterialReciptDetailResponse(MaterialReceiptDetail materialReceiptDetail);
 
     @Mapping(target = "vendor", ignore = true)
     @Mapping(target = "user", ignore = true)
-    @Mapping(target = " materialReceiptDetails", ignore = true)
+    @Mapping(target = "materialReceiptDetails", ignore = true)
     InboundMaterialReceipt toInboundMaterialReceiptEntity(MaterialReceiptRequest materialReceiptRequest);
 
     @Mapping(target = "vendor", ignore = true)
     @Mapping(target = "user", ignore = true)
-    @Mapping(target = " materialReceiptDetails", ignore = true)
+    @Mapping(target = "materialReceiptDetails", ignore = true)
     void updateFromRequest(MaterialReceiptRequest materialReceiptRequest, @MappingTarget InboundMaterialReceipt inboundMaterialReceipt);
-
 }

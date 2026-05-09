@@ -15,5 +15,6 @@ public class ReceiptDetailResponse {
     BigDecimal price;
     String zoneId;
     String zoneName;
+    Integer zoneType;
     BigDecimal subTotal;
 }

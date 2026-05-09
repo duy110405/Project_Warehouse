@@ -4,6 +4,7 @@ import com.warehouse.backend.dto.request.CustomerRequest;
 import com.warehouse.backend.dto.response.ApiResponse;
 import com.warehouse.backend.dto.response.CustomerResponse;
 import com.warehouse.backend.service.ICustomerService;
+import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -40,7 +41,7 @@ public class CustomerController {
     }
 
     @PostMapping
-    public ApiResponse<CustomerResponse> createCustomer(@RequestBody CustomerRequest customerRequest) {
+    public ApiResponse<CustomerResponse> createCustomer(@Valid @RequestBody CustomerRequest customerRequest) {
         return ApiResponse.<CustomerResponse>builder()
                 .code(201)
                 .message("Thêm khách hàng thành công!")
@@ -48,7 +49,7 @@ public class CustomerController {
                 .build();
     }
     @PutMapping("/{customerId}")
-    public ApiResponse<CustomerResponse> updateCustomer(@PathVariable String customerId, @RequestBody CustomerRequest customerRequest) {
+    public ApiResponse<CustomerResponse> updateCustomer(@PathVariable String customerId, @Valid @RequestBody CustomerRequest customerRequest) {
         return ApiResponse.<CustomerResponse>builder()
                 .code(200)
                 .message("Cập nhật thông tin khách hàng thành công!")

@@ -4,6 +4,7 @@ import com.warehouse.backend.dto.request.MaterialRequest;
 import com.warehouse.backend.dto.response.ApiResponse;
 import com.warehouse.backend.dto.response.MaterialResponse;
 import com.warehouse.backend.service.IMaterialService;
+import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -36,7 +37,7 @@ public class MaterialController {
     }
 
     @PostMapping
-    public ApiResponse<MaterialResponse> createMaterial(@RequestBody MaterialRequest materialRequest){
+    public ApiResponse<MaterialResponse> createMaterial(@Valid @RequestBody MaterialRequest materialRequest){
         return ApiResponse.<MaterialResponse>builder()
                 .code(201)
                 .message("Thêm nguyên liệu thành công")
@@ -45,7 +46,7 @@ public class MaterialController {
     }
 
     @PutMapping("/{materialId}")
-    public ApiResponse<MaterialResponse> updateMaterial(@RequestBody MaterialRequest materialRequest, @PathVariable String materialId){
+    public ApiResponse<MaterialResponse> updateMaterial(@Valid @RequestBody MaterialRequest materialRequest, @PathVariable String materialId){
         return  ApiResponse.<MaterialResponse>builder()
                 .code(200)
                 .message("Cập nhật nguyên liệu thành công")

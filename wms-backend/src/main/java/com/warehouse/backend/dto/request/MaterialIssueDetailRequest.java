@@ -1,20 +1,18 @@
-package com.warehouse.backend.dto.response;
+package com.warehouse.backend.dto.request;
 
 import lombok.AccessLevel;
 import lombok.Data;
 import lombok.experimental.FieldDefaults;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.util.List;
 
 @Data
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class MaterialReceiptDetailResponse {
+public class MaterialIssueDetailRequest {
     String materialId;
-    String materialName;
-    int quantity;
     BigDecimal price;
+    int quantity;
     String zoneId;
-    String zoneName;
-    Integer zoneType;
-    BigDecimal subTotal;
 }

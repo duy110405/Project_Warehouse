@@ -4,12 +4,13 @@ import com.warehouse.backend.dto.request.MaterialReceiptRequest;
 import com.warehouse.backend.dto.response.ApiResponse;
 import com.warehouse.backend.dto.response.MaterialReceiptResponse;
 import com.warehouse.backend.service.IMaterialReceiptService;
+import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/inboundMaterial")
+@RequestMapping("/api/inbound-material")
 @CrossOrigin("*") // Cho phép React gọi API
 public class InboundMaterialController {
     private final IMaterialReceiptService materialReceiptService;
@@ -37,7 +38,7 @@ public class InboundMaterialController {
     }
 
     @PostMapping
-    public ApiResponse<MaterialReceiptResponse> createMaterialReceipt(@RequestBody MaterialReceiptRequest materialReceiptRequest) {
+    public ApiResponse<MaterialReceiptResponse> createMaterialReceipt(@Valid @RequestBody MaterialReceiptRequest materialReceiptRequest) {
         return ApiResponse.<MaterialReceiptResponse>builder()
                 .code(201)
                 .message("Thêm phiếu nhập nguyên vật liệu thành công!")
@@ -55,7 +56,7 @@ public class InboundMaterialController {
     }
 
     @PutMapping("/{materialReceiptId}")
-    public ApiResponse<MaterialReceiptResponse> updateMaterialReceipt(@PathVariable String materialReceiptId, @RequestBody MaterialReceiptRequest materialReceiptRequest) {
+    public ApiResponse<MaterialReceiptResponse> updateMaterialReceipt(@PathVariable String materialReceiptId,@Valid @RequestBody MaterialReceiptRequest materialReceiptRequest) {
         return ApiResponse.<MaterialReceiptResponse>builder()
                 .code(200)
                 .message("Cập nhật phiếu nhập nguyên vật liệu thành công!")

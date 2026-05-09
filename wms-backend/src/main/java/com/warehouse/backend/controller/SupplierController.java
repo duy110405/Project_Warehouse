@@ -5,6 +5,7 @@ import com.warehouse.backend.dto.response.ApiResponse;
 import com.warehouse.backend.dto.response.SupplierResponse;
 import com.warehouse.backend.entity.danhmuc.Supplier;
 import com.warehouse.backend.service.ISupplierService;
+import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -38,7 +39,7 @@ public class SupplierController {
     }
 
     @PostMapping
-    public ApiResponse<SupplierResponse> cretaSupplier(@RequestBody SupplierRequest supplierRequest){
+    public ApiResponse<SupplierResponse> cretaSupplier(@Valid @RequestBody SupplierRequest supplierRequest){
         return ApiResponse.<SupplierResponse>builder()
                 .code(201)
                 .message("Thêm xưởng thành công ")
@@ -47,7 +48,7 @@ public class SupplierController {
     }
 
     @PutMapping("/{supplierId}")
-    public ApiResponse<SupplierResponse> updateSupplier(@PathVariable String supplierId , @RequestBody SupplierRequest supplierRequest){
+    public ApiResponse<SupplierResponse> updateSupplier(@PathVariable String supplierId ,@Valid @RequestBody SupplierRequest supplierRequest){
         return ApiResponse.<SupplierResponse>builder()
                 .code(200)
                 .message("Cập nhật xưởng thành công ")
