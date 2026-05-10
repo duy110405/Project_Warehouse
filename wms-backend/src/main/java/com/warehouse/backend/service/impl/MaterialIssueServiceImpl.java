@@ -132,6 +132,11 @@ public class MaterialIssueServiceImpl implements IMaterialIssueService {
                 throw new RuntimeException("Không thể xuất nguyên liệu ở khu vực loại " + zone.getZoneType() + ". " +
                         "Khu vực này dành cho thành phẩm, vui lòng chọn khu vực nguyên liệu");
             }
+            int quantityToIssue = detailRequest.getQuantity();
+            if (quantityToIssue > material.getQuantity()) {
+                throw new RuntimeException("Không thể tạo phiếu! Nguyên liệu '" + material.getMaterialName() +
+                        "' chỉ còn " + material.getQuantity() + " trong kho, nhưng bạn muốn xuất " + quantityToIssue);
+            }
 
             // Tạo dòng chi tiết
             MaterialIssueDetail detail = new MaterialIssueDetail();
@@ -176,16 +181,31 @@ public class MaterialIssueServiceImpl implements IMaterialIssueService {
         // 3. Lặp qua chi tiết để kiểm tra và trừ tồn kho
         for (MaterialIssueDetail detail : materialIssue.getMaterialIssueDetails()) {
             Material material = detail.getMaterial();
+            Zone zone = detail.getZone();// Lấy khu vực của sản phẩm này
+            int quantityToDeduct = detail.getQuantity();
+
 
             // Kiểm tra tồn kho
             if (material.getQuantity() < detail.getQuantity()) {
                 throw new RuntimeException("Không đủ hàng trong kho cho nguyên liệu: " + material.getMaterialName() +
                         ". Tồn kho: " + material.getQuantity() + ", yêu cầu: " + detail.getQuantity());
             }
-
             // Trừ tồn kho
-            material.setQuantity(material.getQuantity() - detail.getQuantity());
+            material.setQuantity(material.getQuantity() - quantityToDeduct);
             materialRepository.save(material);
+
+            // GIẢI PHÓNG KHÔNG GIAN CHO KHU VỰC (Zone)
+            if (zone != null) {
+                int currentLoad = zone.getCurrentLoad() != null ? zone.getCurrentLoad() : 0;
+                int newCurrentLoad = currentLoad - quantityToDeduct;
+
+                // Đảm bảo tải trọng không bị âm (đề phòng dữ liệu cũ bị sai lệch)
+                if (newCurrentLoad < 0) {
+                    newCurrentLoad = 0;
+                }
+                zone.setCurrentLoad(newCurrentLoad);
+                zoneRepository.save(zone); // Lưu Zone xuống DB
+            }
         }
 
         // 4. Cập nhật trạng thái phiếu thành 1 (Đã xuất)
@@ -258,7 +278,11 @@ public class MaterialIssueServiceImpl implements IMaterialIssueService {
                     throw new RuntimeException("Không thể xuất nguyên liệu ở khu vực loại " + zone.getZoneType() + ". " +
                             "Khu vực này dành cho thành phẩm, vui lòng chọn khu vực nguyên liệu");
                 }
-
+                int quantityToIssue = detailRequest.getQuantity();
+                if (quantityToIssue > material.getQuantity()) {
+                    throw new RuntimeException("Không thể cập nhật phiếu! Nguyên liệu '" + material.getMaterialName() +
+                            "' chỉ còn " + material.getQuantity() + " trong kho, nhưng bạn muốn xuất " + quantityToIssue);
+                }
                 // Tạo dòng chi tiết
                 MaterialIssueDetail detail = new MaterialIssueDetail();
                 detail.setOutboundMaterialIssue(existingMaterialIssue);

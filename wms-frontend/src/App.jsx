@@ -5,6 +5,7 @@ import {
 } from 'lucide-react';
 import { Routes, Route, Link } from 'react-router-dom';
 
+import Product from './pages/Product';
 import Dashboard from './pages/Dashboard';
 import Category from './pages/Category';
 import Zone from './pages/Zone';
@@ -33,7 +34,7 @@ export default function App() {
           </Link>
 
           {/* Các nút menu khác */}
-          <MenuItem icon={<Package size={20} />} label="Products" to="/categories" />
+          <MenuItem icon={<Package size={20} />} label="Products" to="/products" />
           <MenuItem icon={<ShoppingCart size={20} />} label="Orders" to="/orders" />     
           <MenuItem icon={<Users size={20} />} label="Customers" />
           <MenuItem icon={<Truck size={20} />} label="Couriers" />
@@ -56,8 +57,9 @@ export default function App() {
       </button>
       {/* DROPDOWN */}
       {openWarehouse && (
-        <div className="mt-1">
+        <div className="mt-1 ml-8 space-y-1">
           <MenuItem icon={<Settings size={20} />} label="Setup Zones" to="/zones" />
+          <MenuItem icon={<Settings size={20} />} label="Setup Categories" to="/categories" />
         </div>
       )}
     </div>
@@ -98,10 +100,14 @@ export default function App() {
            <Routes>
               {/* Nếu gõ localhost:5173/ thì hiện Dashboard */}
               <Route path="/" element={<Dashboard />} /> 
+               {/* Nếu gõ localhost:5173/products thì hiện trang Products */}
+              <Route path="/products" element={<Product />} />
               {/* Nếu gõ localhost:5173/categories thì hiện trang Danh mục */}
               <Route path="/categories" element={<Category />} />
               {/* Nếu gõ localhost:5173/zones thì hiện trang Setup Zones */}
               <Route path="/zones" element={<Zone />} />
+             
+            
            </Routes>
         </div>
 

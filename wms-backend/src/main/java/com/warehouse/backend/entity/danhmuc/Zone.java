@@ -22,6 +22,9 @@ public class Zone {
     @Column(name = "TenKhu", nullable = false, length = 100)
     String zoneName;
 
+    @Column(name = "SoLuongHienTai", nullable = false, length = 100)
+    Integer currentLoad = 0;
+
     @Column (name = "SucChua", length = 50)
     Integer capacity;
 

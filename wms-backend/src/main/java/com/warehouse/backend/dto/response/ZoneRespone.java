@@ -9,6 +9,7 @@ import lombok.experimental.FieldDefaults;
 public class ZoneRespone {
     String zoneId;
     String zoneName;
+    Integer currentLoad;
     Integer capacity;
     Integer zoneType;
 }

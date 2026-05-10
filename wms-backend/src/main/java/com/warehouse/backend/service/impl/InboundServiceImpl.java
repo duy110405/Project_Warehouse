@@ -21,7 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
-public class InboundImpl implements IInboundService {
+public class InboundServiceImpl implements IInboundService {
     private final InboundMapper inboundMapper;
     private final InboundReceiptRepository inboundReceiptRepository;
     private final UserRepository userRepository;
@@ -30,7 +30,7 @@ public class InboundImpl implements IInboundService {
     private final ZoneRepository zoneRepository;
 
 
-    public InboundImpl(InboundMapper inboundMapper, InboundReceiptRepository inboundReceiptRepository, ReceiptDetailRepository receiptDetailRepository, UserRepository userRepository, ProductRepository productRepository, SupplierRepository supplierRepository, ZoneRepository zoneRepository) {
+    public InboundServiceImpl(InboundMapper inboundMapper, InboundReceiptRepository inboundReceiptRepository, ReceiptDetailRepository receiptDetailRepository, UserRepository userRepository, ProductRepository productRepository, SupplierRepository supplierRepository, ZoneRepository zoneRepository) {
         this.inboundMapper = inboundMapper;
         this.inboundReceiptRepository = inboundReceiptRepository;
         this.userRepository = userRepository;
@@ -104,7 +104,7 @@ public class InboundImpl implements IInboundService {
                 throw new RuntimeException("Lỗi: Không thể cất thành phẩm vào Khu nguyên liệu (" + zone.getZoneName() + ")!");
             }
             if (zone != null && zone.getCapacity() != null) {
-                int currentLoad = zoneRepository.getCurrentLoadOfZone(zone.getZoneId());
+                int currentLoad = zone.getCurrentLoad();
                 int amountToAdd = detailRequest.getQuantity();
 
                 if (currentLoad + amountToAdd > zone.getCapacity()) {
@@ -153,7 +153,7 @@ public class InboundImpl implements IInboundService {
 
                 if (zone != null && zone.getCapacity() != null) {
                     // Đếm xem khu này đang chứa bao nhiêu hàng rồi
-                    int currentLoad = zoneRepository.getCurrentLoadOfZone(zone.getZoneId());
+                    int currentLoad = zone.getCurrentLoad();
                     int amountToAdd = detail.getQuantity();
 
                     // Nếu Hàng đang có + Hàng chuẩn bị nhập > Sức chứa -> BÁO LỖI CHẶN LẠI NGAY!
@@ -164,12 +164,14 @@ public class InboundImpl implements IInboundService {
                                 ", Chuẩn bị nhập thêm: " + amountToAdd);
                     }
                 }
-
                 // Cộng dồn kho
                 int newQuantity = product.getQuantity() + detail.getQuantity();
                 product.setQuantity(newQuantity);
+                int newCurrentLoad = zone.getCurrentLoad() + detail.getQuantity();
+                zone.setCurrentLoad(newCurrentLoad);
                 // Cập nhật Hàng xuống DB
                 productRepository.save(product);
+                zoneRepository.save(zone);
             }
         InboundReceipt savedInboundReceipt = inboundReceiptRepository.save(inboundReceipt);
         return inboundMapper.toInboundResponse(savedInboundReceipt);
@@ -211,16 +213,17 @@ public class InboundImpl implements IInboundService {
                         throw new RuntimeException("Lỗi: Không thể cất thành phẩm vào Khu nguyên liệu (" + zone.getZoneName() + ")!");
                     }
 
-                    // --- LOGIC FAIL-FAST: Chặn ngay từ lúc sửa nháp nếu thấy số lượng vô lý ---
+                    // --- LOGIC FAIL-FAST: Chỉ CHECK sức chứa, KHÔNG CỘNG VÀO DATABASE ---
                     if (zone != null && zone.getCapacity() != null) {
-                        int currentLoad = zoneRepository.getCurrentLoadOfZone(zone.getZoneId());
+                        // Chú ý: Vì đang là phiếu nháp, ta lấy currentLoad hiện tại để xem nếu duyệt thì có vừa không
+                        int currentLoad = zone.getCurrentLoad() != null ? zone.getCurrentLoad() : 0;
                         int amountToAdd = detailRequest.getQuantity();
 
                         if (currentLoad + amountToAdd > zone.getCapacity()) {
-                            throw new RuntimeException("Cannot save receipt! Zone '" + zone.getZoneName() +
-                                    "' will be overloaded. Capacity: " + zone.getCapacity() +
-                                    ", Current load: " + currentLoad +
-                                    ", Attempting to add: " + amountToAdd);
+                            throw new RuntimeException("Không thể lưu nháp! Khu vực '" + zone.getZoneName() +
+                                    "' sẽ bị quá tải nếu duyệt. Sức chứa: " + zone.getCapacity() +
+                                    ", Đang có: " + currentLoad +
+                                    ", Chuẩn bị thêm: " + amountToAdd);
                         }
                     }
                     // Tạo chi tiết mới

@@ -6,7 +6,6 @@ import com.warehouse.backend.dto.response.OutboundIssueResponse;
 import com.warehouse.backend.entity.danhmuc.Product;
 import com.warehouse.backend.entity.danhmuc.Zone;
 import com.warehouse.backend.entity.hethong.User;
-import com.warehouse.backend.entity.nghiepvu.InboundReceipt;
 import com.warehouse.backend.entity.nghiepvu.Invoice;
 import com.warehouse.backend.entity.nghiepvu.IssueDetail;
 import com.warehouse.backend.entity.nghiepvu.OutboundIssue;
@@ -22,7 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
-public class OutboundImpl implements IOutboundService {
+public class OutboundServiceImpl implements IOutboundService {
     private final OutboundIssueRepository outboundIssueRepository;
     private final OutboundMapper outboundMapper;
     private final InvoiceRepository invoiceRepository;
@@ -30,7 +29,7 @@ public class OutboundImpl implements IOutboundService {
     private final ProductRepository productRepository;
     private final ZoneRepository zoneRepository;
 
-    public OutboundImpl(OutboundIssueRepository outboundIssueRepository, OutboundMapper outboundMapper, InvoiceRepository invoiceRepository, UserRepository userRepository, ProductRepository productRepository, ZoneRepository zoneRepository) {
+    public OutboundServiceImpl(OutboundIssueRepository outboundIssueRepository, OutboundMapper outboundMapper, InvoiceRepository invoiceRepository, UserRepository userRepository, ProductRepository productRepository, ZoneRepository zoneRepository) {
         this.outboundIssueRepository = outboundIssueRepository;
         this.outboundMapper = outboundMapper;
         this.invoiceRepository = invoiceRepository;
@@ -92,13 +91,12 @@ public class OutboundImpl implements IOutboundService {
             } else {
                 zone = product.getZone();
             }
-                int amountToAdd = issueDetailRequest.getQuantity();
+            int quantityToIssue = issueDetailRequest.getQuantity();
 
-                if ( amountToAdd > product.getQuantity()) {
-                    throw new RuntimeException("Không thể xuất phiếu! Sản phẩm " + product.getProductName() +
-                            " chỉ còn " + product.getQuantity() + " cái trong kho, nhưng bạn muốn xuất " + amountToAdd + " cái.");
-                }
-
+            if (quantityToIssue > product.getQuantity()) {
+                throw new RuntimeException("Không thể xuất phiếu! Sản phẩm " + product.getProductName() +
+                        " chỉ còn " + product.getQuantity() + " cái trong kho, nhưng bạn muốn xuất " + quantityToIssue + " cái.");
+            }
             // Tạo dòng chi tiết
             IssueDetail issueDetail = new IssueDetail();
             issueDetail.setOutboundIssue(outboundIssue);
@@ -138,17 +136,31 @@ public class OutboundImpl implements IOutboundService {
         }
         for (IssueDetail issueDetail : outboundIssue.getIssueDetails()) {
             Product product = issueDetail.getProduct();
+            Zone zone = issueDetail.getZone();// Lấy khu vực của sản phẩm này
+            int quantityToDeduct = issueDetail.getQuantity();
 
-            // Kiểm tra xem kho còn đủ hàng không
-            if (product.getQuantity() < issueDetail.getQuantity()) {
-                throw new RuntimeException("Không đủ hàng trong kho cho sản phẩm: " + product.getProductName());
+            //  Kiểm tra và Trừ kho Sản phẩm (Product)
+            if (product.getQuantity() < quantityToDeduct) {
+                throw new RuntimeException("Không đủ hàng trong kho! Sản phẩm: " + product.getProductName() +
+                        " (Tồn: " + product.getQuantity() + ", Yêu cầu: " + quantityToDeduct + ")");
             }
-            // Thực hiện trừ kho
-            product.setQuantity(product.getQuantity() - issueDetail.getQuantity());
+            product.setQuantity(product.getQuantity() - quantityToDeduct);
             productRepository.save(product);
-        }
 
-        //Cập nhật trạng thái Hóa đơn liên quan sang "Hoàn thành" (Status 2)
+            // GIẢI PHÓNG KHÔNG GIAN CHO KHU VỰC (Zone)
+            if (zone != null) {
+                int currentLoad = zone.getCurrentLoad() != null ? zone.getCurrentLoad() : 0;
+                int newCurrentLoad = currentLoad - quantityToDeduct;
+
+                // Đảm bảo tải trọng không bị âm (đề phòng dữ liệu cũ bị sai lệch)
+                if (newCurrentLoad < 0) {
+                    newCurrentLoad = 0;
+                }
+                zone.setCurrentLoad(newCurrentLoad);
+                zoneRepository.save(zone); // Lưu Zone xuống DB
+            }
+        }
+        // Cập nhật trạng thái Hóa đơn liên quan sang Hoàn thành
         if (outboundIssue.getInvoices() != null) {
             for (Invoice invoice : outboundIssue.getInvoices()) {
                 invoice.setStatus(2);
@@ -186,13 +198,12 @@ public class OutboundImpl implements IOutboundService {
                 } else {
                     zone = product.getZone();
                 }
-                int amountToAdd = issueDetailRequest.getQuantity();
+                int quantityToIssue = issueDetailRequest.getQuantity();
 
-                if ( amountToAdd > product.getQuantity()) {
+                if (quantityToIssue > product.getQuantity()) {
                     throw new RuntimeException("Không thể xuất phiếu! Sản phẩm " + product.getProductName() +
-                            " chỉ còn " + product.getQuantity() + " cái trong kho, nhưng bạn muốn xuất " + amountToAdd + " cái.");
+                            " chỉ còn " + product.getQuantity() + " cái trong kho, nhưng bạn muốn xuất " + quantityToIssue + " cái.");
                 }
-
                 // chi tiết phiếu
                 IssueDetail issueDetail = new IssueDetail();
                 issueDetail.setOutboundIssue(existingIssue);

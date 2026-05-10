@@ -110,7 +110,7 @@ public class MaterialReceiptServiceImpl implements IMaterialReceiptService {
             }
 
             if (zone != null && zone.getCapacity() != null) {
-                int currentLoad = zoneRepository.getCurrentLoadOfZone(zone.getZoneId());
+                int currentLoad = zone.getCurrentLoad();
                 int amountToAdd = materialReceiptDetailRequest.getQuantity();
 
                 if (currentLoad + amountToAdd > zone.getCapacity()) {
@@ -158,7 +158,7 @@ public class MaterialReceiptServiceImpl implements IMaterialReceiptService {
 
             if (zone != null && zone.getCapacity() != null) {
                 // Đếm xem khu này đang chứa bao nhiêu hàng rồi
-                int currentLoad = zoneRepository.getCurrentLoadOfZone(zone.getZoneId());
+                int currentLoad = zone.getCurrentLoad();
                 int amountToAdd = detail.getQuantity();
 
                 // Nếu Hàng đang có + Hàng chuẩn bị nhập > Sức chứa -> BÁO LỖI CHẶN LẠI NGAY!
@@ -172,6 +172,8 @@ public class MaterialReceiptServiceImpl implements IMaterialReceiptService {
             // Cộng dồn kho
             int newQuantity = material.getQuantity() + detail.getQuantity();
             material.setQuantity(newQuantity);
+            int newCurrentLoad = zone.getCurrentLoad() + detail.getQuantity();
+            zone.setCurrentLoad(newCurrentLoad);
             // Cập nhật Hàng xuống DB
             materialRepository.save(material);
         }
@@ -217,7 +219,7 @@ public class MaterialReceiptServiceImpl implements IMaterialReceiptService {
 
                 // --- LOGIC FAIL-FAST: Chặn ngay từ lúc sửa nháp nếu thấy số lượng vô lý ---
                 if (zone != null && zone.getCapacity() != null) {
-                    int currentLoad = zoneRepository.getCurrentLoadOfZone(zone.getZoneId());
+                    int currentLoad = zone.getCurrentLoad();
                     int amountToAdd = detailRequest.getQuantity();
 
                     if (currentLoad + amountToAdd > zone.getCapacity()) {

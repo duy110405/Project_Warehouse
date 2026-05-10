@@ -65,11 +65,10 @@ public class ZoneServiceImpl implements IZoneService {
     @Override
     public void deleteZone(String zoneId){
         Zone zone = findZoneById(zoneId);
-        Integer currentLoad = zoneRepository.getCurrentLoadOfZone(zoneId);
-        if(currentLoad != null && currentLoad > 0){
+        int currentLoad = zone.getCurrentLoad();
+        if(currentLoad > 0){
             throw new RuntimeException("Cannot delete zone " + zoneId + " because it currently contains " + currentLoad + " items!");
         }
-
         zoneRepository.delete(zone);
     }
 
