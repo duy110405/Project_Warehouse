@@ -1,10 +1,16 @@
-
+import { useState } from "react";
 import { 
   LayoutGrid, Package, ShoppingCart, Users, Truck, 
-  HeadphonesIcon, BarChart2, Settings, Archive, ChevronDown 
+  HeadphonesIcon, BarChart2, Settings, Archive, ChevronDown, ChevronRight
 } from 'lucide-react';
+import { Routes, Route, Link } from 'react-router-dom';
+
+import Dashboard from './pages/Dashboard';
+import Category from './pages/Category';
+import Zone from './pages/Zone';
 
 export default function App() {
+  const [openWarehouse, setOpenWarehouse] = useState(false);
   return (
     <div className="flex h-screen bg-[#0B1120] text-white font-sans overflow-hidden">
       
@@ -19,25 +25,42 @@ export default function App() {
         </div>
 
         {/* Menu Items */}
-        <nav className="flex-1 px-4 py-2 space-y-2 overflow-y-auto">
-          {/* Nút Dashboard đang active */}
-          <a href="#" className="flex items-center gap-3 px-4 py-3 bg-blue-600 text-white rounded-xl shadow-[0_0_15px_rgba(37,99,235,0.3)]">
+       <nav className="flex-1 px-4 py-2 space-y-2 overflow-y-auto">
+          {/* Menu Dashboard */}
+          <Link to="/" className="flex items-center gap-3 px-4 py-3 bg-blue-600 text-white rounded-xl shadow-[0_0_15px_rgba(37,99,235,0.3)]">
             <LayoutGrid size={20} />
             <span className="font-medium">Dashboard</span>
-          </a>
+          </Link>
 
           {/* Các nút menu khác */}
-          <MenuItem icon={<Package size={20} />} label="Products" />
-          <MenuItem icon={<ShoppingCart size={20} />} label="Orders" />
+          <MenuItem icon={<Package size={20} />} label="Products" to="/categories" />
+          <MenuItem icon={<ShoppingCart size={20} />} label="Orders" to="/orders" />     
           <MenuItem icon={<Users size={20} />} label="Customers" />
           <MenuItem icon={<Truck size={20} />} label="Couriers" />
           <MenuItem icon={<HeadphonesIcon size={20} />} label="Customer Service" />
           <MenuItem icon={<BarChart2 size={20} />} label="Management Reports" />
           
-          <div className="pt-4 pb-2">
-            <p className="px-4 text-xs font-semibold text-slate-500 uppercase tracking-wider">Warehouse</p>
-          </div>
-          <MenuItem icon={<Settings size={20} />} label="Setup" />
+    <div>
+       {/* Warehouse Dropdown */}
+      <button
+        onClick={() => setOpenWarehouse(!openWarehouse)}
+        className="w-full flex items-center justify-between px-4 py-2 text-slate-400 hover:text-white">
+        <span className="text-xs font-semibold uppercase tracking-wider">
+          Warehouse
+        </span>
+        {openWarehouse ? (
+          <ChevronDown size={16} />
+        ) : (
+          <ChevronRight size={16} />
+        )}
+      </button>
+      {/* DROPDOWN */}
+      {openWarehouse && (
+        <div className="mt-1">
+          <MenuItem icon={<Settings size={20} />} label="Setup Zones" to="/zones" />
+        </div>
+      )}
+    </div>
         </nav>
       </aside>
 
@@ -71,23 +94,28 @@ export default function App() {
         </header>
 
         {/* Dashboard Content (Chỗ này bài sau mình sẽ làm các ô vuông) */}
-        <div className="flex-1 p-8 overflow-y-auto">
-           <div className="w-full h-full border-2 border-dashed border-slate-800 rounded-2xl flex items-center justify-center">
-              <p className="text-slate-500 text-lg">Khu vực chứa các thẻ Card và Bảng dữ liệu sẽ nằm ở đây</p>
-           </div>
+       <div className="flex-1 p-8 overflow-y-auto">
+           <Routes>
+              {/* Nếu gõ localhost:5173/ thì hiện Dashboard */}
+              <Route path="/" element={<Dashboard />} /> 
+              {/* Nếu gõ localhost:5173/categories thì hiện trang Danh mục */}
+              <Route path="/categories" element={<Category />} />
+              {/* Nếu gõ localhost:5173/zones thì hiện trang Setup Zones */}
+              <Route path="/zones" element={<Zone />} />
+           </Routes>
         </div>
-      </main>
 
+      </main>
     </div>
   );
 }
 
 // Component phụ để vẽ Menu cho gọn code
-function MenuItem({ icon, label }) {
+function MenuItem({ icon, label, to }) {
   return (
-    <a href="#" className="flex items-center gap-3 px-4 py-3 text-slate-400 hover:text-white hover:bg-slate-800/50 rounded-xl transition-all duration-200">
+    <Link to={to} className="flex items-center gap-3 px-4 py-3 text-slate-400 hover:text-white hover:bg-slate-800/50 rounded-xl transition-all duration-200">
       {icon}
       <span className="font-medium">{label}</span>
-    </a>
+    </Link>
   );
 }
