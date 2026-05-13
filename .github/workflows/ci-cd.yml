@@ -17,7 +17,7 @@ jobs:
     # MỚI THÊM: Chỉ định mặc định mọi lệnh trong Job này đều chạy ở folder backend
     defaults:
       run:
-        working-directory: ./backend
+        working-directory: ./wms-backend
 
     steps:
       - name: Checkout code
@@ -43,7 +43,7 @@ jobs:
     # MỚI THÊM: Chỉ định mặc định mọi lệnh trong Job này đều chạy ở folder frontend
     defaults:
       run:
-        working-directory: ./frontend
+        working-directory: ./wms-frontend
 
     steps:
       - name: Checkout code
