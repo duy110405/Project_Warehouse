@@ -10,6 +10,8 @@ import Product from './pages/Product';
 import Dashboard from './pages/Dashboard';
 import Category from './pages/Category';
 import Zone from './pages/Zone';
+import Material from './pages/Material';
+import Vendor from './pages/Vendor';
 
 export default function App() {
   const [openWarehouse, setOpenWarehouse] = useState(false);
@@ -60,7 +62,7 @@ export default function App() {
       {openOperations && (
         <div className="mt-1 ml-8 space-y-1">
           <MenuItem icon={<Package size={20} />} label="Products" to="/products" />
-          <MenuItem icon={<ArchiveRestore size={20} />} label="Inbound"/> 
+          <MenuItem icon={<ArchiveRestore size={20} />} label="Inbound" to="/materials" /> 
           <MenuItem icon={<PackageOpen size={20} />} label="Outbound"/> 
         </div>
         )}
@@ -85,7 +87,7 @@ export default function App() {
         <div className="mt-1 ml-8 space-y-1">
           <MenuItem icon={<ShoppingCart size={20} />} label="Invoices" to="/invoices" /> 
           <MenuItem icon={<Users size={20} />} label="Customers" />
-          <MenuItem icon={<Truck size={20} />} label="Couriers" />
+          <MenuItem icon={<Truck size={20} />} label="Vendors" to="/vendors" />
           <MenuItem icon={<HeadphonesIcon size={20} />} label="Customer Service" />
         </div>
         )}
@@ -159,8 +161,9 @@ export default function App() {
               <Route path="/categories" element={<Category />} />
               {/* Nếu gõ localhost:5173/zones thì hiện trang Setup Zones */}
               <Route path="/zones" element={<Zone />} />
+              <Route path="/materials" element={<Material />} />
+              <Route path="/vendors" element={<Vendor />} />
              
-            
            </Routes>
         </div>
 
