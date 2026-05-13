@@ -8,4 +8,10 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class VendorRequest {
     String vendorName;
+    String phone;
+    String email;
+    String address;
+    String type;
+    Integer status;
 }
+

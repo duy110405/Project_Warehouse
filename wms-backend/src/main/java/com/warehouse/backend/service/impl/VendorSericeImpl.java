@@ -44,6 +44,7 @@ public class VendorSericeImpl implements IVendorService {
     public VendorResponse saveVendor(VendorRequest vendorRequest){
         Vendor vendor = vendorMapper.toVendorEntity(vendorRequest);
         vendor.setVendorId(generateNextVendorId());
+        vendor.setStatus(1);
         Vendor savedVendor = vendorRepository.save(vendor);
         return vendorMapper.toVendorResponse(savedVendor);
     }
@@ -59,7 +60,13 @@ public class VendorSericeImpl implements IVendorService {
 
     @Override
     public void deleteVendor(String vendorId) {
-        vendorRepository.deleteById(vendorId);
+        //  đổi status về 0 (Ngừng hợp tác)
+        Vendor vendor = findVendorById(vendorId);
+        if (vendor.getStatus() != null && vendor.getStatus() == 0) {
+            throw new RuntimeException("Nhà cung cấp này đã bị ngừng hợp tác từ trước!");
+        }
+        vendor.setStatus(0);
+        vendorRepository.save(vendor); // Lưu lại thay đổi
     }
 
     @Override

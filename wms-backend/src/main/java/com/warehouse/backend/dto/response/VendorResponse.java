@@ -9,4 +9,9 @@ import lombok.experimental.FieldDefaults;
 public class VendorResponse {
     String vendorId;
     String vendorName;
+    String phone;
+    String email;
+    String address;
+    String type;
+    Integer status;
 }

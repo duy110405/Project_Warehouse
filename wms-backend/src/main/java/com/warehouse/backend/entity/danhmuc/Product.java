@@ -20,6 +20,9 @@ public class Product {
     @Column(name = "MaH", length = 20)
     String productId;
 
+    @Column (name = "anhHang" , length = 255)
+    String productImage;
+
     @Column(name = "TenH", nullable = false, length = 100)
     String productName;
 

@@ -17,6 +17,9 @@ public class Material {
     @Column(name = "MaNL", length = 20)
     private String materialId;
 
+    @Column(name = "anhNL" , length = 255)
+    private String materialImage;
+
     @Column(name = "TenNL", nullable = false, length = 100)
     private String materialName;
 

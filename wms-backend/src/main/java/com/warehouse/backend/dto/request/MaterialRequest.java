@@ -9,6 +9,7 @@ import java.math.BigDecimal;
 @Data
 @FieldDefaults (level = AccessLevel.PRIVATE)
 public class MaterialRequest {
+    String materialImage;
     String materialName;
     String unit;
     BigDecimal price;

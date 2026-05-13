@@ -9,6 +9,7 @@ import java.util.List;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Data
 public class ProductRequest {
+     String productImage;
      String productName;
      Integer quantity;
      BigDecimal price;

@@ -21,4 +21,19 @@ public class Vendor {
 
     @Column(name = "TenNCC", nullable = false, length = 100)
     private String vendorName;
+
+    @Column(name = "SoDienThoai", length = 15)
+    String phone;
+
+    @Column(name = "Email", length = 100)
+    String email;
+
+    @Column(name = "DiaChi", length = 255)
+    String address;
+
+    @Column(name = "LoaiNCC", length = 50)
+    String type;
+
+    @Column(name = "TrangThai")
+    Integer status = 1; // 1: Đang hợp tác, 0: Ngừng hợp tác
 }
