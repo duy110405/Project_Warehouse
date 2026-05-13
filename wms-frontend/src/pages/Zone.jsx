@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Modal, Form, Input, InputNumber, Select, ConfigProvider, theme } from 'antd';
-import { Plus, Edit, MapPin, Box, Layers, ArchiveRestore } from 'lucide-react';
+import { Plus, Trash2 , Edit, MapPin, Box, Layers, ArchiveRestore } from 'lucide-react';
 
 // Component StatCard tĩnh - khai báo ngoài để tránh re-create mỗi lần render
 const StatCard = ({ title, value, subtitle }) => (
@@ -49,6 +49,12 @@ export default function Zone() {
     setIsModalOpen(true);
   };
 
+  const handleDeleteZone = (id) => {
+     // Logic Xóa (Gọi API: axios.delete)
+    const filteredList = zones.filter(zone => zone.id !== id);
+    setZones(filteredList);
+  }
+
   const handleSubmit = (values) => {
     if (editingId) {
       const updatedList = zones.map(z => z.id === editingId ? { ...z, ...values } : z);
@@ -66,7 +72,7 @@ export default function Zone() {
 
   return (
     <ConfigProvider theme={{ algorithm: theme.darkAlgorithm }}>
-      <div className="flex flex-col h-full max-w-6xl mx-auto">
+      <div className="flex flex-col h-full max-w-9xl mx-auto">
         
         {/* HEADER & NÚT THÊM */}
         <div className="flex items-center justify-between mb-6">
@@ -146,12 +152,21 @@ export default function Zone() {
                       </div>
                     </div>
                     {/* Nút sửa */}
+                    <div className="flex gap-1">
                     <button 
                       onClick={() => handleOpenModal(zone)}
                       className="p-2 text-slate-400 hover:text-white bg-[#1E293B] hover:bg-slate-700 rounded-lg transition-colors border border-slate-700"
-                    >
+                      >
                       <Edit size={16} />
                     </button>
+                     {/* Nút xóa */}
+                    <button 
+                      onClick={() => handleDeleteZone(zone.id)}
+                      className="p-2 text-slate-400 hover:text-white bg-red-500/20 hover:bg-red-500/20 rounded-lg transition-colors border border-slate-700"
+                    >
+                      <Trash2 size={16} />
+                    </button>
+                    </div>
                   </div>
 
                   {/* Card Body (3 cục thông tin dưới) */}

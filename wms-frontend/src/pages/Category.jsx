@@ -130,6 +130,7 @@ export default function Category() {
           colorBgContainer: '#0F172A', // Màu nền bảng
           colorBorderSecondary: '#1E293B', // Màu viền bảng
           colorText: '#cbd5e1', // Màu chữ
+          sizeText: 28, // Kích thước chữ mặc định
         },
       }}
     >
@@ -139,7 +140,7 @@ export default function Category() {
         <div className="flex items-center justify-between mb-8">
           <div>
             <h2 className="text-2xl font-bold text-white tracking-wide">Category Management</h2>
-            <p className="text-slate-400 text-sm mt-1">Manage all warehouse product categories</p>
+            <p className="text-slate-400 text-base mt-1">Manage all warehouse product categories</p>
           </div>
           <button 
             onClick={() => handleOpenModal()}
@@ -163,7 +164,7 @@ export default function Category() {
         </div>
 
         {/* BẢNG DỮ LIỆU */}
-        <div className="bg-[#0F172A] border-x border-b border-slate-800 rounded-b-2xl overflow-hidden shadow-xl">
+        <div className="bg-[#0F172A] border-x border-b border-slate-800 rounded-b-2xl overflow-hidden shadow-xl text-base">
           <Table 
             columns={columns} 
             dataSource={categories} 

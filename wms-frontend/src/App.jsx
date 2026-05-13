@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { 
   LayoutGrid, Package, ShoppingCart, Users, Truck, 
-  HeadphonesIcon, BarChart2, Settings, Archive, ChevronDown, ChevronRight
+  HeadphonesIcon, BarChart2, Settings, Archive, ChevronDown, ChevronRight ,
+   List, User , BookMinus ,ArchiveRestore ,PackageOpen
 } from 'lucide-react';
 import { Routes, Route, Link } from 'react-router-dom';
 
@@ -12,6 +13,8 @@ import Zone from './pages/Zone';
 
 export default function App() {
   const [openWarehouse, setOpenWarehouse] = useState(false);
+  const [openOperations, setOpenOperations] = useState(false);
+  const [openSales, setOpenSales] = useState(false);
   return (
     <div className="flex h-screen bg-[#0B1120] text-white font-sans overflow-hidden">
       
@@ -26,23 +29,70 @@ export default function App() {
         </div>
 
         {/* Menu Items */}
-       <nav className="flex-1 px-4 py-2 space-y-2 overflow-y-auto">
+       <nav className="flex-1 px-4 py-2 space-y-1 overflow-y-auto custom-scrollbar">
           {/* Menu Dashboard */}
           <Link to="/" className="flex items-center gap-3 px-4 py-3 bg-blue-600 text-white rounded-xl shadow-[0_0_15px_rgba(37,99,235,0.3)]">
             <LayoutGrid size={20} />
             <span className="font-medium">Dashboard</span>
           </Link>
 
-          {/* Các nút menu khác */}
+           {/* Menu Active Orders */}
+          <Link to="/" className="flex items-center gap-3 px-4 py-3 bg-blue-600 text-white rounded-xl shadow-[0_0_15px_rgba(37,99,235,0.3)]">
+            <List size={20} />
+            <span className="font-medium">Active Orders</span>
+          </Link>
+
+          {/* NHÓM 1: NGHIỆP VỤ KHO (Operations) */}
+      <div>
+          <button
+        onClick={() => setOpenOperations(!openOperations)}
+        className="w-full flex items-center justify-between px-4 py-2 text-slate-400 hover:text-white">
+        <span className="text-xs font-semibold uppercase tracking-wider">
+          Operations
+        </span>
+        {openOperations ? (
+          <ChevronDown size={16} />
+        ) : (
+          <ChevronRight size={16} />
+        )}
+      </button>
+      {/* DROPDOWN */}
+      {openOperations && (
+        <div className="mt-1 ml-8 space-y-1">
           <MenuItem icon={<Package size={20} />} label="Products" to="/products" />
-          <MenuItem icon={<ShoppingCart size={20} />} label="Orders" to="/orders" />     
+          <MenuItem icon={<ArchiveRestore size={20} />} label="Inbound"/> 
+          <MenuItem icon={<PackageOpen size={20} />} label="Outbound"/> 
+        </div>
+        )}
+      </div>
+
+       {/* NHÓM 2: KINH DOANH & ĐƠN HÀNG (Sales) */}
+      <div>
+          <button
+        onClick={() => setOpenSales(!openSales)}
+        className="w-full flex items-center justify-between px-4 py-2 text-slate-400 hover:text-white">
+        <span className="text-xs font-semibold uppercase tracking-wider">
+          Sales
+        </span>
+        {openSales ? (
+          <ChevronDown size={16} />
+        ) : (
+          <ChevronRight size={16} />
+        )}
+      </button>
+      {/* DROPDOWN */}
+      {openSales && (
+        <div className="mt-1 ml-8 space-y-1">
+          <MenuItem icon={<ShoppingCart size={20} />} label="Invoices" to="/invoices" /> 
           <MenuItem icon={<Users size={20} />} label="Customers" />
           <MenuItem icon={<Truck size={20} />} label="Couriers" />
           <MenuItem icon={<HeadphonesIcon size={20} />} label="Customer Service" />
-          <MenuItem icon={<BarChart2 size={20} />} label="Management Reports" />
-          
+        </div>
+        )}
+       </div>
+        
+        {/* NHÓM 3: BÁO CÁO & HỆ THỐNG (System & Setup) */}  
     <div>
-       {/* Warehouse Dropdown */}
       <button
         onClick={() => setOpenWarehouse(!openWarehouse)}
         className="w-full flex items-center justify-between px-4 py-2 text-slate-400 hover:text-white">
@@ -59,10 +109,13 @@ export default function App() {
       {openWarehouse && (
         <div className="mt-1 ml-8 space-y-1">
           <MenuItem icon={<Settings size={20} />} label="Setup Zones" to="/zones" />
-          <MenuItem icon={<Settings size={20} />} label="Setup Categories" to="/categories" />
+          <MenuItem icon={<BookMinus size={20} />} label="Setup Categories" to="/categories" />
+          <MenuItem icon={<BarChart2 size={20} />} label="Management Reports" />
+          <MenuItem icon={<User size={20} />} label="Users" />
         </div>
       )}
     </div>
+
         </nav>
       </aside>
 
