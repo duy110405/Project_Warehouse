@@ -11,7 +11,7 @@ import Dashboard from './pages/Dashboard';
 import Category from './pages/Category';
 import Zone from './pages/Zone';
 import Material from './pages/Material';
-import Vendor from './pages/Vendor';
+import Supply from './pages/SupplyPartner/SupplyManager'
 
 export default function App() {
   const [openWarehouse, setOpenWarehouse] = useState(false);
@@ -35,13 +35,13 @@ export default function App() {
           {/* Menu Dashboard */}
           <Link to="/" className="flex items-center gap-3 px-4 py-3 bg-blue-600 text-white rounded-xl shadow-[0_0_15px_rgba(37,99,235,0.3)]">
             <LayoutGrid size={20} />
-            <span className="font-medium">Dashboard</span>
+            <span className="font-medium">Bảng điều khiển</span>
           </Link>
 
            {/* Menu Active Orders */}
           <Link to="/" className="flex items-center gap-3 px-4 py-3 bg-blue-600 text-white rounded-xl shadow-[0_0_15px_rgba(37,99,235,0.3)]">
             <List size={20} />
-            <span className="font-medium">Active Orders</span>
+            <span className="font-medium">Đơn hàng đang xử lý</span>
           </Link>
 
           {/* NHÓM 1: NGHIỆP VỤ KHO (Operations) */}
@@ -50,7 +50,7 @@ export default function App() {
         onClick={() => setOpenOperations(!openOperations)}
         className="w-full flex items-center justify-between px-4 py-2 text-slate-400 hover:text-white">
         <span className="text-xs font-semibold uppercase tracking-wider">
-          Operations
+          Nghiệp vụ
         </span>
         {openOperations ? (
           <ChevronDown size={16} />
@@ -61,9 +61,9 @@ export default function App() {
       {/* DROPDOWN */}
       {openOperations && (
         <div className="mt-1 ml-8 space-y-1">
-          <MenuItem icon={<Package size={20} />} label="Products" to="/products" />
-          <MenuItem icon={<ArchiveRestore size={20} />} label="Inbound" to="/materials" /> 
-          <MenuItem icon={<PackageOpen size={20} />} label="Outbound"/> 
+          <MenuItem icon={<Package size={20} />} label="Sản phẩm" to="/products" />
+          <MenuItem icon={<ArchiveRestore size={20} />} label="Nhập kho" to="/materials" /> 
+          <MenuItem icon={<PackageOpen size={20} />} label="Xuất kho"/> 
         </div>
         )}
       </div>
@@ -74,7 +74,7 @@ export default function App() {
         onClick={() => setOpenSales(!openSales)}
         className="w-full flex items-center justify-between px-4 py-2 text-slate-400 hover:text-white">
         <span className="text-xs font-semibold uppercase tracking-wider">
-          Sales
+          Kinh doanh
         </span>
         {openSales ? (
           <ChevronDown size={16} />
@@ -85,10 +85,10 @@ export default function App() {
       {/* DROPDOWN */}
       {openSales && (
         <div className="mt-1 ml-8 space-y-1">
-          <MenuItem icon={<ShoppingCart size={20} />} label="Invoices" to="/invoices" /> 
-          <MenuItem icon={<Users size={20} />} label="Customers" />
-          <MenuItem icon={<Truck size={20} />} label="Vendors" to="/vendors" />
-          <MenuItem icon={<HeadphonesIcon size={20} />} label="Customer Service" />
+          <MenuItem icon={<ShoppingCart size={20} />} label="Hóa đơn" to="/invoices" /> 
+          <MenuItem icon={<Users size={20} />} label="Khách hàng" />
+          <MenuItem icon={<Truck size={20} />} label="Nguồn cung ứng" to="/Supply" />
+          <MenuItem icon={<HeadphonesIcon size={20} />} label="Chăm sóc khách hàng" />
         </div>
         )}
        </div>
@@ -99,7 +99,7 @@ export default function App() {
         onClick={() => setOpenWarehouse(!openWarehouse)}
         className="w-full flex items-center justify-between px-4 py-2 text-slate-400 hover:text-white">
         <span className="text-xs font-semibold uppercase tracking-wider">
-          Warehouse
+          Kho
         </span>
         {openWarehouse ? (
           <ChevronDown size={16} />
@@ -110,10 +110,10 @@ export default function App() {
       {/* DROPDOWN */}
       {openWarehouse && (
         <div className="mt-1 ml-8 space-y-1">
-          <MenuItem icon={<Settings size={20} />} label="Setup Zones" to="/zones" />
-          <MenuItem icon={<BookMinus size={20} />} label="Setup Categories" to="/categories" />
-          <MenuItem icon={<BarChart2 size={20} />} label="Management Reports" />
-          <MenuItem icon={<User size={20} />} label="Users" />
+          <MenuItem icon={<Settings size={20} />} label="Thiết lập khu vực" to="/zones" />
+          <MenuItem icon={<BookMinus size={20} />} label="Thiết lập danh mục" to="/categories" />
+          <MenuItem icon={<BarChart2 size={20} />} label="Báo cáo quản lý" />
+          <MenuItem icon={<User size={20} />} label="Người dùng" />
         </div>
       )}
     </div>
@@ -162,7 +162,7 @@ export default function App() {
               {/* Nếu gõ localhost:5173/zones thì hiện trang Setup Zones */}
               <Route path="/zones" element={<Zone />} />
               <Route path="/materials" element={<Material />} />
-              <Route path="/vendors" element={<Vendor />} />
+              <Route path="/supply" element={<Supply />} />
              
            </Routes>
         </div>

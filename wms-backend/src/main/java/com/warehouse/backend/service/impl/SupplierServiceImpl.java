@@ -3,6 +3,7 @@ package com.warehouse.backend.service.impl;
 import com.warehouse.backend.dto.request.SupplierRequest;
 import com.warehouse.backend.dto.response.SupplierResponse;
 import com.warehouse.backend.entity.danhmuc.Supplier;
+import com.warehouse.backend.entity.danhmuc.Vendor;
 import com.warehouse.backend.mapper.SupplierMapper;
 import com.warehouse.backend.repository.SupplierRepository;
 import com.warehouse.backend.service.ISupplierService;
@@ -42,6 +43,7 @@ public class SupplierServiceImpl implements ISupplierService {
     public SupplierResponse saveSupplier(SupplierRequest supplierRequest){
         Supplier supplier = supplierMapper.toSupplierEntity(supplierRequest);
         supplier.setSupplierId(generateNextSupplierId());
+        supplier.setStatus(1);
         Supplier savedSupplier = supplierRepository.save(supplier);
         return supplierMapper.toSupplierResponse(savedSupplier);
     }
@@ -57,7 +59,13 @@ public class SupplierServiceImpl implements ISupplierService {
 
     @Override
     public void deleteSupplier(String supplierId) {
-        supplierRepository.deleteById(supplierId);
+        //  đổi status về 0 (Ngừng hợp tác)
+        Supplier supplier = findSupplierById(supplierId);
+        if (supplier.getStatus() != null && supplier.getStatus() == 0) {
+            throw new RuntimeException("xưởng này đã ngừng hoạt động từ trước!");
+        }
+        supplier.setStatus(0);
+        supplierRepository.save(supplier); // Lưu lại thay đổi
     }
 
     @Override

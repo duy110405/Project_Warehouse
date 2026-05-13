@@ -17,16 +17,16 @@ export default function Material() {
   
   // State quản lý dữ liệu (Sau này thay bằng data lấy từ API axios.get)
   const [materials, setMaterials] = useState([
-    { id: '1', code: 'NL01', name: 'Màn hình 15.6 inch 144Hz', unit: 'cái', price: 3500000 , quantity: 100, zoneName: 'Zone A', image: 'https://placehold.co/100x100/1E293B/FFF?text=N5'},
-    { id: '2', code: 'NL02', name: 'RAM 16GB DDR4 3200MHz', unit: 'cái', price: 1500000 , quantity: 200, zoneName: 'Zone B', image: 'https://placehold.co/100x100/1E293B/FFF?text=N5'},
-    { id: '3', code: 'NL03', name: 'Ổ cứng SSD 1TB NVMe', unit: 'cái', price: 2500000 , quantity: 150, zoneName: 'Zone C', image: 'https://placehold.co/100x100/1E293B/FFF?text=N5'},
+    { id: '1', code: 'NL01', name: 'Màn hình 15.6 inch 144Hz', unit: 'cái', price: 3500000 , quantity: 100, zoneName: 'Khu A - Công nghệ', image: 'https://placehold.co/100x100/1E293B/FFF?text=N5'},
+    { id: '2', code: 'NL02', name: 'RAM 16GB DDR4 3200MHz', unit: 'cái', price: 1500000 , quantity: 200, zoneName: 'Khu B - Thời trang', image: 'https://placehold.co/100x100/1E293B/FFF?text=N5'},
+    { id: '3', code: 'NL03', name: 'Ổ cứng SSD 1TB NVMe', unit: 'cái', price: 2500000 , quantity: 150, zoneName: 'Khu C - Lưu trữ', image: 'https://placehold.co/100x100/1E293B/FFF?text=N5'},
   ]);
 
   // State quản lý Modal
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingId, setEditingId] = useState(null); // Lưu ID của danh mục đang sửa (nếu có)
    const [openZones, setOpenZones] = useState(false);
-    const [selectedFilter, setSelectedFilter] = useState({zone: 'All Zones' });
+  const [selectedFilter, setSelectedFilter] = useState({zone: 'Tất cả khu vực' });
 
   // 1. CẤU HÌNH CỘT CHO BẢNG ANT DESIGN
   const columns = [
@@ -167,15 +167,15 @@ export default function Material() {
         {/* HEADER CỦA TRANG */}
         <div className="flex items-center justify-between mb-8">
           <div>
-            <h2 className="text-2xl font-bold text-white tracking-wide">Material Management</h2>
-            <p className="text-slate-400 text-base mt-1">Manage all warehouse materials</p>
+            <h2 className="text-2xl font-bold text-white tracking-wide">Quản lý nguyên liệu</h2>
+            <p className="text-slate-400 text-base mt-1">Quản lý toàn bộ nguyên liệu kho</p>
           </div>
           <button 
             onClick={() => handleOpenModal()}
             className="flex items-center gap-2 bg-blue-600 hover:bg-blue-500 text-white px-5 py-2.5 rounded-xl transition-all shadow-[0_0_15px_rgba(37,99,235,0.3)] font-medium"
           >
             <Plus size={18} />
-            Create Material
+            Thêm vật tư
           </button>
         </div>
 
@@ -187,7 +187,7 @@ export default function Material() {
             <Search className="text-slate-400 mr-3" size={18} />
             <input 
               type="text" 
-              placeholder="Search products by name, code or SKU..." 
+              placeholder="Tìm kiếm vật tư theo tên, mã hoặc khu vực..." 
               className="w-full bg-transparent text-white text-sm focus:outline-none placeholder-slate-400"
             />
           </div>
@@ -205,9 +205,9 @@ export default function Material() {
               </button>
               {openZones && (
                 <div className="absolute top-full right-0 mt-2 w-full bg-[#1E293B] border border-slate-600 rounded-xl p-2 shadow-2xl z-20">
-                  <MenuItem icon={<MapPin size={18} />} label="All Zones" onClick={() => { setSelectedFilter({...selectedFilter, zone: 'All Zones'}); setOpenZones(false); }} />
-                  <MenuItem icon={<MapPin size={18} />} label="Zone A - Tech" onClick={() => { setSelectedFilter({...selectedFilter, zone: 'Zone A - Tech'}); setOpenZones(false); }} />
-                  <MenuItem icon={<MapPin size={18} />} label="Zone B - Clothes" onClick={() => { setSelectedFilter({...selectedFilter, zone: 'Zone B - Clothes'}); setOpenZones(false); }} />
+                  <MenuItem icon={<MapPin size={18} />} label="Tất cả khu vực" onClick={() => { setSelectedFilter({...selectedFilter, zone: 'Tất cả khu vực'}); setOpenZones(false); }} />
+                  <MenuItem icon={<MapPin size={18} />} label="Khu A - Công nghệ" onClick={() => { setSelectedFilter({...selectedFilter, zone: 'Zone A - Tech'}); setOpenZones(false); }} />
+                  <MenuItem icon={<MapPin size={18} />} label="Khu B - Thời trang" onClick={() => { setSelectedFilter({...selectedFilter, zone: 'Zone B - Clothes'}); setOpenZones(false); }} />
                 </div>
               )}
           </div>
@@ -227,7 +227,7 @@ export default function Material() {
 
         {/* MODAL THÊM / SỬA */}
         <Modal
-          title={<span className="text-lg">{editingId ? 'Edit Material' : 'Create New Material'}</span>}
+          title={<span className="text-lg">{editingId ? 'Sửa vật tư' : 'Thêm vật tư mới'}</span>}
           open={isModalOpen}
           onCancel={handleCloseModal}
           footer={null} // Ẩn footer mặc định để tự custom nút
@@ -235,34 +235,34 @@ export default function Material() {
         >
           <Form form={form} layout="vertical" onFinish={handleSubmit} className="mt-6">
 
-             <Form.Item name="code" label={<span className="text-slate-300">Mã sản phẩm (MaH)</span>} rules={[{ required: true }]}>
-                 <Input placeholder="VD: H001" className="bg-[#1E293B] border-slate-700 text-white py-2" disabled={editingId !== null} />
+             <Form.Item name="code" label={<span className="text-slate-300">Mã nguyên liệu</span>} rules={[{ required: true }]}>
+                 <Input placeholder="VD: NL01" className="bg-[#1E293B] border-slate-700 text-white py-2" disabled={editingId !== null} />
                </Form.Item>
 
             <Form.Item 
               name="name" 
-              label={<span className="text-slate-300">Material Name</span>}
+              label={<span className="text-slate-300">Tên nguyên liệu</span>}
               rules={[{ required: true, message: 'Vui lòng nhập tên vật tư!' }]}
             >
-              <Input placeholder="e.g., Electronics" className="bg-[#1E293B] border-slate-700 text-white py-2" />
+              <Input placeholder="VD: RAM 16GB" className="bg-[#1E293B] border-slate-700 text-white py-2" />
             </Form.Item>
 
 
-            <Form.Item name="price" label={<span className="text-slate-300">Giá bán (Gia)</span>} rules={[{ required: true }]}>
+            <Form.Item name="price" label={<span className="text-slate-300">Giá nhập</span>} rules={[{ required: true }]}>
                  <Input type="number" placeholder="15000000" className="bg-[#1E293B] border-slate-700 text-white py-2" />
              </Form.Item>
 
-            <Form.Item name="quantity" label={<span className="text-slate-300">Số lượng (SoLg)</span>} rules={[{ required: true }]}>
+            <Form.Item name="quantity" label={<span className="text-slate-300">Số lượng</span>} rules={[{ required: true }]}>
                  <Input type="number" placeholder="10" className="bg-[#1E293B] border-slate-700 text-white py-2" />
             </Form.Item>
         
 
             <div className="flex justify-end gap-3 mt-8">
               <Button onClick={handleCloseModal} className="border-slate-700 text-slate-300 hover:text-white bg-transparent">
-                Cancel
+                Hủy
               </Button>
               <Button type="primary" htmlType="submit" className="bg-blue-600 hover:bg-blue-500">
-                {editingId ? 'Save Changes' : 'Create Material'}
+                {editingId ? 'Lưu thay đổi' : 'Tạo vật tư'}
               </Button>
             </div>
           </Form>

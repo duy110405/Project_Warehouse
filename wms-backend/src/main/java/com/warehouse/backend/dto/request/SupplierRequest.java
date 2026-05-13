@@ -9,4 +9,7 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class SupplierRequest {
     String supplierName;
+    String type;
+    Integer status;
+
 }

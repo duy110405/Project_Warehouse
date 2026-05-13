@@ -19,7 +19,7 @@ export default function Product() {
   //  dữ liệu giả lập
  const [products, setProducts] = useState([
     { 
-      id: 'H001', code: 'H001', name: 'Laptop Nitro 5', quantity: 10, price: 15000000, categoryName: 'Electronics', zoneName: 'Zone A', image: 'https://placehold.co/100x100/1E293B/FFF?text=N5',
+      id: 'H001', code: 'H001', name: 'Laptop Nitro 5', quantity: 10, price: 15000000, categoryName: 'Điện tử', zoneName: 'Khu A - Công nghệ', image: 'https://placehold.co/100x100/1E293B/FFF?text=N5',
       materials: [
         { id: 'NL01', name: 'Màn hình 15.6 inch 144Hz', quantity: 1, unit: 'Cái' },
         { id: 'NL02', name: 'Bàn phím LED RGB', quantity: 1, unit: 'Bộ' },
@@ -27,7 +27,7 @@ export default function Product() {
       ]
     },
     { 
-      id: 'H002', code: 'H002', name: 'Áo Sơ Mi Nam', quantity: 0, price: 250000, categoryName: 'Apparel', zoneName: 'Zone B', image: 'https://placehold.co/100x100/1E293B/FFF?text=Ao',
+      id: 'H002', code: 'H002', name: 'Áo Sơ Mi Nam', quantity: 0, price: 250000, categoryName: 'Thời trang', zoneName: 'Khu B - Thời trang', image: 'https://placehold.co/100x100/1E293B/FFF?text=Ao',
       materials: [
         { id: 'NL04', name: 'Vải Cotton 100%', quantity: 1.5, unit: 'Mét' },
         { id: 'NL05', name: 'Cúc áo nhựa mờ', quantity: 6, unit: 'Cái' },
@@ -46,7 +46,7 @@ export default function Product() {
   // State Bộ lọc
   const [openCategories, setOpenCategories] = useState(false);
   const [openZones, setOpenZones] = useState(false);
-  const [selectedFilter, setSelectedFilter] = useState({ category: 'All Categories', zone: 'All Zones' });
+  const [selectedFilter, setSelectedFilter] = useState({ category: 'Tất cả danh mục', zone: 'Tất cả khu vực' });
 
   // 2. CẤU HÌNH CỘT CHO BẢNG (Bổ sung cột Ảnh lên đầu)
   const columns = [
@@ -205,12 +205,12 @@ export default function Product() {
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
           <div>
-            <h2 className="text-2xl font-bold text-white tracking-wide">Products</h2>
-            <p className="text-slate-400 text-sm mt-1">Manage your product catalog and inventory</p>
+            <h2 className="text-2xl font-bold text-white tracking-wide">Sản phẩm</h2>
+            <p className="text-slate-400 text-sm mt-1">Quản lý danh mục sản phẩm và tồn kho</p>
           </div>
           <button onClick={() => handleOpenModal()} className="flex items-center gap-2 bg-blue-600 hover:bg-blue-500 text-white px-5 py-2.5 rounded-xl transition-all shadow-[0_0_15px_rgba(37,99,235,0.3)] font-medium">
             <Plus size={18} />
-            Create Product
+            Tạo sản phẩm
           </button>
         </div>
 
@@ -222,7 +222,7 @@ export default function Product() {
             <Search className="text-slate-400 mr-3" size={18} />
             <input 
               type="text" 
-              placeholder="Search products by name, code or SKU..." 
+              placeholder="Tìm kiếm sản phẩm theo tên, mã hoặc SKU..." 
               className="w-full bg-transparent text-white text-sm focus:outline-none placeholder-slate-400"
             />
           </div>
@@ -241,9 +241,9 @@ export default function Product() {
               </button>
               {openCategories && (
                 <div className="absolute top-full right-0 mt-2 w-full bg-[#1E293B] border border-slate-600 rounded-xl p-2 shadow-2xl z-20">
-                  <MenuItem icon={<Package size={18} />} label="All Categories" onClick={() => { setSelectedFilter({...selectedFilter, category: 'All Categories'}); setOpenCategories(false); }} />
-                  <MenuItem icon={<Package size={18} />} label="Electronics" onClick={() => { setSelectedFilter({...selectedFilter, category: 'Electronics'}); setOpenCategories(false); }} />
-                  <MenuItem icon={<Package size={18} />} label="Apparel" onClick={() => { setSelectedFilter({...selectedFilter, category: 'Apparel'}); setOpenCategories(false); }} />
+                  <MenuItem icon={<Package size={18} />} label="Tất cả danh mục" onClick={() => { setSelectedFilter({...selectedFilter, category: 'Tất cả danh mục'}); setOpenCategories(false); }} />
+                  <MenuItem icon={<Package size={18} />} label="Điện tử" onClick={() => { setSelectedFilter({...selectedFilter, category: 'Electronics'}); setOpenCategories(false); }} />
+                  <MenuItem icon={<Package size={18} />} label="Thời trang" onClick={() => { setSelectedFilter({...selectedFilter, category: 'Apparel'}); setOpenCategories(false); }} />
                 </div>
               )}
           </div>
@@ -262,9 +262,9 @@ export default function Product() {
               </button>
               {openZones && (
                 <div className="absolute top-full right-0 mt-2 w-full bg-[#1E293B] border border-slate-600 rounded-xl p-2 shadow-2xl z-20">
-                  <MenuItem icon={<MapPin size={18} />} label="All Zones" onClick={() => { setSelectedFilter({...selectedFilter, zone: 'All Zones'}); setOpenZones(false); }} />
-                  <MenuItem icon={<MapPin size={18} />} label="Zone A - Tech" onClick={() => { setSelectedFilter({...selectedFilter, zone: 'Zone A - Tech'}); setOpenZones(false); }} />
-                  <MenuItem icon={<MapPin size={18} />} label="Zone B - Clothes" onClick={() => { setSelectedFilter({...selectedFilter, zone: 'Zone B - Clothes'}); setOpenZones(false); }} />
+                  <MenuItem icon={<MapPin size={18} />} label="Tất cả khu vực" onClick={() => { setSelectedFilter({...selectedFilter, zone: 'Tất cả khu vực'}); setOpenZones(false); }} />
+                  <MenuItem icon={<MapPin size={18} />} label="Khu A - Công nghệ" onClick={() => { setSelectedFilter({...selectedFilter, zone: 'Zone A - Tech'}); setOpenZones(false); }} />
+                  <MenuItem icon={<MapPin size={18} />} label="Khu B - Thời trang" onClick={() => { setSelectedFilter({...selectedFilter, zone: 'Zone B - Clothes'}); setOpenZones(false); }} />
                 </div>
               )}
           </div>
@@ -366,10 +366,10 @@ export default function Product() {
 
             <div className="grid grid-cols-2 gap-4">
                 {/* Select Danh mục */}
-               <Form.Item name="categoryId" label={<span className="text-slate-300">Danh mục (Category)</span>} rules={[{ required: true, message: 'Vui lòng chọn danh mục' }]}>
+               <Form.Item name="categoryId" label={<span className="text-slate-300">Danh mục sản phẩm</span>} rules={[{ required: true, message: 'Vui lòng chọn danh mục' }]}>
                   <Select placeholder="Chọn danh mục" className="h-[40px] custom-dark-select">
-                      <Select.Option value="C01">Electronics</Select.Option>
-                      <Select.Option value="C02">Apparel</Select.Option>
+                      <Select.Option value="C01">Điện tử</Select.Option>
+                      <Select.Option value="C02">Thời trang</Select.Option>
                   </Select>
                </Form.Item>
 

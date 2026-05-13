@@ -7,10 +7,10 @@ export default function Category() {
   
   // State quản lý dữ liệu (Sau này thay bằng data lấy từ API axios.get)
   const [categories, setCategories] = useState([
-    { id: '1', code: 'ELEC', name: 'Electronics', description: 'Thiết bị điện tử, máy tính, điện thoại', status: 'Active' },
-    { id: '2', code: 'APP', name: 'Apparel', description: 'Quần áo, thời trang nam nữ', status: 'Active' },
-    { id: '3', code: 'HOME', name: 'Home & Garden', description: 'Đồ gia dụng, nội thất', status: 'Inactive' },
-    { id: '4', code: 'FOOD', name: 'Food & Beverage', description: 'Thực phẩm, đồ uống đóng gói', status: 'Active' },
+    { id: '1', code: 'ELEC', name: 'Điện tử', description: 'Thiết bị điện tử, máy tính, điện thoại', status: 'Active' },
+    { id: '2', code: 'APP', name: 'Thời trang', description: 'Quần áo, thời trang nam nữ', status: 'Active' },
+    { id: '3', code: 'HOME', name: 'Gia dụng & Sân vườn', description: 'Đồ gia dụng, nội thất', status: 'Inactive' },
+    { id: '4', code: 'FOOD', name: 'Thực phẩm & Đồ uống', description: 'Thực phẩm, đồ uống đóng gói', status: 'Active' },
   ]);
 
   // State quản lý Modal
@@ -139,15 +139,15 @@ export default function Category() {
         {/* HEADER CỦA TRANG */}
         <div className="flex items-center justify-between mb-8">
           <div>
-            <h2 className="text-2xl font-bold text-white tracking-wide">Category Management</h2>
-            <p className="text-slate-400 text-base mt-1">Manage all warehouse product categories</p>
+            <h2 className="text-2xl font-bold text-white tracking-wide">Quản lý danh mục</h2>
+            <p className="text-slate-400 text-base mt-1">Quản lý các danh mục sản phẩm kho</p>
           </div>
           <button 
             onClick={() => handleOpenModal()}
             className="flex items-center gap-2 bg-blue-600 hover:bg-blue-500 text-white px-5 py-2.5 rounded-xl transition-all shadow-[0_0_15px_rgba(37,99,235,0.3)] font-medium"
           >
             <Plus size={18} />
-            Create Category
+            Tạo danh mục
           </button>
         </div>
 
@@ -157,7 +157,7 @@ export default function Category() {
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
             <input 
               type="text" 
-              placeholder="Search categories by name or code..." 
+              placeholder="Tìm kiếm danh mục theo tên hoặc mã..." 
               className="w-full bg-[#1E293B] border border-slate-700 text-white text-sm rounded-lg pl-10 pr-4 py-2.5 focus:outline-none focus:border-blue-500 transition-colors"
             />
           </div>
@@ -196,22 +196,22 @@ export default function Category() {
               label={<span className="text-slate-300">Category Name</span>}
               rules={[{ required: true, message: 'Vui lòng nhập tên danh mục!' }]}
             >
-              <Input placeholder="e.g., Electronics" className="bg-[#1E293B] border-slate-700 text-white py-2" />
+              <Input placeholder="VD: Điện tử" className="bg-[#1E293B] border-slate-700 text-white py-2" />
             </Form.Item>
 
             <Form.Item 
               name="description" 
-              label={<span className="text-slate-300">Description</span>}
+              label={<span className="text-slate-300">Mô tả</span>}
             >
               <Input.TextArea rows={3} placeholder="Mô tả chi tiết..." className="bg-[#1E293B] border-slate-700 text-white" />
             </Form.Item>
 
             <div className="flex justify-end gap-3 mt-8">
               <Button onClick={handleCloseModal} className="border-slate-700 text-slate-300 hover:text-white bg-transparent">
-                Cancel
+                Hủy
               </Button>
               <Button type="primary" htmlType="submit" className="bg-blue-600 hover:bg-blue-500">
-                {editingId ? 'Save Changes' : 'Create Category'}
+                {editingId ? 'Lưu thay đổi' : 'Tạo danh mục'}
               </Button>
             </div>
           </Form>

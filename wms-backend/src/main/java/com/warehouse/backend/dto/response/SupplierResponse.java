@@ -10,4 +10,6 @@ import lombok.experimental.FieldDefaults;
 public class SupplierResponse {
     String supplierId;
     String supplierName;
+    String type;
+    Integer status;
 }

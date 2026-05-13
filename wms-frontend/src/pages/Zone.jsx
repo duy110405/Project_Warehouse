@@ -77,8 +77,8 @@ export default function Zone() {
         {/* HEADER & NÚT THÊM */}
         <div className="flex items-center justify-between mb-6">
           <div>
-            <h2 className="text-2xl font-bold text-white tracking-wide">Warehouse Setup</h2>
-            <p className="text-slate-400 text-sm mt-1">Configure zones, capacity, and storage locations</p>
+            <h2 className="text-2xl font-bold text-white tracking-wide">Thiết lập kho</h2>
+            <p className="text-slate-400 text-sm mt-1">Cấu hình khu vực, sức chứa và vị trí lưu trữ</p>
           </div>
           <button 
             onClick={() => handleOpenModal()}
@@ -91,10 +91,10 @@ export default function Zone() {
 
         {/* TOP STATS */}
         <div className="grid grid-cols-4 gap-4 mb-8">
-          <StatCard title="Total Zones" value={totalZones} subtitle={activeTab === 1 ? "Khu vực Nguyên liệu" : "Khu vực Thành phẩm"} />
-          <StatCard title="Total Capacity" value={totalCapacity.toLocaleString()} subtitle="Units" />
-          <StatCard title="Current Load" value={totalLoad.toLocaleString()} subtitle="Units" />
-          <StatCard title="Utilization" value={`${utilization}%`} subtitle="Tỉ lệ lấp đầy" />
+          <StatCard title="Tổng số khu vực" value={totalZones} subtitle={activeTab === 1 ? "Khu vực Nguyên liệu" : "Khu vực Thành phẩm"} />
+          <StatCard title="Tổng sức chứa" value={totalCapacity.toLocaleString()} subtitle="Đơn vị" />
+          <StatCard title="Lượng tồn" value={totalLoad.toLocaleString()} subtitle="Đơn vị" />
+          <StatCard title="Tỉ lệ sử dụng" value={`${utilization}%`} subtitle="Tỉ lệ lấp đầy" />
         </div>
 
         {/* VÙNG CHỨA DANH SÁCH ZONE */}
@@ -102,7 +102,7 @@ export default function Zone() {
           
           <div className="flex items-center gap-2 mb-6">
             <MapPin className="text-blue-500" size={20} />
-            <h3 className="text-lg font-semibold text-white">Zone Configuration</h3>
+            <h3 className="text-lg font-semibold text-white">Cấu hình khu vực</h3>
           </div>
 
           {/* THANH TOGGLE CHUYỂN ĐỔI (NGUYÊN LIỆU - THÀNH PHẨM) */}

@@ -12,4 +12,11 @@ public class Supplier {
 
     @Column(name = "TenXuong", nullable = false, length = 100)
     private String supplierName;
+
+    @Column(name = "LoaiXuong", length = 50)
+    String type;
+
+    @Column(name = "TrangThai")
+    Integer status = 1; // 1: Đang hoạt động , 0: Ngừng hoạt động
+
 }
