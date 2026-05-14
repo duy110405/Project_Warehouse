@@ -1,7 +1,9 @@
 package com.warehouse.backend.service.impl;
 
 import com.warehouse.backend.dto.request.ZoneRequest;
+import com.warehouse.backend.dto.response.MaterialResponse;
 import com.warehouse.backend.dto.response.ZoneRespone;
+import com.warehouse.backend.entity.danhmuc.Material;
 import com.warehouse.backend.entity.danhmuc.Zone;
 import com.warehouse.backend.mapper.ZoneMapper;
 import com.warehouse.backend.repository.ZoneRepository;

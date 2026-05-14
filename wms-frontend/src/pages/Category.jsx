@@ -1,23 +1,12 @@
-import { useState } from 'react';
-import { Table, Button, Modal, Form, Input, Tag, Space, Popconfirm, ConfigProvider, theme } from 'antd';
+import { useState, useEffect } from 'react';
+import { Table, Button, Modal, Form, Input, Tag, Space, Popconfirm, ConfigProvider, theme, message } from 'antd';
 import { Plus, Edit, Trash2, Search } from 'lucide-react';
+import axios from 'axios';
 
-export default function Category() {
-  const [form] = Form.useForm();
-  
-  // State quản lý dữ liệu (Sau này thay bằng data lấy từ API axios.get)
-  const [categories, setCategories] = useState([
-    { id: '1', code: 'ELEC', name: 'Điện tử', description: 'Thiết bị điện tử, máy tính, điện thoại', status: 'Active' },
-    { id: '2', code: 'APP', name: 'Thời trang', description: 'Quần áo, thời trang nam nữ', status: 'Active' },
-    { id: '3', code: 'HOME', name: 'Gia dụng & Sân vườn', description: 'Đồ gia dụng, nội thất', status: 'Inactive' },
-    { id: '4', code: 'FOOD', name: 'Thực phẩm & Đồ uống', description: 'Thực phẩm, đồ uống đóng gói', status: 'Active' },
-  ]);
+const API_URL = 'http://localhost:8080/api/category'; 
 
-  // State quản lý Modal
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [editingId, setEditingId] = useState(null); // Lưu ID của danh mục đang sửa (nếu có)
-
-  // 1. CẤU HÌNH CỘT CHO BẢNG ANT DESIGN
+//  COMPONENT BẢNG DỮ LIỆU (CategoryTable)
+const CategoryTable = ({ categories, isLoading, onEdit, onDelete }) => {
   const columns = [
     {
       title: 'Mã danh mục',
@@ -53,19 +42,17 @@ export default function Category() {
       align: 'right',
       render: (_, record) => (
         <Space size="middle">
-          {/* Nút Sửa */}
           <button 
-            onClick={() => handleOpenModal(record)}
+            onClick={() => onEdit(record)}
             className="p-2 text-slate-400 hover:text-blue-400 hover:bg-blue-400/10 rounded-lg transition-colors"
           >
             <Edit size={18} />
           </button>
           
-          {/* Nút Xóa (Có Popconfirm xác nhận tránh xóa nhầm) */}
           <Popconfirm
             title="Xóa danh mục"
             description={`Bạn có chắc chắn muốn xóa "${record.name}" không?`}
-            onConfirm={() => handleDelete(record.id)}
+            onConfirm={() => onDelete(record.id)}
             okText="Xóa"
             cancelText="Hủy"
             okButtonProps={{ danger: true }}
@@ -79,15 +66,108 @@ export default function Category() {
     },
   ];
 
-  // 2. CÁC HÀM XỬ LÝ SỰ KIỆN (CRUD)
+  return (
+    <div className="bg-[#0F172A] border-x border-b border-slate-800 rounded-b-2xl overflow-hidden shadow-xl text-base">
+      <Table 
+        columns={columns} 
+        dataSource={categories} 
+        loading={isLoading}
+        rowKey="id"
+        pagination={{ pageSize: 5 }} 
+        className="custom-dark-table"
+      />
+    </div>
+  );
+};
+
+// 2. COMPONENT MODAL THÊM/SỬA (CategoryModal)
+
+const CategoryModal = ({ isOpen, onClose, form, onSubmit, isEditing }) => (
+  <Modal
+    title={<span className="text-lg">{isEditing ? 'Sửa thông tin danh mục' : 'Tạo danh mục mới'}</span>}
+    open={isOpen}
+    onCancel={onClose}
+    footer={null} 
+    className="dark-modal"
+  >
+    <Form form={form} layout="vertical" onFinish={onSubmit} className="mt-6">
+      <Form.Item 
+        name="code" 
+        label={<span className="text-slate-300">Mã danh mục</span>}
+        rules={[{ required: true, message: 'Vui lòng nhập mã danh mục!' }]}
+      >
+        <Input placeholder="VD: ELEC, FOOD..." className="bg-[#1E293B] border-slate-700 text-white py-2" />
+      </Form.Item>
+
+      <Form.Item 
+        name="name" 
+        label={<span className="text-slate-300">Tên danh mục</span>}
+        rules={[{ required: true, message: 'Vui lòng nhập tên danh mục!' }]}
+      >
+        <Input placeholder="VD: Điện tử" className="bg-[#1E293B] border-slate-700 text-white py-2" />
+      </Form.Item>
+
+      <Form.Item 
+        name="description" 
+        label={<span className="text-slate-300">Mô tả</span>}
+      >
+        <Input.TextArea rows={3} placeholder="Mô tả chi tiết..." className="bg-[#1E293B] border-slate-700 text-white" />
+      </Form.Item>
+
+      <div className="flex justify-end gap-3 mt-8">
+        <Button onClick={onClose} className="border-slate-700 text-slate-300 hover:text-white bg-transparent">
+          Hủy
+        </Button>
+        <Button type="primary" htmlType="submit" className="bg-blue-600 hover:bg-blue-500 border-none">
+          {isEditing ? 'Lưu thay đổi' : 'Tạo danh mục'}
+        </Button>
+      </div>
+    </Form>
+  </Modal>
+);
+
+
+export default function Category() {
+  const [form] = Form.useForm();
+  
+  // State quản lý dữ liệu
+  const [categories, setCategories] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [searchTerm, setSearchTerm] = useState('');
+
+  // State quản lý Modal
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editingId, setEditingId] = useState(null); 
+
+  // LẤY DỮ LIỆU TỪ API
+  const fetchCategories = async () => {
+    try {
+      setIsLoading(true);
+      const response = await axios.get(API_URL);
+      setCategories(response.data.data);
+    
+    } catch (error) {
+      console.error("Lỗi khi tải dữ liệu:", error);
+      message.error("Không thể kết nối đến máy chủ!");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    fetchCategories();
+  }, []);
+
+  // QUẢN LÝ MODAL
   const handleOpenModal = (category = null) => {
     if (category) {
       setEditingId(category.id);
-      form.setFieldsValue(category); // Đổ dữ liệu cũ vào Form để sửa
+      form.setFieldsValue(category); 
     } else {
       setEditingId(null);
-      form.resetFields(); // Làm sạch Form để thêm mới
-      form.setFieldsValue({ status: 'Active' }); // Mặc định trạng thái
+      form.resetFields(); 
+      form.setFieldsValue({ status: 'Active' }); 
     }
     setIsModalOpen(true);
   };
@@ -97,40 +177,50 @@ export default function Category() {
     form.resetFields();
   };
 
-  const handleSubmit = (values) => {
-    if (editingId) {
-      // Logic Cập nhật (Sửa API: axios.put)
-      const updatedList = categories.map(cat => 
-        cat.id === editingId ? { ...cat, ...values } : cat
-      );
-      setCategories(updatedList);
-    } else {
-      // Logic Thêm mới (Gọi API: axios.post)
-      const newCategory = {
-        id: Date.now().toString(), // Fake ID
-        ...values
-      };
-      setCategories([...categories, newCategory]);
+  // THÊM / SỬA DỮ LIỆU
+  const handleSubmit = async (values) => {
+    try {
+      if (editingId) {
+        await axios.put(`${API_URL}/${editingId}`, values);
+        message.success('Cập nhật danh mục thành công!');
+      } else {
+        await axios.post(API_URL, values);
+        message.success('Tạo danh mục mới thành công!');
+      }
+      handleCloseModal();
+      fetchCategories(); 
+    } catch (error) {
+      console.error("Lỗi khi lưu:", error);
+      message.error("Có lỗi xảy ra khi lưu dữ liệu!");
     }
-    handleCloseModal();
   };
 
-  const handleDelete = (id) => {
-    // Logic Xóa (Gọi API: axios.delete)
-    const filteredList = categories.filter(cat => cat.id !== id);
-    setCategories(filteredList);
+  // XÓA DỮ LIỆU
+  const handleDelete = async (id) => {
+    try {
+       await axios.delete(`${API_URL}/${id}`);
+      message.success('Đã xóa danh mục này!');
+      fetchCategories(); 
+    } catch (error) {
+      console.error("Lỗi khi xóa:", error);
+      message.error("Không thể xóa danh mục này!");
+    }
   };
+
+  // BỘ LỌC TÌM KIẾM
+  const filteredCategories = categories.filter(cat => 
+    cat.name?.toLowerCase().includes(searchTerm.toLowerCase()) || 
+    cat.code?.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   return (
-    // Dùng ConfigProvider để ép AntD sang chế độ Dark Mode chuẩn tone nền
     <ConfigProvider
       theme={{
         algorithm: theme.darkAlgorithm,
         token: {
-          colorBgContainer: '#0F172A', // Màu nền bảng
-          colorBorderSecondary: '#1E293B', // Màu viền bảng
-          colorText: '#cbd5e1', // Màu chữ
-          sizeText: 28, // Kích thước chữ mặc định
+          colorBgContainer: '#0F172A', 
+          colorBorderSecondary: '#1E293B', 
+          colorText: '#cbd5e1', 
         },
       }}
     >
@@ -158,64 +248,29 @@ export default function Category() {
             <input 
               type="text" 
               placeholder="Tìm kiếm danh mục theo tên hoặc mã..." 
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
               className="w-full bg-[#1E293B] border border-slate-700 text-white text-sm rounded-lg pl-10 pr-4 py-2.5 focus:outline-none focus:border-blue-500 transition-colors"
             />
           </div>
         </div>
 
-        {/* BẢNG DỮ LIỆU */}
-        <div className="bg-[#0F172A] border-x border-b border-slate-800 rounded-b-2xl overflow-hidden shadow-xl text-base">
-          <Table 
-            columns={columns} 
-            dataSource={categories} 
-            rowKey="id"
-            pagination={{ pageSize: 5 }} // Phân 5 dòng 1 trang
-            className="custom-dark-table"
-          />
-        </div>
+        {/* COMPONENT BẢNG DỮ LIỆU */}
+        <CategoryTable 
+          categories={filteredCategories} 
+          isLoading={isLoading} 
+          onEdit={handleOpenModal} 
+          onDelete={handleDelete} 
+        />
 
-        {/* MODAL THÊM / SỬA */}
-        <Modal
-          title={<span className="text-lg">{editingId ? 'Edit Category' : 'Create New Category'}</span>}
-          open={isModalOpen}
-          onCancel={handleCloseModal}
-          footer={null} // Ẩn footer mặc định để tự custom nút
-          className="dark-modal"
-        >
-          <Form form={form} layout="vertical" onFinish={handleSubmit} className="mt-6">
-            <Form.Item 
-              name="code" 
-              label={<span className="text-slate-300">Category Code</span>}
-              rules={[{ required: true, message: 'Vui lòng nhập mã danh mục!' }]}
-            >
-              <Input placeholder="e.g., ELEC, FOOD..." className="bg-[#1E293B] border-slate-700 text-white py-2" />
-            </Form.Item>
-
-            <Form.Item 
-              name="name" 
-              label={<span className="text-slate-300">Category Name</span>}
-              rules={[{ required: true, message: 'Vui lòng nhập tên danh mục!' }]}
-            >
-              <Input placeholder="VD: Điện tử" className="bg-[#1E293B] border-slate-700 text-white py-2" />
-            </Form.Item>
-
-            <Form.Item 
-              name="description" 
-              label={<span className="text-slate-300">Mô tả</span>}
-            >
-              <Input.TextArea rows={3} placeholder="Mô tả chi tiết..." className="bg-[#1E293B] border-slate-700 text-white" />
-            </Form.Item>
-
-            <div className="flex justify-end gap-3 mt-8">
-              <Button onClick={handleCloseModal} className="border-slate-700 text-slate-300 hover:text-white bg-transparent">
-                Hủy
-              </Button>
-              <Button type="primary" htmlType="submit" className="bg-blue-600 hover:bg-blue-500">
-                {editingId ? 'Lưu thay đổi' : 'Tạo danh mục'}
-              </Button>
-            </div>
-          </Form>
-        </Modal>
+        {/* COMPONENT MODAL THÊM/SỬA */}
+        <CategoryModal 
+          isOpen={isModalOpen} 
+          onClose={handleCloseModal} 
+          form={form} 
+          onSubmit={handleSubmit} 
+          isEditing={!!editingId} 
+        />
 
       </div>
     </ConfigProvider>

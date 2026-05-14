@@ -13,4 +13,5 @@ public interface IMaterialService {
     MaterialResponse updateMaterial(String materialId , MaterialRequest materialRequest);
     void deleteMaterial(String materialId);
     String generateNextMaterialId();
+    List<MaterialResponse> searchMaterial (String search , String zoneId);
 }

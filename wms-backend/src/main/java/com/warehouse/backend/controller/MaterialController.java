@@ -63,4 +63,23 @@ public class MaterialController {
                 .build();
     }
 
+    @GetMapping
+    public ApiResponse<List<MaterialResponse>> getMaterials(
+            @RequestParam(required = false) String search,
+            @RequestParam(required = false) String zoneId
+    ) {
+        // Khi Frontend gửi tham số trống (VD: ?search=&zoneId=), Spring có thể hiểu nó là chuỗi rỗng "".
+        // Ta cần ép nó về null để câu lệnh (:search IS NULL) trong @Query hoạt động chính xác 100%.
+        String finalSearch = (search != null && search.trim().isEmpty()) ? null : search.trim();
+        String finalZoneId = (zoneId != null && zoneId.trim().isEmpty()) ? null : zoneId;
+        // Gọi Service
+        List<MaterialResponse> data = materialService.searchMaterial(finalSearch, finalZoneId);
+        // Trả về kết quả bọc trong ApiResponse
+        return ApiResponse.<List<MaterialResponse>>builder()
+                .code(200)
+                .message("Lấy danh sách nguyên liệu thành công")
+                .data(data)
+                .build();
+    }
+
 }

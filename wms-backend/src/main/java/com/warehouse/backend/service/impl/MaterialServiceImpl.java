@@ -65,4 +65,10 @@ public class MaterialServiceImpl implements IMaterialService {
         int nextNumber = Integer.parseInt(maxId.substring(2)) +1 ;
         return String.format("NL%03d" , nextNumber);
     }
+
+    @Override
+    public List<MaterialResponse> searchMaterial(String search , String zoneId){
+        return materialRepository.searchMaterials(search, zoneId).stream().map(materialMapper::toMaterialResponse)
+                .toList();
+    }
 }
