@@ -10,6 +10,21 @@ const API_ZONE_URL = 'http://localhost:8080/api/zones';
 const MaterialTable = ({materials, isLoading, onEdit, onDelete }) =>{
   const columns = [
     {
+      title: 'Ảnh',
+      dataIndex: 'image',
+      key: 'image',
+      width: 80,
+      render: (img) => (
+        <Image 
+          src={img} 
+          width={44} 
+          height={44} 
+          className="rounded-lg object-cover border border-slate-700"
+          fallback="https://placehold.co/100x100/1E293B/FFF?text=No+Img"
+        />
+      )
+    },
+    {
       title: 'Mã nguyên liệu',
       dataIndex: 'code',
       key: 'code',
@@ -129,6 +144,10 @@ const MaterialModal = ({ isOpen, onClose, form, onSubmit, isEditing }) =>(
             <Form.Item name="quantity" label={<span className="text-slate-300">Số lượng</span>} rules={[{ required: true }]}>
                  <Input type="number" placeholder="10" className="bg-[#1E293B] border-slate-700 text-white py-2" />
             </Form.Item>
+
+            <Form.Item name="image" label={<span className="text-slate-300">Link ảnh</span>}>
+           <Input placeholder="https://domain.com/image.jpg" className="bg-[#1E293B] border-slate-700 text-white py-2" />
+           </Form.Item>
         
 
             <div className="flex justify-end gap-3 mt-8">
@@ -219,7 +238,9 @@ export default function Material() {
         await axios.put(`${API_URL}/${editingId}`, values);
         message.success('Cập nhật nguyên liệu thành công!');
       }else {
-        await axios.post(API_URL, values);
+       // Cấp ảnh mặc định nếu để trống
+        const payload = { ...values, image: values.image || 'https://placehold.co/100x100/1E293B/FFF?text=New' };
+        await axios.post(API_URL, payload);
         message.success('Tạo nguyên liệu mới thành công!');
       }
       handleCloseModal();
