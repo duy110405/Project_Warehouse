@@ -12,4 +12,5 @@ public interface IProductService {
     ProductResponse updateProduct(String mah , ProductRequest productRequest);
     void deleteProduct(String mah);
     String generateNextProductId() ;
+    List<ProductResponse> searchProduct(String search, String categoryId, String zoneId);
 }

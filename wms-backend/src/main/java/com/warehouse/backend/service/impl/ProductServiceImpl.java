@@ -164,4 +164,11 @@ public class ProductServiceImpl implements IProductService {
         int nextNumber = Integer.parseInt(maxId.substring(1)) + 1;
         return String.format("H%03d", nextNumber);
     }
+
+    @Override
+    public List<ProductResponse> searchProduct(String search, String categoryId, String zoneId){
+        return productRepository.searchProducts(search , categoryId , zoneId).stream().map(productMapper ::toProductResponse)
+                .toList();
+    }
+
 }
