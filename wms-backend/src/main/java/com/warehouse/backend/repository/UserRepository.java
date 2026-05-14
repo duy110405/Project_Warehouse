@@ -7,6 +7,6 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface UserRepository extends JpaRepository<User,String> {
-    @Query("SELECT MAX(user.userId) FROM User user")
+    @Query("SELECT MAX(user.userId) FROM User user WHERE user.userId LIKE 'ND%'")
     String findMaxUserId();
 }

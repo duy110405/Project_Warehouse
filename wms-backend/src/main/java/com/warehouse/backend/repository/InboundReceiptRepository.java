@@ -7,7 +7,7 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface InboundReceiptRepository extends JpaRepository<InboundReceipt, String> {
-    @Query("SELECT MAX(ir.receiptId) FROM InboundReceipt ir")
+    @Query("SELECT MAX(ir.receiptId) FROM InboundReceipt ir WHERE ir.receiptId LIKE 'PN%'")
     String findMaxReceiptId();
 
 }

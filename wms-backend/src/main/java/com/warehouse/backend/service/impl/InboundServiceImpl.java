@@ -30,7 +30,7 @@ public class InboundServiceImpl implements IInboundService {
     private final ZoneRepository zoneRepository;
 
 
-    public InboundServiceImpl(InboundMapper inboundMapper, InboundReceiptRepository inboundReceiptRepository, ReceiptDetailRepository receiptDetailRepository, UserRepository userRepository, ProductRepository productRepository, SupplierRepository supplierRepository, ZoneRepository zoneRepository) {
+    public InboundServiceImpl(InboundMapper inboundMapper, InboundReceiptRepository inboundReceiptRepository, UserRepository userRepository, ProductRepository productRepository, SupplierRepository supplierRepository, ZoneRepository zoneRepository) {
         this.inboundMapper = inboundMapper;
         this.inboundReceiptRepository = inboundReceiptRepository;
         this.userRepository = userRepository;
@@ -74,6 +74,7 @@ public class InboundServiceImpl implements IInboundService {
         // tự sinh mã
         inboundReceipt.setReceiptId(generateNextReceiptId());
         inboundReceipt.setReceiptDate(LocalDate.now());
+        inboundReceipt.setStatus(0); // Thêm: Set status mặc định = 0 (Nháp)
 
         //Tìm User từ Database và gán vào Phiếu
         User user = userRepository.findById(inboundReceiptRequest.getUserId())
@@ -100,6 +101,12 @@ public class InboundServiceImpl implements IInboundService {
             } else {
                 zone = product.getZone();
             }
+
+            // FIX: Null check trước khi sử dụng zone
+            if (zone == null) {
+                throw new RuntimeException("Không tìm thấy khu vực cho sản phẩm: " + product.getProductName());
+            }
+
             if (zone.getZoneType() != 2) {
                 throw new RuntimeException("Lỗi: Không thể cất thành phẩm vào Khu nguyên liệu (" + zone.getZoneName() + ")!");
             }
@@ -146,10 +153,14 @@ public class InboundServiceImpl implements IInboundService {
             throw new RuntimeException("Phiếu nhập đã được duyệt hoặc đã hủy, không thể duyệt lại!");
         }
 
-            inboundReceipt.setStatus(1); // Cập nhật trạng thái thành "Đã duyệt"
             for (ReceiptDetail detail : inboundReceipt.getReceiptDetails()) {
                 Product product = detail.getProduct();
                 Zone zone = detail.getZone(); // Lấy khu vực của sản phẩm này
+
+                // FIX: Null check cho zone trước khi sử dụng
+                if (zone == null) {
+                    throw new RuntimeException("Chi tiết phiếu thiếu thông tin khu vực cho sản phẩm: " + product.getProductName());
+                }
 
                 if (zone != null && zone.getCapacity() != null) {
                     // Đếm xem khu này đang chứa bao nhiêu hàng rồi
@@ -186,13 +197,16 @@ public class InboundServiceImpl implements IInboundService {
         if(existingInboundReceipt.getStatus() != 0 ) {
             throw new RuntimeException("Phiếu nhập đã được duyệt hoặc đã hủy, không thể cập nhật!");
         }
-            inboundMapper.updateInboundFromRequest(inboundReceiptRequest, existingInboundReceipt);
-        // Cập nhật lại Xưởng nếu FE có gửi Xưởng mới
+
+        // 2. CẬP NHẬT THÔNG TIN CHUNG & NHÀ CUNG CẤP
+        inboundMapper.updateInboundFromRequest(inboundReceiptRequest, existingInboundReceipt);
+
         if(inboundReceiptRequest.getSupplierId() != null) {
             Supplier supplier = supplierRepository.findById(inboundReceiptRequest.getSupplierId())
                     .orElseThrow(() -> new RuntimeException("Không tìm thấy Xưởng!"));
             existingInboundReceipt.setSupplier(supplier);
         }
+
 
         existingInboundReceipt.getReceiptDetails().clear();
         BigDecimal totalAmount = BigDecimal.ZERO; // Khởi tạo ví tiền
@@ -209,13 +223,14 @@ public class InboundServiceImpl implements IInboundService {
                     } else {
                         zone = product.getZone();
                     }
+
                     if (zone.getZoneType() != 2) {
                         throw new RuntimeException("Lỗi: Không thể cất thành phẩm vào Khu nguyên liệu (" + zone.getZoneName() + ")!");
                     }
 
-                    // --- LOGIC FAIL-FAST: Chỉ CHECK sức chứa, KHÔNG CỘNG VÀO DATABASE ---
+                    //  LOGIC FAIL-FAST: Chỉ CHECK sức chứa, KHÔNG CỘNG VÀO DATABASE
                     if (zone != null && zone.getCapacity() != null) {
-                        // Chú ý: Vì đang là phiếu nháp, ta lấy currentLoad hiện tại để xem nếu duyệt thì có vừa không
+                        // Vì đang là phiếu nháp,lấy currentLoad hiện tại để xem nếu duyệt thì có vừa không
                         int currentLoad = zone.getCurrentLoad() != null ? zone.getCurrentLoad() : 0;
                         int amountToAdd = detailRequest.getQuantity();
 

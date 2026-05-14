@@ -3,7 +3,6 @@ package com.warehouse.backend.service.impl;
 import com.warehouse.backend.dto.request.SupplierRequest;
 import com.warehouse.backend.dto.response.SupplierResponse;
 import com.warehouse.backend.entity.danhmuc.Supplier;
-import com.warehouse.backend.entity.danhmuc.Vendor;
 import com.warehouse.backend.mapper.SupplierMapper;
 import com.warehouse.backend.repository.SupplierRepository;
 import com.warehouse.backend.service.ISupplierService;
@@ -11,8 +10,6 @@ import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-
-import static java.util.stream.Collectors.toList;
 
 @Service
 public class SupplierServiceImpl implements ISupplierService {
@@ -58,7 +55,7 @@ public class SupplierServiceImpl implements ISupplierService {
     }
 
     @Override
-    public void deleteSupplier(String supplierId) {
+    public SupplierResponse deleteSupplier(String supplierId) {
         //  đổi status về 0 (Ngừng hợp tác)
         Supplier supplier = findSupplierById(supplierId);
         if (supplier.getStatus() != null && supplier.getStatus() == 0) {
@@ -66,6 +63,7 @@ public class SupplierServiceImpl implements ISupplierService {
         }
         supplier.setStatus(0);
         supplierRepository.save(supplier); // Lưu lại thay đổi
+        return null;
     }
 
     @Override

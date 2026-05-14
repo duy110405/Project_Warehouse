@@ -7,6 +7,6 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface OutboundIssueRepository extends JpaRepository<OutboundIssue, String> {
-    @Query("SELECT MAX(ob.issueId) FROM OutboundIssue ob")
+    @Query("SELECT MAX(ob.issueId) FROM OutboundIssue ob WHERE ob.issueId LIKE 'PX%'")
     String findMaxIssueId();
 }

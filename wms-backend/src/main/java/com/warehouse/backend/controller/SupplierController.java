@@ -55,13 +55,13 @@ public class SupplierController {
                 .build();
     }
 
-    @DeleteMapping("/{supplierId}")
-    public ApiResponse<SupplierResponse> deleteSupplier(@PathVariable String supplierId){
+    @PutMapping("/{supplierId}/cancel")
+    public ApiResponse<SupplierResponse> cancelSupplier(@PathVariable String supplierId){
         supplierService.deleteSupplier(supplierId);
         return ApiResponse.<SupplierResponse>builder()
                 .code(200)
-                .message("Xóa xưởng thành công ")
-                .data(null)
+                .message("Xưởng ngừng hoạt động")
+                .data(supplierService.deleteSupplier(supplierId))
                 .build();
     }
 }
