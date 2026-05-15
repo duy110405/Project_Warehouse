@@ -4,7 +4,7 @@ import com.warehouse.backend.dto.request.RoleRequest;
 import com.warehouse.backend.dto.response.RoleResponse;
 import com.warehouse.backend.entity.hethong.Role;
 import com.warehouse.backend.mapper.SystemMapper;
-import com.warehouse.backend.repository.hethong.RoleRepository;
+import com.warehouse.backend.repository.RoleRepository;
 import com.warehouse.backend.service.IRoleService;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
@@ -23,7 +23,7 @@ public class RoleServiceImpl implements IRoleService {
 
     @Override
     public String generateNextRoleId() {
-        String maxId = roleRepository.findMaxGroupId();
+        String maxId = roleRepository.findMaxRoleId();
         if (maxId == null) {
             return "ROLE01";
         }
@@ -40,9 +40,9 @@ public class RoleServiceImpl implements IRoleService {
                 .toList();
     }
     @Override
-    public RoleResponse getRoleById(String groupId) {
-        Role role = roleRepository.findById(groupId)
-                .orElseThrow(() -> new RuntimeException("Không tìm thấy nhóm người dùng với ID: " + groupId));
+    public RoleResponse getRoleById(String roleId) {
+        Role role = roleRepository.findById(roleId)
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy nhóm người dùng với ID: " + roleId));
         return systemMapper.toRoleResponse(role);
     }
 
@@ -50,11 +50,11 @@ public class RoleServiceImpl implements IRoleService {
     @Transactional
     public RoleResponse saveRole(RoleRequest roleRequest) {
         // Tự sinh ID
-        String newGroupId = generateNextRoleId();
+        String newRoleId = generateNextRoleId();
 
         // Map từ request
         Role role = systemMapper.toRoleEntity(roleRequest);
-        role.setGroupId(newGroupId);
+        role.setRoleId(newRoleId);
 
         // Lưu và trả về response
         Role savedRole = roleRepository.save(role);
@@ -63,10 +63,10 @@ public class RoleServiceImpl implements IRoleService {
 
     @Override
     @Transactional
-    public RoleResponse updateRole(String groupId, RoleRequest roleRequest) {
-        Role existingRole = roleRepository.findById(groupId)
-                .orElseThrow(() -> new RuntimeException("Không tìm thấy nhóm người dùng với ID: " + groupId));
-        // Cập nhật từ request (groupId không bị thay đổi)
+    public RoleResponse updateRole(String roleId, RoleRequest roleRequest) {
+        Role existingRole = roleRepository.findById(roleId)
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy nhóm người dùng với ID: " + roleId));
+        // Cập nhật từ request (roleId không bị thay đổi)
         systemMapper.updateRoleFromRequest(roleRequest, existingRole);
         // Lưu và trả về response
         Role updatedRole = roleRepository.save(existingRole);
@@ -75,9 +75,9 @@ public class RoleServiceImpl implements IRoleService {
 
     @Override
     @Transactional
-    public void deleteRole(String groupId) {
-        Role role = roleRepository.findById(groupId)
-                .orElseThrow(() -> new RuntimeException("Không tìm thấy nhóm người dùng với ID: " + groupId));
+    public void deleteRole(String roleId) {
+        Role role = roleRepository.findById(roleId)
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy nhóm người dùng với ID: " + roleId));
         roleRepository.delete(role);
     }
 }

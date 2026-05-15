@@ -144,7 +144,7 @@ const ProductModal = ({ isOpen, onClose, form, onSubmit, isEditing, categories, 
   <Modal title={<span className="text-lg">{isEditing ? 'Sửa thông tin hàng hóa' : 'Thêm hàng hóa mới'}</span>} open={isOpen} onCancel={onClose} footer={null} className="dark-modal" width={700}>
     <Form form={form} layout="vertical" onFinish={onSubmit} className="mt-6">
       
-      {/* --- CÁC TRƯỜNG THÔNG TIN CƠ BẢN (Giữ nguyên) --- */}
+      {/* --- CÁC TRƯỜNG THÔNG TIN CƠ BẢN --- */}
       <div className="grid grid-cols-2 gap-4">
         <Form.Item name="code" label={<span className="text-slate-300">Mã sản phẩm</span>} rules={[{ required: true }]}>
           <Input placeholder="VD: H001" className="bg-[#1E293B] border-slate-700 text-white py-2" disabled={isEditing} />
@@ -166,7 +166,7 @@ const ProductModal = ({ isOpen, onClose, form, onSubmit, isEditing, categories, 
       <div className="grid grid-cols-2 gap-4">
         <Form.Item name="categoryId" label={<span className="text-slate-300">Danh mục sản phẩm</span>} rules={[{ required: true }]}>
           <Select placeholder="Chọn danh mục" className="h-[40px] custom-dark-select">
-             {categories.map(c => <Select.Option key={c.id} value={c.id}>{c.name}</Select.Option>)}
+             {categories.map(c => <Select.Option key={c.categoryId} value={c.categoryId}>{c.categoryName}</Select.Option>)}
           </Select>
         </Form.Item>
 

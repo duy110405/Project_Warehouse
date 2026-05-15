@@ -5,10 +5,11 @@ import com.warehouse.backend.dto.response.UserResponse;
 import com.warehouse.backend.entity.hethong.Role;
 import com.warehouse.backend.entity.hethong.User;
 import com.warehouse.backend.mapper.SystemMapper;
-import com.warehouse.backend.repository.hethong.RoleRepository;
-import com.warehouse.backend.repository.hethong.UserRepository;
+import com.warehouse.backend.repository.RoleRepository;
+import com.warehouse.backend.repository.UserRepository;
 import com.warehouse.backend.service.IUserService;
 import jakarta.transaction.Transactional;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -18,11 +19,13 @@ public class UserServiceImpl implements IUserService {
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
     private final SystemMapper systemMapper;
+    private final PasswordEncoder passwordEncoder;
 
-    public UserServiceImpl(UserRepository userRepository, RoleRepository roleRepository, SystemMapper systemMapper) {
+    public UserServiceImpl(UserRepository userRepository, RoleRepository roleRepository, SystemMapper systemMapper, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
         this.systemMapper = systemMapper;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Override
@@ -58,24 +61,19 @@ public class UserServiceImpl implements IUserService {
         if (userRepository.existsByUsername(userRequest.getUsername())) {
             throw new RuntimeException("Tên đăng nhập '" + userRequest.getUsername() + "' đã tồn tại!");
         }
-
         // 2. Tìm Role từ database
         Role role = roleRepository.findById(userRequest.getRoleId())
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy nhóm người dùng với ID: " + userRequest.getRoleId()));
-
         // 3. Map từ request thành entity
         User user = systemMapper.toUserEntity(userRequest);
-
+        user.setPassword(passwordEncoder.encode(userRequest.getPassword()));
         // 4. Tự sinh ID
         String newUserId = generateNextUserId();
         user.setUserId(newUserId);
-
         // 5. Gán Role
         user.setRole(role);
-
         // 6. Lưu user
         User savedUser = userRepository.save(user);
-
         // 7. Trả về response (password sẽ bị ignore bởi mapper)
         return systemMapper.toUserResponse(savedUser);
     }
@@ -96,7 +94,6 @@ public class UserServiceImpl implements IUserService {
         String oldPassword = existingUser.getPassword();
 
         systemMapper.updateUserFromRequest(userRequest, existingUser);
-
         // 4. Xử lý password:
         // Nếu request gửi password mới (không null/rỗng) -> cập nhật
         // Nếu không -> giữ nguyên password cũ

@@ -13,4 +13,5 @@ public class MaterialRequest {
     String materialName;
     String unit;
     BigDecimal price;
+    String zoneId;
 }

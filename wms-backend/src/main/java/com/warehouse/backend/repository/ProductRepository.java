@@ -15,7 +15,7 @@ public interface ProductRepository extends JpaRepository<Product, String> {
     String findMaxProductId();
 
     @Query("SELECT p FROM Product p WHERE " +
-            "(:search IS NULL OR p.name LIKE %:search% OR p.code LIKE %:search%) AND " +
+            "(:search IS NULL OR p.productName LIKE %:search% OR p.productId LIKE %:search%) AND " +
             "(:categoryId IS NULL OR p.category.categoryId = :categoryId) AND " +
             "(:zoneId IS NULL OR p.zone.zoneId = :zoneId)")
     List<Product> searchProducts(

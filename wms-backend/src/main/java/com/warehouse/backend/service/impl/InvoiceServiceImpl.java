@@ -28,7 +28,7 @@ public class InvoiceServiceImpl implements IInvoiceService {
     private final UserRepository userRepository;
 
 
-    public InvoiceServiceImpl(InvoiceMapper invoiceMapper, InvoiceRepository invoiceRepository, IssueDetailRepository issueDetailRepository, ProductRepository productRepository, CustomerRepository customerRepository, UserRepository userRepository) {
+    public InvoiceServiceImpl(InvoiceMapper invoiceMapper, InvoiceRepository invoiceRepository, ProductRepository productRepository, CustomerRepository customerRepository, UserRepository userRepository) {
         this.invoiceMapper = invoiceMapper;
         this.invoiceRepository = invoiceRepository;
         this.productRepository = productRepository;

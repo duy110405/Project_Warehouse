@@ -15,7 +15,7 @@ public interface MaterialRepository extends JpaRepository<Material, String> {
     String findMaxMaterialId();
 
     @Query("SELECT m FROM Material m WHERE " +
-            "(:search IS NULL OR m.name LIKE %:search% OR m.code LIKE %:search%) AND " +
+            "(:search IS NULL OR m.materialName LIKE %:search% OR m.materialId LIKE %:search%) AND " +
             "(:zoneId IS NULL OR m.zone.zoneId = :zoneId)")
     List<Material> searchMaterials(@Param("search") String search, @Param("zoneId") String zoneId);
 

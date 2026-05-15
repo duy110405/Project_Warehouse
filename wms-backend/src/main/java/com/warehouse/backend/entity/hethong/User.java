@@ -26,6 +26,6 @@ public class User {
     @Column(name = "ChucVu", nullable = false, length = 50)
     private String position; // (Hoặc dùng jobTitle)
     @ManyToOne
-    @JoinColumn(name = "IDNhom" , referencedColumnName = "IDNhom" , columnDefinition = "varchar(20)")
+    @JoinColumn(name = "IDQuyen" , referencedColumnName = "IDQuyen" , columnDefinition = "varchar(20)")
     private Role role;
 }

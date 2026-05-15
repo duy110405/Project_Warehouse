@@ -21,14 +21,6 @@ public class ProductController {
         this.productService = productService;
     }
 
-    @GetMapping
-    public ApiResponse<List<ProductResponse>> getAllProduct() {
-        return ApiResponse.<List<ProductResponse>>builder()
-                .code(200)
-                .message("Lấy danh sách hàng thành công!")
-                .data(productService.getAllProduct())
-                .build();
-    }
 
     @GetMapping("/{productId}")
     public ApiResponse<ProductResponse> getProductById(@PathVariable String productId){
@@ -79,7 +71,7 @@ public class ProductController {
         String finalCategoryId = (categoryId != null && categoryId.trim().isEmpty()) ? null : categoryId;
         String finalZoneId = (zoneId != null && zoneId.trim().isEmpty()) ? null : zoneId;
         // Gọi Service
-        List<ProductResponse> data = productService.searchProduct(search , categoryId , zoneId);
+        List<ProductResponse> data = productService.searchProduct(finalSearch , finalCategoryId , finalZoneId);
         // Trả về kết quả bọc trong ApiResponse
         return ApiResponse.<List<ProductResponse>>builder()
                 .code(200)

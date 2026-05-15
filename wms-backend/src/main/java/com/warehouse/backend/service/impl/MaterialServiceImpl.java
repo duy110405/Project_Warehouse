@@ -3,6 +3,7 @@ package com.warehouse.backend.service.impl;
 import com.warehouse.backend.dto.request.MaterialRequest;
 import com.warehouse.backend.dto.response.MaterialResponse;
 import com.warehouse.backend.entity.danhmuc.Material;
+import com.warehouse.backend.entity.danhmuc.Zone;
 import com.warehouse.backend.mapper.MaterialMapper;
 import com.warehouse.backend.repository.MaterialRepository;
 import com.warehouse.backend.service.IMaterialService;
@@ -39,6 +40,11 @@ public class MaterialServiceImpl implements IMaterialService {
     public MaterialResponse saveMaterial(MaterialRequest materialRequest){
         Material material = materialMapper.toMaterialEntity(materialRequest);
         material.setMaterialId(generateNextMaterialId());
+        if (materialRequest.getZoneId() != null) {
+            Zone zone = new Zone();
+            zone.setZoneId(materialRequest.getZoneId());
+            material.setZone(zone);
+        }
         Material savedMaterial = materialRepository.save(material);
         return materialMapper.toMaterialResponse(savedMaterial);
     }
@@ -48,6 +54,11 @@ public class MaterialServiceImpl implements IMaterialService {
     public MaterialResponse updateMaterial(String materialId , MaterialRequest materialRequest){
       Material existingMaterial = findMaterialById(materialId);
       materialMapper.updateMaterialFromRequset(materialRequest, existingMaterial);
+        if (materialRequest.getZoneId() != null) {
+            Zone zone = new Zone();
+            zone.setZoneId(materialRequest.getZoneId());
+            existingMaterial.setZone(zone);
+        }
       Material updateMaterial = materialRepository.save(existingMaterial);
       return materialMapper.toMaterialResponse(updateMaterial);
 

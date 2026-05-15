@@ -7,6 +7,7 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface RoleRepository extends JpaRepository<Role, String> {
-    @Query("SELECT MAX(r.groupId) FROM Role r WHERE r.groupId LIKE 'ROLE%'")
-    String findMaxGroupId();
+    @Query("SELECT MAX(r.roleId) FROM Role r WHERE r.roleId LIKE 'ROLE%'")
+    String findMaxRoleId();
 }
+

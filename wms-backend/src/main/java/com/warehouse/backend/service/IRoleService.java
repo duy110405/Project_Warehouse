@@ -10,12 +10,12 @@ public interface IRoleService {
 
     List<RoleResponse> getAllRoles();
 
-    RoleResponse getRoleById(String groupId);
+    RoleResponse getRoleById(String roleId);
 
     RoleResponse saveRole(RoleRequest roleRequest);
 
-    RoleResponse updateRole(String groupId, RoleRequest roleRequest);
+    RoleResponse updateRole(String roleId, RoleRequest roleRequest);
 
-    void deleteRole(String groupId);
+    void deleteRole(String roleId);
 }
 

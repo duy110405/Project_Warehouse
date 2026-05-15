@@ -293,7 +293,7 @@ export default function Vendor() {
             </div>
     
             <VendorGrid 
-              suppliers={filteredVendors} 
+              vendors={filteredVendors} 
               isLoading={isLoading} 
               onEdit={handleOpenModal} 
               onDelete={handleDelete} 

@@ -22,13 +22,13 @@ public interface SystemMapper {
      * Chuyển đổi RoleRequest -> Role Entity
      * Map thủ công: groupName và role từ request
      */
-    @Mapping(target = "groupId", ignore = true)
+    @Mapping(target = "roleId", ignore = true)
     Role toRoleEntity(RoleRequest roleRequest);
 
     /**
      * Cập nhật Role từ RoleRequest (không cập nhật groupId)
      */
-    @Mapping(target = "groupId", ignore = true)
+    @Mapping(target = "roleId", ignore = true)
     void updateRoleFromRequest(RoleRequest roleRequest, @MappingTarget Role role);
 
     // ========== USER MAPPINGS ==========
@@ -37,8 +37,8 @@ public interface SystemMapper {
      * Chuyển đổi User Entity -> UserResponse
      * BẮT BUỘC: Không map password vào response (để bảo mật)
      */
-    @Mapping(target = "roleId", source = "role.groupId")
-    @Mapping(target = "roleName", source = "role.groupName")
+    @Mapping(target = "roleId", source = "role.roleId")
+    @Mapping(target = "roleName", source = "role.roleName")
     UserResponse toUserResponse(User user);
 
     /**

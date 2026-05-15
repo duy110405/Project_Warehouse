@@ -7,7 +7,6 @@ import lombok.experimental.FieldDefaults;
 @Data
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class RoleRequest {
-    String groupName;
-    String role;
+    String roleName;
 }
 

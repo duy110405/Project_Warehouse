@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Table, Button, Modal, Form, Input, Tag, Space, Popconfirm, ConfigProvider, theme, message } from 'antd';
+import { Table, Button, Modal, Form, Input, Space, Popconfirm, ConfigProvider, theme, message } from 'antd';
 import { Plus, Edit, Trash2, Search } from 'lucide-react';
 import axios from 'axios';
 
@@ -10,31 +10,15 @@ const CategoryTable = ({ categories, isLoading, onEdit, onDelete }) => {
   const columns = [
     {
       title: 'Mã danh mục',
-      dataIndex: 'code',
-      key: 'code',
+      dataIndex: 'categoryId',
+      key: 'categoryId',
       render: (text) => <span className="font-semibold text-blue-400">{text}</span>,
     },
     {
       title: 'Tên danh mục',
-      dataIndex: 'name',
-      key: 'name',
+      dataIndex: 'categoryName',
+      key: 'categoryName',
       render: (text) => <span className="text-slate-200 font-medium">{text}</span>,
-    },
-    {
-      title: 'Mô tả',
-      dataIndex: 'description',
-      key: 'description',
-      render: (text) => <span className="text-slate-400">{text}</span>,
-    },
-    {
-      title: 'Trạng thái',
-      dataIndex: 'status',
-      key: 'status',
-      render: (status) => (
-        <Tag color={status === 'Active' ? 'success' : 'error'} className="bg-transparent border border-current">
-          {status === 'Active' ? 'Hoạt động' : 'Tạm dừng'}
-        </Tag>
-      ),
     },
     {
       title: 'Hành động',
@@ -65,7 +49,6 @@ const CategoryTable = ({ categories, isLoading, onEdit, onDelete }) => {
       ),
     },
   ];
-
   return (
     <div className="bg-[#0F172A] border-x border-b border-slate-800 rounded-b-2xl overflow-hidden shadow-xl text-base">
       <Table 
@@ -107,12 +90,6 @@ const CategoryModal = ({ isOpen, onClose, form, onSubmit, isEditing }) => (
         <Input placeholder="VD: Điện tử" className="bg-[#1E293B] border-slate-700 text-white py-2" />
       </Form.Item>
 
-      <Form.Item 
-        name="description" 
-        label={<span className="text-slate-300">Mô tả</span>}
-      >
-        <Input.TextArea rows={3} placeholder="Mô tả chi tiết..." className="bg-[#1E293B] border-slate-700 text-white" />
-      </Form.Item>
 
       <div className="flex justify-end gap-3 mt-8">
         <Button onClick={onClose} className="border-slate-700 text-slate-300 hover:text-white bg-transparent">
@@ -162,7 +139,7 @@ export default function Category() {
   // QUẢN LÝ MODAL
   const handleOpenModal = (category = null) => {
     if (category) {
-      setEditingId(category.id);
+      setEditingId(category.categoryId);
       form.setFieldsValue(category); 
     } else {
       setEditingId(null);
@@ -209,8 +186,8 @@ export default function Category() {
 
   // BỘ LỌC TÌM KIẾM
   const filteredCategories = categories.filter(cat => 
-    cat.name?.toLowerCase().includes(searchTerm.toLowerCase()) || 
-    cat.code?.toLowerCase().includes(searchTerm.toLowerCase())
+    cat.categoryName?.toLowerCase().includes(searchTerm.toLowerCase()) || 
+    cat.categoryId?.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   return (

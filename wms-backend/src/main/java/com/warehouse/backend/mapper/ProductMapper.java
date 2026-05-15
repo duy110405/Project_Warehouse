@@ -24,15 +24,13 @@ public interface ProductMapper {
     // Chuyển Request -> Entity (Bỏ qua danhSachNguyenLieu vì mình lưu bằng tay ở Service)
     @Mapping(target = "materialProducts", ignore = true)
     @Mapping(target = "category" , ignore = true )
-    @Mapping(target = "zoneId", source = "zone.zoneId")
-    @Mapping(target = "zoneName", source = "zone.zoneName")
+    @Mapping(target = "zone" , ignore = true)
     Product toProductEntity(ProductRequest request);
 
     // Hàm update
     @Mapping(target = "materialProducts", ignore = true)
     @Mapping(target = "category" , ignore = true )
-    @Mapping(target = "zoneId", source = "zone.zoneId")
-    @Mapping(target = "zoneName", source = "zone.zoneName")
+    @Mapping(target = "zone" , ignore = true)
     void updateProductFromRequset(ProductRequest productRequest, @MappingTarget Product product);
 
     // Dạy MapStruct cách biến 1 dòng NL_H thành 1 dòng NguyenLieuReponse

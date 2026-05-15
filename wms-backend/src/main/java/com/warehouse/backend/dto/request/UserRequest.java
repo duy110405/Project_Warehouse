@@ -26,7 +26,7 @@ public class UserRequest {
     @NotBlank(message = "Chức vụ không được để trống")
     String position;
 
-    @NotBlank(message = "ID nhóm không được để trống")
+    @NotBlank(message = "ID quyền không được để trống")
     String roleId;
 }
 

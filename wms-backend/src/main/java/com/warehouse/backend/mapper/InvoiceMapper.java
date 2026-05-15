@@ -13,10 +13,10 @@ import org.mapstruct.MappingTarget;
 public interface InvoiceMapper {
     //entity sang response
     @Mapping(target = "customerId", source = "customer.customerId")
-    @Mapping(target = "customerName", source = "customer.name")
+    @Mapping(target = "customerName", source = "customer.customerName")
     @Mapping(target = "userId", source = "user.userId")
     @Mapping(target = "fullName", source = "user.fullName")
-    @Mapping(target = "issuerId", source = "issuer.issuerId")
+    @Mapping(target = "issuerId", source = "outboundIssue.issueId")
     InvoiceResponse toInvoiceResponse(Invoice invoice);
 
     // entity sang chi tiết response
