@@ -1,6 +1,7 @@
 package com.warehouse.backend.mapper;
 
 import com.warehouse.backend.dto.request.ProductRequest;
+import com.warehouse.backend.dto.response.MaterialNormResponse;
 import com.warehouse.backend.dto.response.ProductResponse;
 import com.warehouse.backend.dto.response.MaterialResponse;
 import com.warehouse.backend.entity.danhmuc.Product;
@@ -21,26 +22,32 @@ public interface ProductMapper {
     @Mapping(target = "zoneName", source = "zone.zoneName")
     ProductResponse toProductResponse(Product product);
 
-    // Chuyển Request -> Entity (Bỏ qua danhSachNguyenLieu vì mình lưu bằng tay ở Service)
+    // Chuyển Request -> Entity (Bỏ qua danhSachNguyenLieu vì lưu bằng tay ở Service)
     @Mapping(target = "materialProducts", ignore = true)
     @Mapping(target = "category" , ignore = true )
     @Mapping(target = "zone" , ignore = true)
+    @Mapping(target = "productId", ignore = true)
+    @Mapping(target = "quantity", ignore = true)
     Product toProductEntity(ProductRequest request);
 
     // Hàm update
     @Mapping(target = "materialProducts", ignore = true)
     @Mapping(target = "category" , ignore = true )
     @Mapping(target = "zone" , ignore = true)
+    @Mapping(target = "productId", ignore = true)
+    @Mapping(target = "quantity", ignore = true)
     void updateProductFromRequset(ProductRequest productRequest, @MappingTarget Product product);
 
     // Dạy MapStruct cách biến 1 dòng NL_H thành 1 dòng NguyenLieuReponse
-    default MaterialResponse mapMPToDTO(Material_Product mp) {
+    default MaterialNormResponse mapMPToDTO(Material_Product mp) {
         if (mp == null || mp.getMaterial() == null) {
             return null;
         }
-        MaterialResponse dto = new MaterialResponse();
+        MaterialNormResponse dto = new MaterialNormResponse();
         dto.setMaterialId(mp.getMaterial().getMaterialId());
         dto.setMaterialName(mp.getMaterial().getMaterialName());
+        dto.setUnit(mp.getMaterial().getUnit());
+        dto.setRequiredQuantity(mp.getRequiredQuantity());
         return dto;
     }
 }

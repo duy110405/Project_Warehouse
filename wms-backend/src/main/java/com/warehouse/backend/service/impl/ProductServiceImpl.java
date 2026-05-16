@@ -65,8 +65,8 @@ public class ProductServiceImpl implements IProductService {
             Zone zone = zoneRepository.findById(productRequest.getZoneId())
                     .orElseThrow(() -> new RuntimeException("Không tìm thấy Khu vực lưu trữ!"));
 
-            // Ép buộc phải là Khu Thành Phẩm ( 1 = Thành Phẩm, 2 = Nguyên Liệu)
-            if (zone.getZoneType() != 1) {
+            // Ép buộc phải là Khu Thành Phẩm ( 2 = Thành Phẩm, 1 = Nguyên Liệu)
+            if (zone.getZoneType() != 2) {
                 throw new RuntimeException("Lỗi: Không thể cất Thành Phẩm vào Khu Nguyên Liệu. Vui lòng chọn đúng Khu Thành Phẩm!");
             }
             product.setZone(zone);
@@ -86,7 +86,8 @@ public class ProductServiceImpl implements IProductService {
         // Xử lý lưu bảng NL_H
         if (productRequest.getMaterialIds() != null && !productRequest.getMaterialIds().isEmpty()) {
             for (MaterialNormRequest normRequest : productRequest.getMaterialIds()) {
-                Material nl = materialRepository.findById(normRequest.getMaterialId()).orElseThrow();
+                Material nl = materialRepository.findById(normRequest.getMaterialId())
+                        .orElseThrow(() -> new RuntimeException("Không tìm thấy Nguyên liệu với mã: " + normRequest.getMaterialId()));
                 Material_Product nlh = new Material_Product();
                 nlh.setProduct(savedProduct);
                 nlh.setMaterial(nl);
@@ -114,7 +115,7 @@ public class ProductServiceImpl implements IProductService {
         if (productRequest.getZoneId() != null) {
             Zone zone = zoneRepository.findById(productRequest.getZoneId())
                     .orElseThrow(() -> new RuntimeException("Không tìm thấy Khu vực lưu trữ!"));
-            if (zone.getZoneType() != 1) {
+            if (zone.getZoneType() != 2) {
                 throw new RuntimeException("Lỗi: Không thể cất Thành Phẩm vào Khu Nguyên Liệu!");
             }
             existingProduct.setZone(zone);
@@ -133,7 +134,8 @@ public class ProductServiceImpl implements IProductService {
         if (productRequest.getMaterialIds() != null) {
             nlHRepository.deleteByProduct_ProductId(productId);
             for (MaterialNormRequest normRequest : productRequest.getMaterialIds()) {
-                Material nl = materialRepository.findById(normRequest.getMaterialId()).orElseThrow();
+                Material nl = materialRepository.findById(normRequest.getMaterialId())
+                        .orElseThrow(() -> new RuntimeException("Không tìm thấy Nguyên liệu với mã: " + normRequest.getMaterialId()));
                 Material_Product nlh = new Material_Product();
                 nlh.setProduct(updatedProduct);
                 nlh.setMaterial(nl);

@@ -76,9 +76,9 @@ public class InboundServiceImpl implements IInboundService {
         inboundReceipt.setReceiptDate(LocalDate.now());
         inboundReceipt.setStatus(0); // Thêm: Set status mặc định = 0 (Nháp)
 
-        //Tìm User từ Database và gán vào Phiếu
-        User user = userRepository.findById(inboundReceiptRequest.getUserId())
-                .orElseThrow(() -> new RuntimeException("User not found with ID: " + inboundReceiptRequest.getUserId()));
+        // Tìm User từ Database bằng Tên đăng nhập (Username)
+        User user = userRepository.findByUsername(inboundReceiptRequest.getCreateBy())
+                .orElseThrow(() -> new RuntimeException("User not found with Username: " + inboundReceiptRequest.getCreateBy()));
         inboundReceipt.setUser(user);
 
         // Tìm Xưởng và gán vào Phiếu
@@ -180,6 +180,7 @@ public class InboundServiceImpl implements IInboundService {
                 product.setQuantity(newQuantity);
                 int newCurrentLoad = zone.getCurrentLoad() + detail.getQuantity();
                 zone.setCurrentLoad(newCurrentLoad);
+                inboundReceipt.setStatus(1);
                 // Cập nhật Hàng xuống DB
                 productRepository.save(product);
                 zoneRepository.save(zone);
@@ -274,5 +275,13 @@ public class InboundServiceImpl implements IInboundService {
         inboundReceipt.setStatus(-1);
         InboundReceipt canceledInboundReceipt = inboundReceiptRepository.save(inboundReceipt);
         return inboundMapper.toInboundResponse(canceledInboundReceipt);
+    }
+
+    @Override
+    public List<InboundReceiptResponse> searchReceipts(Integer status, String search, String supplierId) {
+        return inboundReceiptRepository.searchInboundReceipts(status, search, supplierId)
+                .stream()
+                .map(inboundMapper::toInboundResponse)
+                .toList();
     }
 }

@@ -77,8 +77,8 @@ export default function MainLayout({ children }) {
             </button>
             {openInbound && (
               <div className="mt-1 ml-4 border-l border-slate-700/50 pl-2 space-y-1">
-                <MenuItem icon={<ArchiveRestore size={18} />} label="Nhập nguyên liệu" to="/inbound/materials" />
-                <MenuItem icon={<ArchiveRestore size={18} />} label="Nhập thành phẩm" to="/inbound/products" />
+                <MenuItem icon={<ArchiveRestore size={18} />} label="Nhập nguyên liệu" to="/inboundMaterial" />
+                <MenuItem icon={<ArchiveRestore size={18} />} label="Nhập thành phẩm" to="/inboundProduct" />
               </div>
             )}
           </div>

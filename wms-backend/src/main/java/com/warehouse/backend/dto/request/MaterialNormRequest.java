@@ -6,4 +6,5 @@ import lombok.Data;
 public class MaterialNormRequest {
     private String materialId;
     private double requiredQuantity; // Định mức
+    private  String unit;
 }

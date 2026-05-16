@@ -67,9 +67,9 @@ public class ProductController {
     ) {
         // Khi Frontend gửi tham số trống (VD: ?search=&zoneId=), Spring có thể hiểu nó là chuỗi rỗng "".
         // Ta cần ép nó về null để câu lệnh (:search IS NULL) trong @Query hoạt động chính xác 100%.
-        String finalSearch = (search != null && search.trim().isEmpty()) ? null : search.trim();
-        String finalCategoryId = (categoryId != null && categoryId.trim().isEmpty()) ? null : categoryId;
-        String finalZoneId = (zoneId != null && zoneId.trim().isEmpty()) ? null : zoneId;
+        String finalSearch = (search == null || search.trim().isEmpty()) ? null : search.trim();
+        String finalZoneId = (zoneId == null || zoneId.trim().isEmpty()) ? null : zoneId.trim();
+        String finalCategoryId = (categoryId == null || categoryId.trim().isEmpty()) ?null : categoryId.trim();
         // Gọi Service
         List<ProductResponse> data = productService.searchProduct(finalSearch , finalCategoryId , finalZoneId);
         // Trả về kết quả bọc trong ApiResponse

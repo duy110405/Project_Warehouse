@@ -13,4 +13,6 @@ public interface IInboundService {
     InboundReceiptResponse approveInboundReceipt(String mapnhap);
     InboundReceiptResponse updateInboundReceipt(String mapnhap , InboundReceiptRequest inboundReceiptRequest);
     InboundReceiptResponse cancelInboundReceipt(String mapnhap);
+
+    List<InboundReceiptResponse> searchReceipts(Integer status, String search, String supplierId);
 }

@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Table, Button, Modal, Form, Select, Tag, Space, Popconfirm, ConfigProvider, theme, message, DatePicker, Drawer, Divider, InputNumber } from 'antd';
+import { Table, Button, Modal, Form, Select, Tag, Space, Popconfirm, ConfigProvider, theme, message, DatePicker, Drawer, Divider, InputNumber, Input } from 'antd';
 import { Plus, Edit, Trash2, Search, Calendar, Eye, FileText, Settings2, CheckCircle, Clock, Truck, ChevronDown, ChevronRight } from 'lucide-react';
 import axios from 'axios';
 import dayjs from 'dayjs';
@@ -7,6 +7,7 @@ import dayjs from 'dayjs';
 const API_URL = 'http://localhost:8080/api/inbound'; 
 const API_SUPPLIER_URL = 'http://localhost:8080/api/supplier';
 const API_PRODUCT_URL = 'http://localhost:8080/api/product'; 
+const API_ZONE_URL =  'http://localhost:8080/api/zone';
 
 const { RangePicker } = DatePicker;
 
@@ -17,6 +18,7 @@ const MenuItem = ({ icon, label, onClick }) => (
     <span className="text-sm font-medium">{label}</span>
   </button>
 );
+
 
 // ============================================================================
 // 1. COMPONENT BẢNG PHIẾU NHẬP
@@ -36,8 +38,8 @@ const ReceiptTable = ({ receipts, isLoading, onEdit, onDelete, onView, activeTab
       render: (text) => <span className="text-slate-200">{dayjs(text).format('DD/MM/YYYY')}</span>,
     },
     {
-      title: 'Nhà cung cấp',
-      dataIndex: ['supplier', 'supplierName'], // Lấy từ object supplier trả về từ Backend
+      title: 'Xưởng cung cấp',
+      dataIndex:'supplierName',
       key: 'supplierName',
       render: (text) => <span className="text-slate-300 font-medium">{text}</span>,
     },
@@ -103,14 +105,18 @@ const ReceiptTable = ({ receipts, isLoading, onEdit, onDelete, onView, activeTab
 // ============================================================================
 // 2. COMPONENT MODAL (Tạo/Sửa Phiếu Nhập)
 // ============================================================================
-const ReceiptModal = ({ isOpen, onClose, form, onSubmit, isEditing, suppliers, products }) => (
+const ReceiptModal = ({ isOpen, onClose, form, onSubmit, isEditing, suppliers, products ,zones }) => (
   <Modal title={<span className="text-lg">{isEditing ? 'Sửa phiếu nhập' : 'Tạo phiếu nhập mới'}</span>} open={isOpen} onCancel={onClose} footer={null} className="dark-modal" width={800}>
     <Form form={form} layout="vertical" onFinish={onSubmit} className="mt-6">
       
+        <Form.Item name="receiptId" label={<span className="text-slate-300">Mã phiếu</span>}>
+          <Input placeholder="Tự động tạo..." className="bg-[#1E293B] border-slate-700 text-slate-500 py-2" disabled />
+        </Form.Item>
+
       <div className="grid grid-cols-2 gap-4">
         <Form.Item name="supplierId" label={<span className="text-slate-300">Nhà cung cấp / Xưởng</span>} rules={[{ required: true, message: 'Vui lòng chọn NCC' }]}>
           <Select placeholder="Chọn nhà cung cấp" className="h-[40px] custom-dark-select" showSearch optionFilterProp="children">
-            {suppliers.map(s => <Select.Option key={s.supplierId} value={s.supplierId}>{s.supplierName}</Select.Option>)}
+            {suppliers.map(s => <Select.Option key={s.supplierId || s.id} value={s.supplierId || s.id}>{s.supplierName || s.name}</Select.Option>)}
           </Select>
         </Form.Item>
 
@@ -132,8 +138,12 @@ const ReceiptModal = ({ isOpen, onClose, form, onSubmit, isEditing, suppliers, p
               <div key={key} className="flex gap-3 mb-3 items-start">
                 <Form.Item {...restField} name={[name, 'productId']} rules={[{ required: true, message: 'Chọn hàng' }]} className="flex-1 mb-0">
                   <Select placeholder="Chọn mặt hàng..." className="h-[40px] custom-dark-select" showSearch optionFilterProp="children">
-                    {/* Chú ý: Value cần khớp với product ID mà Backend chờ đợi (MaH) */}
-                    {products.map(p => <Select.Option key={p.id || p.code} value={p.id || p.code}>{p.name}</Select.Option>)}
+                    {products.map(p => <Select.Option key={p.productId || p.id} value={p.productId || p.id}>{p.productName || p.name}</Select.Option>)}
+                  </Select>
+                </Form.Item>
+                <Form.Item {...restField} name={[name, 'zoneId']} className="w-56 mb-0">
+                  <Select placeholder="Khu vực cất" className="h-[40px] custom-dark-select" showSearch optionFilterProp="children">
+                    {zones?.map(z => <Select.Option key={z.zoneId || z.id} value={z.zoneId || z.id}>{z.zoneName || z.name}</Select.Option>)}
                   </Select>
                 </Form.Item>
                 <Form.Item {...restField} name={[name, 'quantity']} rules={[{ required: true, message: 'Nhập SL' }]} className="w-28 mb-0">
@@ -182,9 +192,11 @@ export default function InboundReceipt() {
   const [selectedSupplierName, setSelectedSupplierName] = useState('Tất cả Xưởng (NCC)');
   const [openSuppliers, setOpenSuppliers] = useState(false);
 
+
   // Data phụ trợ
   const [suppliers, setSuppliers] = useState([]);
   const [products, setProducts] = useState([]);
+ const [zones, setZones] = useState([]);
 
   // State Modal & Drawer
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -196,9 +208,10 @@ export default function InboundReceipt() {
   useEffect(() => {
     const fetchSelectData = async () => {
       try {
-        const [supRes, prodRes] = await Promise.all([ axios.get(API_SUPPLIER_URL), axios.get(API_PRODUCT_URL) ]);
+        const [supRes, prodRes , zoneRes] = await Promise.all([ axios.get(API_SUPPLIER_URL), axios.get(API_PRODUCT_URL) , axios.get(API_ZONE_URL) ]);
         setSuppliers(supRes.data?.data || []);
         setProducts(prodRes.data?.data || []);
+        setZones(zoneRes.data?.data || []);
       } catch (error) { console.error("Lỗi data phụ:", error); }
     };
     fetchSelectData();
@@ -241,7 +254,7 @@ export default function InboundReceipt() {
         ...values, 
         receiptDate: values.receiptDate.format('YYYY-MM-DD'),
         status: 0 ,// Phiếu mới luôn là Nháp (0)
-        creatBy: currentUsername 
+        createBy: currentUsername 
       };
       
       if (editingId) {
@@ -385,7 +398,7 @@ export default function InboundReceipt() {
         />
         
         {/* MODAL */}
-        <ReceiptModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} form={form} onSubmit={handleSubmit} isEditing={!!editingId} suppliers={suppliers} products={products} />
+        <ReceiptModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} form={form} onSubmit={handleSubmit} isEditing={!!editingId} suppliers={suppliers} products={products} zones={zones} />
 
         {/* DRAWER CHI TIẾT PHIẾU NHẬP */}
         <Drawer
@@ -408,7 +421,7 @@ export default function InboundReceipt() {
                 </div>
                 <Divider className="border-slate-700 m-0 mb-4"/>
                 <div className="grid grid-cols-2 gap-4 text-sm">
-                   <p className="text-slate-400">Nhà cung cấp: <span className="text-white font-medium block">{viewingReceipt.supplier?.supplierName || '---'}</span></p>
+                   <p className="text-slate-400">Xưởng cung cấp: <span className="text-white font-medium block">{viewingReceipt.supplier?.supplierName || '---'}</span></p>
                    <p className="text-slate-400">Tổng giá trị: <span className="text-emerald-400 font-bold text-base block">{(viewingReceipt.totalAmount || 0).toLocaleString()} VND</span></p>
                 </div>
               </div>
@@ -416,8 +429,8 @@ export default function InboundReceipt() {
               <h4 className="text-lg font-semibold text-white mb-4">Danh sách hàng hóa</h4>
               <Table 
                 columns={[
-                  { title: 'Tên hàng', dataIndex: ['product', 'name'], key: 'name', render: text => <span className="text-slate-200">{text || '---'}</span> },
-                  { title: 'Khu vực cất', dataIndex: ['zone', 'zoneName'], key: 'zone', render: text => <Tag className="bg-slate-800 border-slate-600 text-slate-300">{text || 'Chưa chọn'}</Tag> },
+                  { title: 'Tên hàng', dataIndex:'productName', key: 'name', render: text => <span className="text-slate-200">{text || '---'}</span> },
+                  { title: 'Khu vực cất', dataIndex:'zoneName', key: 'zone', render: text => <Tag className="bg-slate-800 border-slate-600 text-slate-300">{text || 'Chưa chọn'}</Tag> },
                   { title: 'SL', dataIndex: 'quantity', key: 'qty', render: val => <span className="text-emerald-400 font-medium">{val}</span> },
                   { title: 'Đơn giá', dataIndex: 'price', key: 'price', render: val => <span className="text-slate-400">{(val || 0).toLocaleString()}</span> },
                   { title: 'Thành tiền', key: 'total', render: (_, record) => <span className="text-white font-medium">{(record.quantity * record.price).toLocaleString()}</span> },

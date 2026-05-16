@@ -24,6 +24,6 @@ public class ProductResponse {
     String categoryId;
     String categoryName;
 
-    List<MaterialResponse> materials;
+    List<MaterialNormResponse> materials;
 
 }

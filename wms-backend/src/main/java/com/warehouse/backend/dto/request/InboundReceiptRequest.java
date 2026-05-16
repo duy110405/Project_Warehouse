@@ -9,7 +9,7 @@ import java.util.List;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class InboundReceiptRequest {
     String supplierId;
-    String userId;
+    String createBy;
     Integer status;
     List<ReceiptDetailRequest> receiptDetails;
 }

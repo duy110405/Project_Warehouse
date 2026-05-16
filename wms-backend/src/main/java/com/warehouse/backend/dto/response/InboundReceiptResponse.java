@@ -11,8 +11,7 @@ import java.util.List;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class InboundReceiptResponse {
     String receiptId;
-    String userId;
-    String fullName;
+    String createBy;
     String supplierId;
     String supplierName;
     LocalDate receiptDate;

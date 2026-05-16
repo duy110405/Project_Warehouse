@@ -14,8 +14,7 @@ public interface InboundMapper {
     // entity sang respone
     @Mapping(target = "supplierId", source = "supplier.supplierId")
     @Mapping(target = "supplierName", source = "supplier.supplierName")
-    @Mapping(target = "userId", source = "user.userId")
-    @Mapping(target = "fullName", source = "user.fullName")
+    @Mapping(target = "createBy", source = "user.fullName")
     InboundReceiptResponse toInboundResponse(InboundReceipt inboundReceipt);
 
     // entity sang chi tiết response

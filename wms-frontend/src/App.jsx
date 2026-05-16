@@ -9,6 +9,7 @@ import Zone from './pages/Zone';
 import Material from './pages/Material';
 import Supply from './pages/SupplyPartner/SupplyManager';
 import MainLayout from './pages/MainLayout';
+import InboundProduct from './pages/InboundReceipt';
 
 
 
@@ -44,6 +45,7 @@ export default function App() {
                 <Route path="/zones" element={<Zone />} />
                 <Route path="/materials" element={<Material />} />
                 <Route path="/supply" element={<Supply />} />
+                <Route path="/inboundProduct" element={<InboundProduct />} />
               </Routes>
             </MainLayout>
           </ProtectedRoute>

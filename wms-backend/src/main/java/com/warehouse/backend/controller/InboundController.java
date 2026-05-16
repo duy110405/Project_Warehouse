@@ -19,11 +19,22 @@ public class InboundController {
     }
 
     @GetMapping
-    public ApiResponse<List<InboundReceiptResponse >> getAllInboundReceipt(){
+    public ApiResponse<List<InboundReceiptResponse>> getReceipts(
+            @RequestParam(required = false) Integer status,
+            @RequestParam(required = false) String search,
+            @RequestParam(required = false) String supplierId
+    ) {
+        // Xử lý chuỗi rỗng
+        String finalSearch = (search == null || search.trim().isEmpty()) ? null : search.trim();
+        String finalSupplier = (supplierId == null || supplierId.trim().isEmpty()) ? null : supplierId.trim();
+
+        // Gọi hàm search có lọc status
+        List<InboundReceiptResponse> data = inboundService.searchReceipts(status, finalSearch, finalSupplier);
+
         return ApiResponse.<List<InboundReceiptResponse>>builder()
                 .code(200)
-                .message("Lấy danh sách phiếu nhập thành công!")
-                .data(inboundService.getAllInboundReceipt())
+                .message("Lấy danh sách thành công")
+                .data(data)
                 .build();
     }
 
