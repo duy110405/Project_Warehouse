@@ -1,19 +1,12 @@
 package com.warehouse.backend.service.impl;
 
-import com.warehouse.backend.dto.request.InboundReceiptRequest;
 import com.warehouse.backend.dto.request.MaterialReceiptDetailRequest;
 import com.warehouse.backend.dto.request.MaterialReceiptRequest;
-import com.warehouse.backend.dto.request.ReceiptDetailRequest;
-import com.warehouse.backend.dto.response.InboundReceiptResponse;
-import com.warehouse.backend.dto.response.MaterialReceiptDetailResponse;
 import com.warehouse.backend.dto.response.MaterialReceiptResponse;
 import com.warehouse.backend.entity.danhmuc.*;
 import com.warehouse.backend.entity.hethong.User;
 import com.warehouse.backend.entity.nghiepvu.InboundMaterialReceipt;
-import com.warehouse.backend.entity.nghiepvu.InboundReceipt;
 import com.warehouse.backend.entity.nghiepvu.MaterialReceiptDetail;
-import com.warehouse.backend.entity.nghiepvu.ReceiptDetail;
-import com.warehouse.backend.mapper.InboundMapper;
 import com.warehouse.backend.mapper.MaterialReceiptMapper;
 import com.warehouse.backend.repository.*;
 import com.warehouse.backend.service.IMaterialReceiptService;
@@ -57,8 +50,9 @@ public class MaterialReceiptServiceImpl implements IMaterialReceiptService {
     }
 
     @Override
-    public List<MaterialReceiptResponse> getAllMaterialReceipt() {
-        return materialReceiptRepository.findAll().stream()
+    public List<MaterialReceiptResponse> searchReceipts(Integer status, String search, String vendorId) {
+        return materialReceiptRepository.searchInboundMaterialReceipts(status, search, vendorId)
+                .stream()
                 .map(materialReceiptMapper::toMaterialReceiptResponse)
                 .toList();
     }
@@ -81,8 +75,8 @@ public class MaterialReceiptServiceImpl implements IMaterialReceiptService {
         inboundMaterialReceipt.setMaterialReceiptDate(LocalDate.now());
 
         //Tìm User từ Database và gán vào Phiếu
-        User user = userRepository.findById(materialReceiptRequest.getUserId())
-                .orElseThrow(() -> new RuntimeException("User not found with ID: " + materialReceiptRequest.getUserId()));
+        User user = userRepository.findByUsername(materialReceiptRequest.getCreateBy())
+                .orElseThrow(() -> new RuntimeException("User not found with ID: " + materialReceiptRequest.getCreateBy()));
         inboundMaterialReceipt.setUser(user);
 
         // Tìm Xưởng và gán vào Phiếu
@@ -172,10 +166,13 @@ public class MaterialReceiptServiceImpl implements IMaterialReceiptService {
             // Cộng dồn kho
             int newQuantity = material.getQuantity() + detail.getQuantity();
             material.setQuantity(newQuantity);
+            System.out.println("Cập nhật Nguyên liệu: " + material.getMaterialName());
+            System.out.println("Số cũ: " + (newQuantity - detail.getQuantity()) + " | Số mới: " + material.getQuantity());
             int newCurrentLoad = zone.getCurrentLoad() + detail.getQuantity();
             zone.setCurrentLoad(newCurrentLoad);
             // Cập nhật Hàng xuống DB
             materialRepository.save(material);
+            zoneRepository.save(zone);
         }
         InboundMaterialReceipt savedInboundReceipt = materialReceiptRepository.save(inboundMaterialReceipt);
         return materialReceiptMapper.toMaterialReceiptResponse(savedInboundReceipt);

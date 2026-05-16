@@ -10,7 +10,7 @@ import java.util.List;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class MaterialReceiptRequest {
     String vendorId;
-    String userId;
+    String createBy;
     Integer status;
     List<MaterialReceiptDetailRequest> materialReceiptDetails;
 }

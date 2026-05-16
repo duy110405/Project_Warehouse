@@ -12,6 +12,7 @@ public class MaterialRequest {
     String materialImage;
     String materialName;
     String unit;
+    int quantity;
     BigDecimal price;
     String zoneId;
 }

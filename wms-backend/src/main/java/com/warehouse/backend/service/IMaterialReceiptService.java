@@ -7,7 +7,7 @@ import java.util.List;
 
 public interface IMaterialReceiptService {
     String generateNextMaterialReceiptId();
-    List<MaterialReceiptResponse> getAllMaterialReceipt();
+    List<MaterialReceiptResponse> searchReceipts(Integer status, String search, String vendorId);
     MaterialReceiptResponse getMaterialReceiptById(String materialReceiptId);
     MaterialReceiptResponse saveMaterialReceipt(MaterialReceiptRequest materialReceiptRequest);
     MaterialReceiptResponse approveMaterialReceipt(String materialReceiptId);

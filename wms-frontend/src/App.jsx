@@ -10,6 +10,7 @@ import Material from './pages/Material';
 import Supply from './pages/SupplyPartner/SupplyManager';
 import MainLayout from './pages/MainLayout';
 import InboundProduct from './pages/InboundReceipt';
+import InboundMaterial from './pages/MaterialReceipt';
 
 
 
@@ -46,6 +47,7 @@ export default function App() {
                 <Route path="/materials" element={<Material />} />
                 <Route path="/supply" element={<Supply />} />
                 <Route path="/inboundProduct" element={<InboundProduct />} />
+                <Route path="/inboundMaterial" element={<InboundMaterial />} />
               </Routes>
             </MainLayout>
           </ProtectedRoute>

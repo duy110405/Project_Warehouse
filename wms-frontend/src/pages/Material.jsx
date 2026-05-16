@@ -219,7 +219,8 @@ export default function Material() {
       });
       setMaterials(response.data.data || []);
     } catch (error) {
-      message.error("Lỗi khi tải dữ liệu nguyên liệu!",error);
+      console.log(error);
+      message.error("Lỗi khi tải dữ liệu nguyên liệu!");
     } finally {
       setIsLoading(false);
     }

@@ -1,4 +1,15 @@
-﻿USE QLyKhoHang;
+﻿
+USE QLyKhoHang;
+USE master;
+GO
+
+ALTER DATABASE QLyKhoHang
+SET SINGLE_USER
+WITH ROLLBACK IMMEDIATE;
+GO
+
+DROP DATABASE QLyKhoHang;
+GO
 
  --- Dữ liệu tĩnh -- 
 INSERT INTO QUYEN (IDQuyen, TenQuyen)

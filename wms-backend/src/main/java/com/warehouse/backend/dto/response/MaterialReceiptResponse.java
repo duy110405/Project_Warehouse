@@ -14,8 +14,7 @@ public class MaterialReceiptResponse {
     String materialReceiptId;
     String vendorId;
     String vendorName;
-    String userId;
-    String fullName;
+    String createBy;
     LocalDate materialReceiptDate;
     BigDecimal totalAmount;
     Integer status;

@@ -13,6 +13,7 @@ public class MaterialResponse {
     String materialImage;
     String materialName;
     String unit;
+    int quantity;
     BigDecimal price;
     String zoneId;
     String zoneName;

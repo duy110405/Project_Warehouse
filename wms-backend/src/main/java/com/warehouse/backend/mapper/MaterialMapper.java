@@ -15,6 +15,7 @@ public interface MaterialMapper {
     MaterialResponse toMaterialResponse(Material material);
 
     @Mapping(target = "zone" , ignore = true)
+    @Mapping(target = "quantity", ignore = true)
     Material toMaterialEntity(MaterialRequest materialRequest) ;
 
     void updateMaterialFromRequset(MaterialRequest materialRequest, @MappingTarget Material material);

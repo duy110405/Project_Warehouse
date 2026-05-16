@@ -5,14 +5,14 @@ import { Plus, Edit, Trash2, Search, Calendar, Eye, FileText, Settings2,
 import axios from 'axios';
 import dayjs from 'dayjs';
 
-const API_URL = 'http://localhost:8080/api/inbound'; 
-const API_SUPPLIER_URL = 'http://localhost:8080/api/supplier';
-const API_PRODUCT_URL = 'http://localhost:8080/api/product'; 
+const API_URL = 'http://localhost:8080/api/inbound-material'; 
+const API_VENDOR_URL = 'http://localhost:8080/api/vendor';
+const API_MATERIAL_URL = 'http://localhost:8080/api/material'; 
 const API_ZONE_URL =  'http://localhost:8080/api/zone';
 
 const { RangePicker } = DatePicker;
 
-// Component Menu Item dùng chung cho Dropdown lọc Xưởng
+// Component Menu Item dùng chung cho Dropdown lọc NCC
 const MenuItem = ({ icon, label, onClick }) => (
   <button onClick={onClick} className="w-full flex items-center gap-3 px-4 py-2 text-slate-400 hover:text-white hover:bg-slate-800/50 rounded-lg transition-all">
     {icon}
@@ -24,24 +24,24 @@ const MenuItem = ({ icon, label, onClick }) => (
 // ============================================================================
 // 1. COMPONENT BẢNG PHIẾU NHẬP
 // ============================================================================
-const ReceiptTable = ({ receipts, isLoading, onEdit, onDelete, onView, activeTab }) => {
+const ReceiptTable = ({ materialReceipts, isLoading, onEdit, onDelete, onView, activeTab }) => {
   const columns = [
     {
       title: 'Mã phiếu',
-      dataIndex: 'receiptId',
-      key: 'receiptId',
+      dataIndex: 'materialReceiptId',
+      key: 'materialReceiptId',
       render: (text) => <span className="font-semibold text-blue-400">{text}</span>,
     },
     {
       title: 'Ngày nhập',
-      dataIndex: 'receiptDate',
-      key: 'receiptDate',
+      dataIndex: 'materialReceiptDate',
+      key: 'materialReceiptDate',
       render: (text) => <span className="text-slate-200">{dayjs(text).format('DD/MM/YYYY')}</span>,
     },
     {
       title: 'Xưởng cung cấp',
-      dataIndex:'supplierName',
-      key: 'supplierName',
+      dataIndex:'vendorName',
+      key: 'vendorName',
       render: (text) => <span className="text-slate-300 font-medium">{text}</span>,
     },
     {
@@ -84,7 +84,7 @@ const ReceiptTable = ({ receipts, isLoading, onEdit, onDelete, onView, activeTab
               <button onClick={() => onEdit(record)} className="p-2 text-slate-400 hover:text-blue-400 hover:bg-blue-400/10 rounded-lg transition-colors">
                 <Edit size={18} />
               </button>
-              <Popconfirm title="Hủy phiếu nhập" description={`Bạn có chắc muốn hủy phiếu "${record.receiptId}"?`} onConfirm={() => onDelete(record.receiptId)} okText="Đồng ý" cancelText="Hủy" okButtonProps={{ danger: true }}>
+              <Popconfirm title="Hủy phiếu nhập" description={`Bạn có chắc muốn hủy phiếu "${record.materialReceiptId}"?`} onConfirm={() => onDelete(record.materialReceiptId)} okText="Đồng ý" cancelText="Hủy" okButtonProps={{ danger: true }}>
                 <button className="p-2 text-slate-400 hover:text-red-400 hover:bg-red-400/10 rounded-lg transition-colors">
                   <Trash2 size={18} />
                 </button>
@@ -98,7 +98,7 @@ const ReceiptTable = ({ receipts, isLoading, onEdit, onDelete, onView, activeTab
 
   return (
     <div className="bg-[#0F172A] border-x border-b border-slate-800 rounded-b-2xl overflow-hidden shadow-xl text-base">
-      <Table columns={columns} dataSource={receipts} loading={isLoading} rowKey="receiptId" pagination={{ pageSize: 6 }} className="custom-dark-table" />
+      <Table columns={columns} dataSource={materialReceipts} loading={isLoading} rowKey="materialReceiptId" pagination={{ pageSize: 6 }} className="custom-dark-table" />
     </div>
   );
 }
@@ -106,22 +106,26 @@ const ReceiptTable = ({ receipts, isLoading, onEdit, onDelete, onView, activeTab
 // ============================================================================
 // 2. COMPONENT MODAL (Tạo/Sửa Phiếu Nhập)
 // ============================================================================
-const ReceiptModal = ({ isOpen, onClose, form, onSubmit, isEditing, suppliers, products ,zones }) => (
+const ReceiptModal = ({ isOpen, onClose, form, onSubmit, isEditing, vendors, materials ,zones }) => (
   <Modal title={<span className="text-lg">{isEditing ? 'Sửa phiếu nhập' : 'Tạo phiếu nhập mới'}</span>} open={isOpen} onCancel={onClose} footer={null} className="dark-modal" width={800}>
     <Form form={form} layout="vertical" onFinish={onSubmit} className="mt-6">
       
-        <Form.Item name="receiptId" label={<span className="text-slate-300">Mã phiếu</span>}>
+        <Form.Item name="materialReceiptId" label={<span className="text-slate-300">Mã phiếu</span>}>
           <Input placeholder="Tự động tạo..." className="bg-[#1E293B] border-slate-700 text-slate-500 py-2" disabled />
         </Form.Item>
 
       <div className="grid grid-cols-2 gap-4">
-        <Form.Item name="supplierId" label={<span className="text-slate-300">Nhà cung cấp / Xưởng</span>} rules={[{ required: true, message: 'Vui lòng chọn NCC' }]}>
+        <Form.Item name="vendorId" label={<span className="text-slate-300">Nhà cung cấp / Xưởng</span>} rules={[{ required: true, message: 'Vui lòng chọn NCC' }]}>
           <Select placeholder="Chọn nhà cung cấp" className="h-[40px] custom-dark-select" showSearch optionFilterProp="children">
-            {suppliers.map(s => <Select.Option key={s.supplierId || s.id} value={s.supplierId || s.id}>{s.supplierName || s.name}</Select.Option>)}
+            {vendors.map(v => (
+                <Select.Option key={v.vendorId || v.id} value={v.vendorId || v.id}>
+                {v.vendorName || v.name}
+                </Select.Option>
+            ))}
           </Select>
         </Form.Item>
 
-        <Form.Item name="receiptDate" label={<span className="text-slate-300">Ngày nhập</span>} rules={[{ required: true }]}>
+        <Form.Item name="materialReceiptDate" label={<span className="text-slate-300">Ngày nhập</span>} rules={[{ required: true }]}>
           <DatePicker className="w-full bg-[#1E293B] border-slate-700 text-white h-[40px]" format="DD/MM/YYYY" />
         </Form.Item>
       </div>
@@ -129,17 +133,17 @@ const ReceiptModal = ({ isOpen, onClose, form, onSubmit, isEditing, suppliers, p
       <Divider className="border-slate-700 my-4" />
       <div className="flex items-center gap-2 mb-4">
          <Settings2 size={18} className="text-blue-400"/>
-         <h4 className="text-slate-200 font-semibold">Danh sách hàng nhập</h4>
+         <h4 className="text-slate-200 font-semibold">Danh sách nguyên liệu nhập</h4>
       </div>
 
-      <Form.List name="receiptDetails">
+      <Form.List name="materialReceiptDetails">
         {(fields, { add, remove }) => (
           <>
             {fields.map(({ key, name, ...restField }) => (
               <div key={key} className="flex gap-3 mb-3 items-start">
-                <Form.Item {...restField} name={[name, 'productId']} rules={[{ required: true, message: 'Chọn hàng' }]} className="flex-1 mb-0">
-                  <Select placeholder="Chọn mặt hàng..." className="h-[40px] custom-dark-select" showSearch optionFilterProp="children">
-                    {products.map(p => <Select.Option key={p.productId || p.id} value={p.productId || p.id}>{p.productName || p.name}</Select.Option>)}
+                <Form.Item {...restField} name={[name, 'materialId']} rules={[{ required: true, message: 'Chọn nguyên liệu' }]} className="flex-1 mb-0">
+                  <Select placeholder="Chọn nguyên liệu..." className="h-[40px] custom-dark-select" showSearch optionFilterProp="children">
+                    {materials.map(m => <Select.Option key={m.materialId || m.id} value={m.materialId || m.id}>{m.materialName || m.name}</Select.Option>)}
                   </Select>
                 </Form.Item>
                 <Form.Item {...restField} name={[name, 'zoneId']} className="w-56 mb-0">
@@ -183,20 +187,20 @@ export default function InboundReceipt() {
   
   // State quản lý luồng dữ liệu
   const [activeTab, setActiveTab] = useState(0); // 0 = Chưa duyệt, 1 = Đã duyệt , -1 = đã hủy
-  const [receipts, setReceipts] = useState([]);
+  const [materialReceipts, setMaterialReceipts] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   
   // State Filters
   const [searchTerm, setSearchTerm] = useState('');
   const [dateRange, setDateRange] = useState(null);
-  const [selectedSupplierId, setSelectedSupplierId] = useState(null);
-  const [selectedSupplierName, setSelectedSupplierName] = useState('Tất cả Xưởng (NCC)');
-  const [openSuppliers, setOpenSuppliers] = useState(false);
+  const [selectedvendorId, setSelectedvendorId] = useState(null);
+  const [selectedvendorName, setSelectedvendorName] = useState('Tất cả nhà cung cấp ');
+  const [openvendors, setOpenvendors] = useState(false);
 
 
   // Data phụ trợ
-  const [suppliers, setSuppliers] = useState([]);
-  const [products, setProducts] = useState([]);
+  const [vendors, setvendors] = useState([]);
+  const [materials, setMaterials] = useState([]);
  const [zones, setZones] = useState([]);
 
   // State Modal & Drawer
@@ -209,9 +213,9 @@ export default function InboundReceipt() {
   useEffect(() => {
     const fetchSelectData = async () => {
       try {
-        const [supRes, prodRes , zoneRes] = await Promise.all([ axios.get(API_SUPPLIER_URL), axios.get(API_PRODUCT_URL) , axios.get(API_ZONE_URL) ]);
-        setSuppliers(supRes.data?.data || []);
-        setProducts(prodRes.data?.data || []);
+        const [venRes, mateRes , zoneRes] = await Promise.all([ axios.get(API_VENDOR_URL), axios.get(API_MATERIAL_URL) , axios.get(API_ZONE_URL) ]);
+        setvendors(venRes.data?.data || []);
+        setMaterials(mateRes.data?.data || []);
         setZones(zoneRes.data?.data || []);
       } catch (error) { console.error("Lỗi data phụ:", error); }
     };
@@ -225,7 +229,7 @@ export default function InboundReceipt() {
       const params = { 
         status: activeTab, // Filter theo tab (0 hoặc 1)
         search: searchTerm || null,
-        supplierId: selectedSupplierId || null
+        vendorId: selectedvendorId || null
       };
       
       // Định dạng ngày nếu có chọn
@@ -235,7 +239,7 @@ export default function InboundReceipt() {
       }
 
       const response = await axios.get(API_URL, { params });
-      setReceipts(response.data?.data || []);
+      setMaterialReceipts(response.data?.data || []);
     } catch (error) {
       console.log(error);
       message.error("Lỗi khi tải danh sách phiếu nhập!");
@@ -246,7 +250,7 @@ export default function InboundReceipt() {
 
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
-     fetchReceipts(); }, [activeTab, searchTerm, dateRange, selectedSupplierId]);
+     fetchReceipts(); }, [activeTab, searchTerm, dateRange, selectedvendorId]);
 
   // Các hàm CRUD
   const handleSubmit = async (values) => {
@@ -254,7 +258,7 @@ export default function InboundReceipt() {
       const currentUsername = localStorage.getItem('username')
       const payload = { 
         ...values, 
-        receiptDate: values.receiptDate.format('YYYY-MM-DD'),
+        materialReceiptDate: values.materialReceiptDate.format('YYYY-MM-DD'),
         status: 0 ,// Phiếu mới luôn là Nháp (0)
         createBy: currentUsername 
       };
@@ -293,19 +297,19 @@ export default function InboundReceipt() {
   };
 
   // Mở Form sửa
-  const handleOpenModal = (receipt = null) => {
-    if (receipt) {
-      setEditingId(receipt.receiptId);
-      // Backend trả về `supplier` là object, cần map lại để select hiện đúng ID
+  const handleOpenModal = (materialReceipt = null) => {
+    if (materialReceipt) {
+      setEditingId(materialReceipt.materialReceiptId);
+      // Backend trả về `vendor` là object, cần map lại để select hiện đúng ID
       form.setFieldsValue({ 
-        ...receipt, 
-        receiptDate: dayjs(receipt.receiptDate),
-        supplierId: receipt.supplier?.supplierId 
+        ...materialReceipt, 
+        materialReceiptDate: dayjs(materialReceipt.materialReceiptDate),
+        vendorId: materialReceipt.vendor?.vendorId 
       }); 
     } else {
       setEditingId(null);
       form.resetFields();
-      form.setFieldsValue({ receiptDate: dayjs() });
+      form.setFieldsValue({ materialReceiptDate: dayjs() });
     }
     setIsModalOpen(true);
   };
@@ -317,8 +321,8 @@ export default function InboundReceipt() {
         {/* HEADER */}
         <div className="flex items-center justify-between mb-6">
           <div>
-            <h2 className="text-2xl font-bold text-white tracking-wide">Quản lý nhập kho thành phẩm</h2>
-            <p className="text-slate-400 text-sm mt-1">Xử lý chứng từ và duyệt phiếu nhập sản phẩm</p>
+            <h2 className="text-2xl font-bold text-white tracking-wide">Quản lý nhập kho nguyên liệu</h2>
+            <p className="text-slate-400 text-sm mt-1">Xử lý chứng từ và duyệt phiếu nhập nguyên liệu</p>
           </div>
           <button onClick={() => handleOpenModal()} className="flex items-center gap-2 bg-blue-600 hover:bg-blue-500 text-white px-5 py-2.5 rounded-xl transition-all shadow-[0_0_15px_rgba(37,99,235,0.3)] font-medium">
             <Plus size={18} /> Tạo phiếu nhập
@@ -370,18 +374,18 @@ export default function InboundReceipt() {
 
           {/* Lọc theo Xưởng (Nhà cung cấp) */}
           <div className="w-64 h-14 bg-[#1E293B] border border-slate-700 rounded-xl relative shadow-sm hover:border-slate-500 transition-colors">
-            <button onClick={() => setOpenSuppliers(!openSuppliers)} className="w-full h-full flex items-center justify-between px-4 text-slate-300">
+            <button onClick={() => setOpenvendors(!openvendors)} className="w-full h-full flex items-center justify-between px-4 text-slate-300">
               <div className="flex items-center gap-2">
                 <Truck size={16} className="text-emerald-400" />
-                <span className="text-sm font-medium truncate">{selectedSupplierName}</span>
+                <span className="text-sm font-medium truncate">{selectedvendorName}</span>
               </div>
-              {openSuppliers ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
+              {openvendors ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
             </button>
-            {openSuppliers && (
+            {openvendors && (
               <div className="absolute top-full right-0 mt-2 w-full bg-[#1E293B] border border-slate-600 rounded-xl p-2 shadow-2xl z-20 max-h-60 overflow-y-auto">
-                <MenuItem icon={<Truck size={18} />} label="Tất cả Xưởng (NCC)" onClick={() => { setSelectedSupplierId(null); setSelectedSupplierName('Tất cả Xưởng (NCC)'); setOpenSuppliers(false); }} />
-                {suppliers.map(s => (
-                  <MenuItem key={s.supplierId} icon={<Truck size={18} />} label={s.supplierName} onClick={() => { setSelectedSupplierId(s.supplierId); setSelectedSupplierName(s.supplierName); setOpenSuppliers(false); }} />
+                <MenuItem icon={<Truck size={18} />} label="Tất cả nhà cung cấp" onClick={() => { setSelectedvendorId(null); setSelectedvendorName('Tất cả  (NCC)'); setOpenvendors(false); }} />
+                {vendors.map(s => (
+                  <MenuItem key={s.vendorId} icon={<Truck size={18} />} label={s.vendorName} onClick={() => { setSelectedvendorId(s.vendorId); setSelectedvendorName(s.vendorName); setOpenvendors(false); }} />
                 ))}
               </div>
             )}
@@ -401,7 +405,7 @@ export default function InboundReceipt() {
 
         {/* BẢNG DỮ LIỆU */}
         <ReceiptTable 
-          receipts={receipts} 
+          materialReceipts={materialReceipts} 
           isLoading={isLoading} 
           activeTab={activeTab} // Truyền activeTab xuống Bảng để ẩn/hiện nút Edit
           onEdit={handleOpenModal} 
@@ -410,7 +414,7 @@ export default function InboundReceipt() {
         />
         
         {/* MODAL */}
-        <ReceiptModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} form={form} onSubmit={handleSubmit} isEditing={!!editingId} suppliers={suppliers} products={products} zones={zones} />
+        <ReceiptModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} form={form} onSubmit={handleSubmit} isEditing={!!editingId} vendors={vendors} materials={materials} zones={zones} />
 
         {/* DRAWER CHI TIẾT PHIẾU NHẬP */}
         <Drawer
@@ -424,8 +428,8 @@ export default function InboundReceipt() {
               <div className="bg-[#0F172A] p-5 rounded-xl border border-slate-800 mb-6">
                 <div className="flex justify-between items-start mb-4">
                    <div>
-                     <h3 className="text-xl font-bold text-white mb-1">Mã: {viewingReceipt.receiptId}</h3>
-                     <p className="text-slate-400">Ngày nhập: {dayjs(viewingReceipt.receiptDate).format('DD/MM/YYYY')}</p>
+                     <h3 className="text-xl font-bold text-white mb-1">Mã: {viewingReceipt.materialReceiptId}</h3>
+                     <p className="text-slate-400">Ngày nhập: {dayjs(viewingReceipt.materialReceiptDate).format('DD/MM/YYYY')}</p>
                    </div>
                    <Tag color={viewingReceipt.status === 1 ? 'success' : viewingReceipt.status === -1 ? 'error' : 'default'}
                    className="text-sm px-3 py-1">
@@ -434,7 +438,7 @@ export default function InboundReceipt() {
                 </div>
                 <Divider className="border-slate-700 m-0 mb-4"/>
                 <div className="grid grid-cols-2 gap-4 text-sm">
-                   <p className="text-slate-400">Xưởng cung cấp: <span className="text-white font-medium block">{viewingReceipt.supplier?.supplierName || '---'}</span></p>
+                   <p className="text-slate-400">Nhà cung cấp: <span className="text-white font-medium block">{viewingReceipt.vendor?.vendorName || '---'}</span></p>
                    <p className="text-slate-400">Tổng giá trị: <span className="text-emerald-400 font-bold text-base block">{(viewingReceipt.totalAmount || 0).toLocaleString()} VND</span></p>
                 </div>
               </div>
@@ -442,13 +446,13 @@ export default function InboundReceipt() {
               <h4 className="text-lg font-semibold text-white mb-4">Danh sách hàng hóa</h4>
               <Table 
                 columns={[
-                  { title: 'Tên hàng', dataIndex:'productName', key: 'name', render: text => <span className="text-slate-200">{text || '---'}</span> },
+                  { title: 'Tên nguyên liệu', dataIndex:'materialName', key: 'name', render: text => <span className="text-slate-200">{text || '---'}</span> },
                   { title: 'Khu vực cất', dataIndex:'zoneName', key: 'zone', render: text => <Tag className="bg-slate-800 border-slate-600 text-slate-300">{text || 'Chưa chọn'}</Tag> },
                   { title: 'SL', dataIndex: 'quantity', key: 'qty', render: val => <span className="text-emerald-400 font-medium">{val}</span> },
                   { title: 'Đơn giá', dataIndex: 'price', key: 'price', render: val => <span className="text-slate-400">{(val || 0).toLocaleString()}</span> },
                   { title: 'Thành tiền', key: 'total', render: (_, record) => <span className="text-white font-medium">{(record.quantity * record.price).toLocaleString()}</span> },
                 ]} 
-                dataSource={viewingReceipt.receiptDetails || []} 
+                dataSource={viewingReceipt.materialReceiptDetails || []} 
                 rowKey={(record, index) => record.id || index} pagination={false} size="small" className="custom-dark-table border border-slate-800 rounded-xl overflow-hidden"
               />
 
@@ -456,7 +460,7 @@ export default function InboundReceipt() {
               {viewingReceipt.status === 0 && (
                 <div className="mt-auto pt-6">
                    <Button 
-                     onClick={() => handleApprove(viewingReceipt.receiptId)}
+                     onClick={() => handleApprove(viewingReceipt.materialReceiptId)}
                      type="primary" block className="bg-emerald-600 hover:bg-emerald-500 border-none h-[45px] text-base font-medium"
                    >
                      Duyệt phiếu nhập kho

@@ -17,8 +17,7 @@ public interface MaterialReceiptMapper {
 
     @Mapping(target = "vendorId", source = "vendor.vendorId")
     @Mapping(target = "vendorName", source = "vendor.vendorName")
-    @Mapping(target = "userId", source = "user.userId")
-    @Mapping(target = "fullName", source = "user.fullName")
+    @Mapping(target = "createBy", source = "user.fullName")
     MaterialReceiptResponse toMaterialReceiptResponse(InboundMaterialReceipt materialReceipt);
 
     @Mapping(target = "materialId", source = "material.materialId")
