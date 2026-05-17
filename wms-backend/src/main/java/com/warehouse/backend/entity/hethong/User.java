@@ -11,10 +11,10 @@ public class User {
     @Column(name = "IDND", length = 20)
     private String userId;
 
-    @Column(name = "TenND", nullable = false, length = 100)
+    @Column(name = "TenND", nullable = false, columnDefinition = "NVARCHAR(100)")
     private String fullName;
 
-    @Column(name = "SDT", nullable = false, length = 15)
+    @Column(name = "SDT", nullable = false, columnDefinition = "NVARCHAR(15)")
     private String phoneNumber;
 
     @Column(name = "TenDN", nullable = false, length = 50, unique = true) // Thêm unique = true vì tên đăng nhập không được trùng
@@ -23,7 +23,7 @@ public class User {
     @Column(name = "MatKhau", nullable = false, length = 255)
     private String password;
 
-    @Column(name = "ChucVu", nullable = false, length = 50)
+    @Column(name = "ChucVu", nullable = false, columnDefinition = "NVARCHAR(50)")
     private String position; // (Hoặc dùng jobTitle)
     @ManyToOne
     @JoinColumn(name = "IDQuyen" , referencedColumnName = "IDQuyen" , columnDefinition = "varchar(20)")

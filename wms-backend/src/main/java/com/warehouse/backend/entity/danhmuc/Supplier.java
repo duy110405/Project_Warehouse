@@ -7,13 +7,13 @@ import lombok.Data;
 @Data
 public class Supplier {
     @Id
-    @Column(name = "MaXuong", length = 20)
+    @Column(name = "MaXuong", columnDefinition = "NVARCHAR(20)")
     private String supplierId;
 
-    @Column(name = "TenXuong", nullable = false, length = 100)
+    @Column(name = "TenXuong", nullable = false, columnDefinition = "NVARCHAR(100)")
     private String supplierName;
 
-    @Column(name = "LoaiXuong", length = 50)
+    @Column(name = "LoaiXuong", columnDefinition = "NVARCHAR(100)")
     String type;
 
     @Column(name = "TrangThai")

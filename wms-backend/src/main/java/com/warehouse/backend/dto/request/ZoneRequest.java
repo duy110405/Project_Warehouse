@@ -7,7 +7,7 @@ import lombok.experimental.FieldDefaults;
 @Data
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class ZoneRequest {
-    String zoneId;
+    String zoneName;
     Integer currentLoad;
     Integer capacity;
     Integer zoneType;

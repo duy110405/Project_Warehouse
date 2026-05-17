@@ -17,16 +17,16 @@ import java.math.BigDecimal;
 
 public class Material {
     @Id
-    @Column(name = "MaNL", length = 20)
+    @Column(name = "MaNL", columnDefinition = "NVARCHAR(20)")
     private String materialId;
 
-    @Column(name = "anhNL" , length = 255)
+    @Column(name = "anhNL" , columnDefinition = "NVARCHAR(255)")
     private String materialImage;
 
-    @Column(name = "TenNL", nullable = false, length = 100)
+    @Column(name = "TenNL", nullable = false, columnDefinition = "NVARCHAR(100)")
     private String materialName;
 
-    @Column(name = "DVT", length = 20)
+    @Column(name = "DVT", columnDefinition = "NVARCHAR(20)")
     private String unit;
 
     @Column(name = "Gia")

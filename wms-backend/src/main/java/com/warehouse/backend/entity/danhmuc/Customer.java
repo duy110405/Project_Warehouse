@@ -14,18 +14,18 @@ import lombok.experimental.FieldDefaults;
 @Getter
 public class Customer {
     @Id
-    @Column(name = "MaKH", length = 20)
+    @Column(name = "MaKH", columnDefinition = "NVARCHAR(20)")
     private String customerId;
 
-    @Column(name = "TenKH", nullable = false, length = 100)
+    @Column(name = "TenKH", nullable = false, columnDefinition = "NVARCHAR(100)")
     private String customerName;
 
-    @Column(name = "DiaChi", length = 255)
+    @Column(name = "DiaChi", columnDefinition = "NVARCHAR(255)")
     private String address;
 
-    @Column(name = "Sdt", length = 15)
+    @Column(name = "Sdt", columnDefinition = "NVARCHAR(15)")
     private String phoneNumber;
 
-    @Column(name = "Stk", length = 255)
+    @Column(name = "Stk", columnDefinition = "NVARCHAR(255)")
     private String bankAccountNumber;
 }

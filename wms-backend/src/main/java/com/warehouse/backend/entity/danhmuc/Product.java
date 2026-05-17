@@ -17,13 +17,13 @@ import java.util.List;
 public class Product {
 
     @Id
-    @Column(name = "MaH", length = 20)
+    @Column(name = "MaH", columnDefinition = "NVARCHAR(20)")
     String productId;
 
-    @Column (name = "anhHang" , length = 255)
+    @Column (name = "anhHang" , columnDefinition = "NVARCHAR(255)")
     String productImage;
 
-    @Column(name = "TenH", nullable = false, length = 100)
+    @Column(name = "TenH", nullable = false, columnDefinition = "NVARCHAR(100)")
     String productName;
 
     @Column(name = "SoLg")

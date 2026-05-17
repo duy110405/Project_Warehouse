@@ -16,10 +16,10 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class Zone {
     @Id
-    @Column(name = "MaKhu", length = 20)
+    @Column(name = "MaKhu",columnDefinition = "NVARCHAR(20)")
     String zoneId;
 
-    @Column(name = "TenKhu", nullable = false, length = 100)
+    @Column(name = "TenKhu", nullable = false, columnDefinition = "NVARCHAR(100)")
     String zoneName;
 
     @Column(name = "SoLuongHienTai", nullable = false, length = 100)

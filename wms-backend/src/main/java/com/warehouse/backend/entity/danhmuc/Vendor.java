@@ -16,10 +16,10 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class Vendor {
     @Id
-    @Column(name = "MaNCC", length = 20)
+    @Column(name = "MaNCC", columnDefinition = "NVARCHAR(20)")
     private String vendorId;
 
-    @Column(name = "TenNCC", nullable = false, length = 100)
+    @Column(name = "TenNCC", nullable = false, columnDefinition = "NVARCHAR(100)")
     private String vendorName;
 
     @Column(name = "SoDienThoai", length = 15)
@@ -28,10 +28,10 @@ public class Vendor {
     @Column(name = "Email", length = 100)
     String email;
 
-    @Column(name = "DiaChi", length = 255)
+    @Column(name = "DiaChi", columnDefinition = "NVARCHAR(255)")
     String address;
 
-    @Column(name = "LoaiNCC", length = 50)
+    @Column(name = "LoaiNCC", columnDefinition = "NVARCHAR(50)")
     String type;
 
     @Column(name = "TrangThai")

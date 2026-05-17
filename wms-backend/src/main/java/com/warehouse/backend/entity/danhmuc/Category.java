@@ -12,9 +12,9 @@ import lombok.Data;
 public class Category {
 
     @Id
-    @Column(name = "MaLH", length = 20)
+    @Column(name = "MaLH", columnDefinition = "NVARCHAR(20)")
     private String categoryId;
 
-    @Column(name = "TenLH", nullable = false, length = 100)
+    @Column(name = "TenLH", nullable = false, columnDefinition = "NVARCHAR(100)")
     private String categoryName;
 }

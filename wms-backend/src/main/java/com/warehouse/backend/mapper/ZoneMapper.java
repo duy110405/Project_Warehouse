@@ -4,6 +4,7 @@ import com.warehouse.backend.dto.request.ZoneRequest;
 import com.warehouse.backend.dto.response.ZoneRespone;
 import com.warehouse.backend.entity.danhmuc.Zone;
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 
 @Mapper(componentModel = "spring")
 public interface ZoneMapper {
@@ -15,5 +16,6 @@ public interface ZoneMapper {
     Zone toZoneEntity (ZoneRequest zoneRequest);
 
     // Ham update
+    @Mapping(target = "currentLoad", ignore = true)
     void updateFromRequest(ZoneRequest zoneRequest, @org.mapstruct.MappingTarget Zone zone);
 }

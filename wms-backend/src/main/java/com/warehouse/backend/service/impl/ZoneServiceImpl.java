@@ -51,6 +51,7 @@ public class ZoneServiceImpl implements IZoneService {
     public ZoneRespone saveZone (ZoneRequest zoneRequest){
         Zone zone = zoneMapper.toZoneEntity(zoneRequest);
         zone.setZoneId(generateNextZoneId());
+        zone.setCurrentLoad(0);
         Zone savedZone = zoneRepository.save(zone);
         return zoneMapper.toZoneRespone(savedZone);
     }

@@ -15,10 +15,10 @@ import lombok.Setter;
 @Setter
 public class Role {
     @Id
-    @Column(name = "IDQuyen", length = 20)
+    @Column(name = "IDQuyen", columnDefinition = "NVARCHAR(20)")
     private String roleId;
 
-    @Column(name = "TenQuyen", nullable = false, length = 100)
+    @Column(name = "TenQuyen", nullable = false, columnDefinition = "NVARCHAR(100)")
     private String roleName;
 
 }
