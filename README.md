@@ -22,6 +22,7 @@
 ## 3. Quản lý tài khoản người dùng và quản lý khách hàng
 > ADMIN có thể cấp tài khoản cho người dùng 
  ![Màn hình nguyên liệu](./images/user.png)
+
 > Quản lý lưu thông tin khách hàng 
  ![Màn hình nguyên liệu](./images/customer.png)
 
