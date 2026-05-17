@@ -7,7 +7,7 @@ import java.util.List;
 
 public interface IMaterialIssueService {
     String generateNextMaterialIssueId();
-    List<MaterialIssueResponse> getAllMaterialIssues();
+    List<MaterialIssueResponse> getMaterialIssues(Integer status ,String search, String supplierId);
     MaterialIssueResponse getMaterialIssueById(String materialIssueId);
     MaterialIssueResponse saveMaterialIssue(MaterialIssueRequest materialIssueRequest);
     MaterialIssueResponse approveMaterialIssue(String materialIssueId);

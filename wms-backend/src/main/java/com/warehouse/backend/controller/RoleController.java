@@ -27,7 +27,7 @@ public class RoleController {
                 .build();
     }
 
-    @GetMapping("/{groupId}")
+    @GetMapping("/{roleId}")
     public ApiResponse<RoleResponse> getRoleById(@PathVariable String groupId) {
         return ApiResponse.<RoleResponse>builder()
                 .code(200)
@@ -45,7 +45,7 @@ public class RoleController {
                 .build();
     }
 
-    @PutMapping("/{groupId}")
+    @PutMapping("/{roleId}")
     public ApiResponse<RoleResponse> updateRole(
             @PathVariable String groupId,
             @Valid @RequestBody RoleRequest roleRequest) {
@@ -56,7 +56,7 @@ public class RoleController {
                 .build();
     }
 
-    @DeleteMapping("/{groupId}")
+    @DeleteMapping("/{roleId}")
     public ApiResponse<Void> deleteRole(@PathVariable String groupId) {
         roleService.deleteRole(groupId);
         return ApiResponse.<Void>builder()

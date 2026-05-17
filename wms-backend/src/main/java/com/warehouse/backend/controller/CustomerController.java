@@ -41,6 +41,7 @@ public class CustomerController {
 
     @PostMapping
     public ApiResponse<CustomerResponse> createCustomer(@Valid @RequestBody CustomerRequest customerRequest) {
+        System.out.println(" Spring Boot nhận được tên KH là: " + customerRequest.getCustomerName());
         return ApiResponse.<CustomerResponse>builder()
                 .code(201)
                 .message("Thêm khách hàng thành công!")

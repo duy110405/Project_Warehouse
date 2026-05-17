@@ -19,11 +19,14 @@ public class OutboundController {
     }
 
     @GetMapping
-    public ApiResponse<List<OutboundIssueResponse>> getAllOutboundIssues(){
+    public ApiResponse<List<OutboundIssueResponse>> getOutboundIssues(@RequestParam(required = false) Integer status,
+                                                                         @RequestParam (required = false) String search){
+        String finalSearch = (search == null || search.trim().isEmpty()) ? null : search.trim();
+        List<OutboundIssueResponse> data = outboundService.getOutboundIssuess(status , finalSearch);
         return ApiResponse.<List<OutboundIssueResponse>>builder()
                 .code(200)
                 .message("Lấy danh sách phiếu xuất thành công!")
-                .data(outboundService.getAllOutboundIssues())
+                .data(data)
                 .build();
     }
 

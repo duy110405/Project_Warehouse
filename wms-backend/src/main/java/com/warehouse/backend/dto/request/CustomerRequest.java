@@ -7,8 +7,8 @@ import lombok.experimental.FieldDefaults;
 @Data
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class CustomerRequest {
-    String tenkh;
-    String diachi;
-    String sdt;
-    String stk;
+    String customerName;
+    String address;
+    String phoneNumber;
+    String bankAccountNumber;
 }

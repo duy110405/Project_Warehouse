@@ -15,8 +15,7 @@ import java.util.List;
 @Mapper(componentModel = "spring")
 public interface OutboundMapper {
     // entity sang response
-    @Mapping(target = "userId", source = "user.userId")
-    @Mapping(target = "fullName", source = "user.fullName")
+    @Mapping(target = "createBy", source = "user.fullName")
     @Mapping(target = "invoiceIds", source = "invoices")
     OutboundIssueResponse toOutboundIssueResponse(OutboundIssue outboundIssue);
 

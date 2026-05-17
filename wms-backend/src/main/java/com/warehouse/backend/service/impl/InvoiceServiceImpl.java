@@ -48,11 +48,18 @@ public class InvoiceServiceImpl implements IInvoiceService {
         int nextNumber = Integer.parseInt(maxId.substring(2)) + 1;
         return String.format("HD%03d", nextNumber);
     }
-    // Hàm Laays hóa đơn
+//    // Hàm Laays hóa đơn
+//    @Override
+//    public List<InvoiceResponse> getAllInvoice(){
+//        return invoiceRepository.findAll()
+//                .stream().map(invoiceMapper::toInvoiceResponse).toList();
+//    }
+
     @Override
-    public List<InvoiceResponse> getAllInvoice(){
-        return invoiceRepository.findAll()
+    public List<InvoiceResponse> getInvoices(Integer status, String search, String customerId){
+        return invoiceRepository.searchInvoice(status , search , customerId)
                 .stream().map(invoiceMapper::toInvoiceResponse).toList();
+
     }
 
     @Override
@@ -73,8 +80,8 @@ public class InvoiceServiceImpl implements IInvoiceService {
         invoice.setInvoiceDate(LocalDate.now());
 
         // lấy id user
-        User user = userRepository.findById(invoiceRequest.getUserId())
-                .orElseThrow(() -> new RuntimeException("Không tìm thấy người dùng với id : " + invoiceRequest.getUserId()));
+        User user = userRepository.findByUsername(invoiceRequest.getCreateBy())
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy người dùng với id : " + invoiceRequest.getCreateBy()));
         invoice.setUser(user);
 
         // lấy khách hàng

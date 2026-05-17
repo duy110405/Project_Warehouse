@@ -61,8 +61,8 @@ public class MaterialIssueServiceImpl implements IMaterialIssueService {
     }
 
     @Override
-    public List<MaterialIssueResponse> getAllMaterialIssues() {
-        return materialIssueRepository.findAll()
+    public List<MaterialIssueResponse> getMaterialIssues(Integer status , String search,  String supplierId) {
+        return materialIssueRepository.searchoutboundMaterialIssues(status , search , supplierId)
                 .stream()
                 .map(materialIssueMapper::toMaterialIssueResponse)
                 .toList();
@@ -93,8 +93,8 @@ public class MaterialIssueServiceImpl implements IMaterialIssueService {
         materialIssue.setStatus(0);
 
         // 4. Tìm User (Người lập)
-        User user = userRepository.findById(materialIssueRequest.getUserId())
-                .orElseThrow(() -> new RuntimeException("Không tìm thấy người dùng với ID: " + materialIssueRequest.getUserId()));
+        User user = userRepository.findByUsername(materialIssueRequest.getCreateBy())
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy người dùng với ID: " + materialIssueRequest.getCreateBy()));
         materialIssue.setUser(user);
 
         // 5. Tìm Supplier (Đại diện Xưởng)
@@ -238,9 +238,9 @@ public class MaterialIssueServiceImpl implements IMaterialIssueService {
         materialIssueMapper.updateFromRequest(materialIssueRequest, existingMaterialIssue);
 
         // 4. Cập nhật User nếu khác
-        if (materialIssueRequest.getUserId() != null) {
-            User user = userRepository.findById(materialIssueRequest.getUserId())
-                    .orElseThrow(() -> new RuntimeException("Không tìm thấy người dùng với ID: " + materialIssueRequest.getUserId()));
+        if (materialIssueRequest.getCreateBy() != null) {
+            User user = userRepository.findByUsername(materialIssueRequest.getCreateBy())
+                    .orElseThrow(() -> new RuntimeException("Không tìm thấy người dùng với ID: " + materialIssueRequest.getCreateBy()));
             existingMaterialIssue.setUser(user);
         }
 

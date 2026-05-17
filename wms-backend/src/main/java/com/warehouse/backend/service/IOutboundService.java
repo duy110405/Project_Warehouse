@@ -8,7 +8,8 @@ import java.util.List;
 
 public interface IOutboundService {
     String generateNextIssueId();
-    List<OutboundIssueResponse> getAllOutboundIssues();
+//    List<OutboundIssueResponse> getAllOutboundIssues();
+    List<OutboundIssueResponse> getOutboundIssuess(Integer status, String search);
     OutboundIssueResponse getOutBoundById(String issueId);
     OutboundIssueResponse saveOutBound(OutboundIssueRequest outboundIssueRequest);
     OutboundIssueResponse approveOutBound(String issueId);

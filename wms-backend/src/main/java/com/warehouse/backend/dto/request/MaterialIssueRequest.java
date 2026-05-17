@@ -11,7 +11,7 @@ import java.util.List;
 @Data
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class MaterialIssueRequest {
-    String userId;
+    String createBy;
     LocalDate materialIssueDate;
     Integer status;
     String supplierId;

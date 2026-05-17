@@ -4,6 +4,7 @@ import lombok.AccessLevel;
 import lombok.Data;
 import lombok.experimental.FieldDefaults;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -11,9 +12,10 @@ import java.util.List;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class OutboundIssueResponse {
     String issueId;
-    String userId;
-    String fullName;
+    String createBy;
     LocalDate issueDate;
+    Integer status;
+    BigDecimal totalAmount;
     List<IssueDetailResponse> issueDetails;
     List<String> invoiceIds; // Chỉ cần trả về danh sách Mã Hóa Đơn là đủ
 }

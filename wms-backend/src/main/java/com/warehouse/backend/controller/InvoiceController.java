@@ -19,13 +19,21 @@ public class InvoiceController {
     }
 
     @GetMapping
-    public ApiResponse<List<InvoiceResponse>> getAllInvoice() {
+    public ApiResponse<List<InvoiceResponse>> getInvoices(@RequestParam(required = false) Integer status,
+                                                          @RequestParam(required = false) String search,
+                                                          @RequestParam(required = false) String customerId) {
+        String finalSearch = (search == null || search.trim().isEmpty()) ? null : search.trim();
+        String finalCustomer = (customerId == null || customerId.trim().isEmpty()) ? null : customerId.trim();
+
+        List<InvoiceResponse> data = invoiceService.getInvoices(status , finalSearch , finalCustomer);
         return ApiResponse.<List<InvoiceResponse>>builder()
                 .code(200)
                 .message("Lấy danh sách hóa đơn thành công!")
-                .data(invoiceService.getAllInvoice())
+                .data(data)
                 .build();
     }
+
+
 
     @GetMapping("/{invoiceId}")
     public ApiResponse<InvoiceResponse> getInvoiceById(@PathVariable String invoiceId) {

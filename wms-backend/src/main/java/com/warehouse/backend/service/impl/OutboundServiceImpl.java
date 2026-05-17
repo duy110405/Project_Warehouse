@@ -50,11 +50,17 @@ public class OutboundServiceImpl implements IOutboundService {
     }
 
 
+//    @Override
+//    public List<OutboundIssueResponse> getAllOutboundIssues() {
+//       return  outboundIssueRepository.findAll()
+//               .stream().map(outboundMapper::toOutboundIssueResponse).toList();
+//    }
     @Override
-    public List<OutboundIssueResponse> getAllOutboundIssues() {
-       return  outboundIssueRepository.findAll()
-               .stream().map(outboundMapper::toOutboundIssueResponse).toList();
+    public List<OutboundIssueResponse> getOutboundIssuess(Integer status, String search) {
+        return  outboundIssueRepository.searchOutboundIssue(status , search)
+                .stream().map(outboundMapper::toOutboundIssueResponse).toList();
     }
+
     @Override
     public OutboundIssueResponse getOutBoundById(String issueId){
         OutboundIssue outboundIssue = findOutBoundById(issueId);
@@ -70,10 +76,11 @@ public class OutboundServiceImpl implements IOutboundService {
         OutboundIssue outboundIssue = outboundMapper.toOutboundIssueEntity(outboundIssueRequest);
         outboundIssue.setIssueId(generateNextIssueId());
         outboundIssue.setIssueDate(LocalDate.now());
+        outboundIssue.setStatus(0);
 
         //Tìm User từ Database và gán vào Phiếu
-        User user = userRepository.findById(outboundIssueRequest.getUserId())
-                .orElseThrow(() -> new RuntimeException("User not found with ID: " + outboundIssueRequest.getUserId()));
+        User user = userRepository.findByUsername(outboundIssueRequest.getCreateBy())
+                .orElseThrow(() -> new RuntimeException("User not found with ID: " + outboundIssueRequest.getCreateBy()));
         outboundIssue.setUser(user);
 
         // xử lý Chi tiết xuất kho
@@ -114,16 +121,19 @@ public class OutboundServiceImpl implements IOutboundService {
         }
         outboundIssue.setTotalAmount(totalAmount);
         outboundIssue.setIssueDetails(issueDetails);
+        OutboundIssue savedOutboundIssue = outboundIssueRepository.save(outboundIssue);
         // GẮN HÓA ĐƠN
         if (outboundIssueRequest.getInvoiceIds() != null && !outboundIssueRequest.getInvoiceIds().isEmpty()) {
             List<Invoice> invoices = invoiceRepository.findAllById(outboundIssueRequest.getInvoiceIds());
-            // Vì Invoice giữ khóa ngoại (MaPxuat), ta phải gán Phiếu Xuất này cho từng cái Hóa Đơn
             for (Invoice invoice : invoices) {
-                invoice.setOutboundIssue(outboundIssue);
+                // Gắn bản Phiếu Xuất "đã được lưu" (savedOutboundIssue) thay vì bản nháp
+                invoice.setOutboundIssue(savedOutboundIssue);
             }
-            outboundIssue.setInvoices(invoices);
+            // 3. Cập nhật các Hóa đơn này xuống DB
+            invoiceRepository.saveAll(invoices);
+            // Cập nhật lại list cho object trả về FE
+            savedOutboundIssue.setInvoices(invoices);
         }
-        OutboundIssue savedOutboundIssue = outboundIssueRepository.save(outboundIssue);
         return outboundMapper.toOutboundIssueResponse(savedOutboundIssue);
     }
 

@@ -12,9 +12,10 @@ import java.util.List;
 @Data
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class OutboundIssueRequest {
-    String userId;
+    String createBy;
     LocalDate issueDate;
     Integer status;
+    BigDecimal totalAmount;
     List<IssueDetailRequest> issueDetails;
     List<String> invoiceIds;
 }

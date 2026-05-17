@@ -12,7 +12,7 @@ import java.util.List;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class InvoiceRequest {
     String customerId;
-    String userId;
+    String createBy;
     String issueId;
     List<InvoiceDetailRequest> invoiceDetails;
 }

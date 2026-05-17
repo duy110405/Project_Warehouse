@@ -2,6 +2,7 @@ package com.warehouse.backend.controller;
 
 import com.warehouse.backend.dto.request.MaterialIssueRequest;
 import com.warehouse.backend.dto.response.ApiResponse;
+import com.warehouse.backend.dto.response.InboundReceiptResponse;
 import com.warehouse.backend.dto.response.MaterialIssueResponse;
 import com.warehouse.backend.service.IMaterialIssueService;
 import jakarta.validation.Valid;
@@ -19,11 +20,18 @@ public class OutboundMaterialController {
     }
 
     @GetMapping
-    public ApiResponse<List<MaterialIssueResponse>> getAllMaterialIssues() {
+    public ApiResponse<List<MaterialIssueResponse>> getMaterialIssues( @RequestParam(required = false) Integer status,
+                                                                       @RequestParam(required = false) String search,
+                                                                       @RequestParam(required = false) String supplierId) {
+        // Xử lý chuỗi rỗng
+        String finalSearch = (search == null || search.trim().isEmpty()) ? null : search.trim();
+        String finalSupplier = (supplierId == null || supplierId.trim().isEmpty()) ? null : supplierId.trim();
+        // Gọi hàm search có lọc status
+        List<MaterialIssueResponse> data = materialIssueService.getMaterialIssues(status ,finalSearch , finalSupplier);
         return ApiResponse.<List<MaterialIssueResponse>>builder()
                 .code(200)
                 .message("Lấy danh sách phiếu xuất nguyên liệu thành công!")
-                .data(materialIssueService.getAllMaterialIssues())
+                .data(data)
                 .build();
     }
 

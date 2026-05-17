@@ -11,6 +11,11 @@ import Supply from './pages/SupplyPartner/SupplyManager';
 import MainLayout from './pages/MainLayout';
 import InboundProduct from './pages/InboundReceipt';
 import InboundMaterial from './pages/MaterialReceipt';
+import OutboundMaterial from './pages/MaterialIssue';
+import Customer from './pages/Customer';
+import User from './pages/User';
+import Invoice from './pages/Invoice';
+import OutboundProduct from './pages/OutboundIssue';
 
 
 
@@ -48,6 +53,11 @@ export default function App() {
                 <Route path="/supply" element={<Supply />} />
                 <Route path="/inboundProduct" element={<InboundProduct />} />
                 <Route path="/inboundMaterial" element={<InboundMaterial />} />
+                <Route path="/outboundMaterial" element={<OutboundMaterial />} />
+                <Route path="/customers" element={<Customer />} />
+                <Route path="/users" element={<User />} />
+                 <Route path="/invoices" element={<Invoice />} />
+                  <Route path="/OutboundProduct" element={<OutboundProduct />} />
               </Routes>
             </MainLayout>
           </ProtectedRoute>

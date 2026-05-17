@@ -7,8 +7,9 @@ import com.warehouse.backend.entity.nghiepvu.Invoice;
 import java.util.List;
 
 public interface IInvoiceService {
+    List<InvoiceResponse> getInvoices(Integer status, String search, String customerId);
     InvoiceResponse getInvoiceById(String invoiceId);
-    List<InvoiceResponse> getAllInvoice();
+//    List<InvoiceResponse> getAllInvoice();
     InvoiceResponse saveInvoice(InvoiceRequest invoiceRequest);
     InvoiceResponse approveInvoice (String invoiceId);
     InvoiceResponse updateInvoice(String invoiceId , InvoiceRequest invoiceRequest);

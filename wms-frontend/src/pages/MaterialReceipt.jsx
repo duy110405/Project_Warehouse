@@ -142,7 +142,22 @@ const ReceiptModal = ({ isOpen, onClose, form, onSubmit, isEditing, vendors, mat
             {fields.map(({ key, name, ...restField }) => (
               <div key={key} className="flex gap-3 mb-3 items-start">
                 <Form.Item {...restField} name={[name, 'materialId']} rules={[{ required: true, message: 'Chọn nguyên liệu' }]} className="flex-1 mb-0">
-                  <Select placeholder="Chọn nguyên liệu..." className="h-[40px] custom-dark-select" showSearch optionFilterProp="children">
+                  <Select placeholder="Chọn nguyên liệu..." className="h-[40px] custom-dark-select" showSearch optionFilterProp="children"
+                   onChange={(selectedValue) => {
+                       // 1. Tìm sản phẩm vừa được chọn trong mảng products
+                       const selectedMaterial = materials.find(m => m.materialId === selectedValue || m.id === selectedValue);     
+                       if (selectedMaterial) {
+                       // 2. Lấy toàn bộ mảng dữ liệu hiện tại đang có trên Form
+                       const currentDetails = form.getFieldValue('materialReceiptDetails') || [];       
+                       // 3. Cập nhật lại giá (price) cho đúng cái dòng (name) hiện tại
+                       currentDetails[name] = { 
+                      ...currentDetails[name], 
+                      price: selectedMaterial.price // Lấy giá từ object Product nhét vào ô price
+                      };
+                       // 4. Đẩy ngược mảng dữ liệu đã cập nhật lên lại Form
+                    form.setFieldsValue({ invoiceDetails: currentDetails });
+                    }
+                    }}>
                     {materials.map(m => <Select.Option key={m.materialId || m.id} value={m.materialId || m.id}>{m.materialName || m.name}</Select.Option>)}
                   </Select>
                 </Form.Item>

@@ -14,8 +14,7 @@ public interface MaterialIssueMapper {
 
     @Mapping(target = "supplierId" , source = "supplier.supplierId")
     @Mapping(target = "supplierName" , source = "supplier.supplierName")
-    @Mapping(target = "userId" , source = "user.userId")
-    @Mapping(target = "fullName" , source = "user.fullName")
+    @Mapping(target = "createBy" , source = "user.fullName")
     MaterialIssueResponse toMaterialIssueResponse(OutboundMaterialIssue outboundMaterialIssue);
 
     @Mapping(target = "materialId" , source = "material.materialId")

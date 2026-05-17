@@ -94,8 +94,8 @@ export default function MainLayout({ children }) {
             </button>
             {openOutbound && (
               <div className="mt-1 ml-4 border-l border-slate-700/50 pl-2 space-y-1">
-                <MenuItem icon={<PackageOpen size={18} />} label="Xuất sản xuất" to="/outbound/production" />
-                <MenuItem icon={<PackageOpen size={18} />} label="Xuất bán hàng" to="/outbound/sales" />
+                <MenuItem icon={<PackageOpen size={18} />} label="Xuất nguyên liệu" to="/outboundMaterial" />
+                <MenuItem icon={<PackageOpen size={18} />} label="Xuất sản phẩm" to="/outboundProduct" />
               </div>
             )}
           </div>

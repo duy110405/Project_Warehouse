@@ -17,8 +17,7 @@ public class InvoiceResponse {
     String customerId;
     String customerName;
 
-    String userId;
-    String fullName;
+    String createBy;
 
     BigDecimal totalAmount;
     Integer status;
