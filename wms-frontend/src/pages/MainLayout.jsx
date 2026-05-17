@@ -4,27 +4,39 @@ import {
   HeadphonesIcon, BarChart2, Settings, Archive, ChevronDown, ChevronRight,
   List, User, BookMinus, ArchiveRestore, PackageOpen, Cog, FileText, LogOut
 } from 'lucide-react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 
-
+// 1. COMPONENT MENU ITEM ĐÃ ĐƯỢC NÂNG CẤP ĐỂ TỰ BẮT MÀU XANH
 const MenuItem = ({ icon, label, to }) => {
+  const location = useLocation();
+  // Kiểm tra xem URL hiện tại có trùng với link (to) của Menu này không
+  const isActive = location.pathname === to;
+
   return (
-    <Link to={to} className="flex items-center gap-3 px-4 py-2.5 text-slate-400 hover:text-white hover:bg-slate-800/50 rounded-xl transition-all duration-200">
+    <Link 
+      to={to} 
+      className={`flex items-center gap-3 px-4 py-2.5 rounded-xl transition-all duration-200 
+        ${isActive 
+         ? 'bg-blue-600/20 text-blue-200 font-semibold' 
+          : 'text-slate-400 hover:text-white hover:bg-slate-800/50 font-medium'    // Trạng thái bình thường
+        }`}
+    >
       {icon}
-      <span className="font-medium text-sm">{label}</span>
+      <span className="text-sm">{label}</span>
     </Link>
   );
 };
 
-
 export default function MainLayout({ children }) {
   const navigate = useNavigate();
+  const location = useLocation();
 
   // Quản lý trạng thái đóng/mở của 4 Dropdown
-  const [openInbound, setOpenInbound] = useState(false);
-  const [openOutbound, setOpenOutbound] = useState(false);
-  const [openSales, setOpenSales] = useState(false);
-  const [openWarehouse, setOpenWarehouse] = useState(false);
+  // Mình nâng cấp 1 chút: Tự động mở Dropdown nếu đang ở một trang con nằm trong Dropdown đó
+  const [openInbound, setOpenInbound] = useState(location.pathname.includes('/inbound'));
+  const [openOutbound, setOpenOutbound] = useState(location.pathname.includes('/outbound'));
+  const [openSales, setOpenSales] = useState(['/invoices', '/customers', '/support'].includes(location.pathname));
+  const [openWarehouse, setOpenWarehouse] = useState(['/zones', '/categories', '/reports', '/users'].includes(location.pathname));
 
   // Lấy tên User từ LocalStorage (Nếu không có thì để rỗng)
   const currentUsername = localStorage.getItem('username') || 'Người dùng';
@@ -33,7 +45,7 @@ export default function MainLayout({ children }) {
   const handleLogout = () => {
     localStorage.removeItem('token');
     localStorage.removeItem('username');
-    navigate('/login'); // Đá về trang login
+    navigate('/login'); 
   };
 
   return (
@@ -52,12 +64,20 @@ export default function MainLayout({ children }) {
         {/* Menu Items */}
         <nav className="flex-1 px-4 py-2 space-y-2 overflow-y-auto custom-scrollbar pb-6">
           
-          {/* NHÓM FLAT MENUS (Không có dropdown)        */}
-          <Link to="/" className="flex items-center gap-3 px-4 py-3 bg-blue-600 text-white rounded-xl shadow-[0_0_15px_rgba(37,99,235,0.3)] mb-4">
+          {/* Dashboard (Sử dụng logic màu xanh luôn) */}
+          <Link 
+            to="/" 
+            className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 mb-4
+              ${location.pathname === '/' 
+                ? 'bg-blue-600 text-white shadow-[0_0_15px_rgba(37,99,235,0.3)]' 
+                : 'text-slate-400 hover:text-white hover:bg-slate-800/50'
+              }`}
+          >
             <LayoutGrid size={20} />
             <span className="font-medium">Bảng điều khiển</span>
           </Link>
 
+          {/* NHÓM FLAT MENUS */}
           <MenuItem icon={<List size={20} />} label="Đơn hàng đang xử lý" to="/active-orders" />
           <MenuItem icon={<Package size={20} />} label="Sản phẩm" to="/products" />
           <MenuItem icon={<Cog size={20} />} label="Nguyên liệu" to="/materials" />
@@ -95,7 +115,7 @@ export default function MainLayout({ children }) {
             {openOutbound && (
               <div className="mt-1 ml-4 border-l border-slate-700/50 pl-2 space-y-1">
                 <MenuItem icon={<PackageOpen size={18} />} label="Xuất nguyên liệu" to="/outboundMaterial" />
-                <MenuItem icon={<PackageOpen size={18} />} label="Xuất sản phẩm" to="/outboundProduct" />
+                <MenuItem icon={<PackageOpen size={18} />} label="Xuất sản phẩm" to="/outboundProduct" /> {/* Fix hoa thường chữ P cho khớp App.jsx */}
               </div>
             )}
           </div>
@@ -161,12 +181,10 @@ export default function MainLayout({ children }) {
               <ChevronDown size={16} className="text-slate-400" />
             </div>
             
-            {/* Hiển thị tên user đang đăng nhập và Nút Đăng xuất */}
             <div className="flex items-center gap-3 bg-[#0F172A] px-4 py-2 rounded-lg border border-slate-700">
               <div className="w-2 h-2 rounded-full bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.5)]"></div>
               <span className="text-sm font-medium text-slate-300">Chào, {currentUsername}</span>
               
-              {/* Nút Đăng xuất nhỏ gọn */}
               <div className="w-px h-4 bg-slate-700 mx-1"></div>
               <button 
                 onClick={handleLogout} 
@@ -179,7 +197,6 @@ export default function MainLayout({ children }) {
           </div>
         </header>
 
-        {/*Dùng biến children để các trang con hiển thị ở đây */}
         <div className="flex-1 p-8 overflow-y-auto custom-scrollbar">
           {children}
         </div>
