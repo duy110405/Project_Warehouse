@@ -22,14 +22,17 @@
 ## 3. Quản lý tài khoản người dùng và quản lý khách hàng
 > ADMIN có thể cấp tài khoản cho người dùng 
  ![Màn hình nguyên liệu](./images/user.png)
+
 > Quản lý lưu thông tin khách hàng 
  ![Màn hình nguyên liệu](./images/customer.png)
 
 ### 4. Quản Lý Hóa Đơn & Tự Động Hóa Phiếu Xuất
 > Tính năng Auto-Fill thông minh tự động trích xuất sản phẩm từ hóa đơn bán hàng vào phiếu xuất kho, loại bỏ việc nhập liệu thủ công.
+ ![Video xuất hàng](./images/invoice.gif)
 
 ## 5.Quản lý Phiếu Nhập Hàng & Nguyên Liệu
 > tạo phiếu nhập , tự động tính toán trong kho.
+ ![Video nhập hàng](./images/inbound.gif)
 
 ### 6. Cấu Trúc Kho Bãi (Zone Layout)
 > Quản lý trực quan theo từng phân khu, hiển thị thanh tiến trình sức chứa (Capacity) và cảnh báo khi tải trọng vượt mức.
