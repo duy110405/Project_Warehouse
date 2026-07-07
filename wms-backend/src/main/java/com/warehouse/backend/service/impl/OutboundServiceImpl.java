@@ -13,6 +13,8 @@ import com.warehouse.backend.mapper.OutboundMapper;
 import com.warehouse.backend.repository.*;
 import com.warehouse.backend.service.IOutboundService;
 import jakarta.transaction.Transactional;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -56,9 +58,9 @@ public class OutboundServiceImpl implements IOutboundService {
 //               .stream().map(outboundMapper::toOutboundIssueResponse).toList();
 //    }
     @Override
-    public List<OutboundIssueResponse> getOutboundIssuess(Integer status, String search) {
-        return  outboundIssueRepository.searchOutboundIssue(status , search)
-                .stream().map(outboundMapper::toOutboundIssueResponse).toList();
+    public Page<OutboundIssueResponse> getOutboundIssuess(Integer status, String search, Pageable pageable) {
+        Page<OutboundIssue> outboundIssues = outboundIssueRepository.searchOutboundIssue(status, search, pageable);
+        return outboundIssues.map(outboundMapper::toOutboundIssueResponse);
     }
 
     @Override

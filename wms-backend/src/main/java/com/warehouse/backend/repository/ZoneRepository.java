@@ -12,4 +12,5 @@ public interface ZoneRepository extends JpaRepository<Zone, String > {
     // Hàm này để hỗ trợ việc tự động sinh mã
     @Query("SELECT MAX(z.zoneId) FROM Zone z")
     String findMaxZoneId();
+
 }

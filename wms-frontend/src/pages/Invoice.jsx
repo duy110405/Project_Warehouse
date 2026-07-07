@@ -13,6 +13,27 @@ const API_PRODUCT_URL = 'http://localhost:8080/api/product'; // API Danh sách S
 
 const { RangePicker } = DatePicker;
 
+const VendorStats = () => (
+  <div className="grid grid-cols-4 gap-6 mb-8">
+    <div className="bg-[#0F172A] p-5 rounded-2xl border border-slate-800 shadow-lg">
+      <h3 className="text-slate-400 text-sm font-medium mb-2">Hóa đơn chưa duyệt</h3>
+      <p className="text-3xl font-bold text-white">24</p>
+    </div>
+    <div className="bg-[#0F172A] p-5 rounded-2xl border border-slate-800 shadow-lg">
+      <h3 className="text-slate-400 text-sm font-medium mb-2">Hóa đơn đã thanh toán</h3>
+      <p className="text-3xl font-bold text-white">156</p>
+    </div>
+    <div className="bg-[#0F172A] p-5 rounded-2xl border border-slate-800 shadow-lg">
+      <h3 className="text-slate-400 text-sm font-medium mb-2">Hóa đơn đã hoàn thành</h3>
+      <p className="text-3xl font-bold text-emerald-400">50</p>
+    </div>
+    <div className="bg-[#0F172A] p-5 rounded-2xl border border-slate-800 shadow-lg">
+      <h3 className="text-slate-400 text-sm font-medium mb-2">Tổng doanh thu</h3>
+      <p className="text-3xl font-bold text-white">2.8B <span className="text-lg text-slate-500 font-normal">VND</span></p>
+    </div>
+  </div>
+);
+
 // Component Menu Item dùng chung cho Dropdown lọc Khách hàng
 const MenuItem = ({ icon, label, onClick }) => (
   <button onClick={onClick} className="w-full flex items-center gap-3 px-4 py-2 text-slate-400 hover:text-white hover:bg-slate-800/50 rounded-lg transition-all">
@@ -24,7 +45,7 @@ const MenuItem = ({ icon, label, onClick }) => (
 // ============================================================================
 // 1. COMPONENT BẢNG HÓA ĐƠN
 // ============================================================================
-const InvoiceTable = ({ invoices, isLoading, onEdit, onDelete, onView, activeTab }) => {
+const InvoiceTable = ({ invoices, isLoading, onEdit, onDelete, onView, activeTab , pagination , onChange }) => {
   const columns = [
     {
       title: 'Mã Hóa Đơn',
@@ -99,8 +120,9 @@ const InvoiceTable = ({ invoices, isLoading, onEdit, onDelete, onView, activeTab
   ];
 
   return (
-    <div className="bg-[#0F172A] border-x border-b border-slate-800 rounded-b-2xl overflow-hidden shadow-xl text-base">
-      <Table columns={columns} dataSource={invoices} loading={isLoading} rowKey="invoiceId" pagination={{ pageSize: 6 }} className="custom-dark-table" />
+    <div className="bg-[#0F172A] border-x border-b border-slate-800 rounded-b-2xl  shadow-xl text-base">
+      <Table columns={columns} dataSource={invoices} loading={isLoading} rowKey="invoiceId" pagination={pagination} 
+    onChange={onChange} className="custom-dark-table" />
     </div>
   );
 }
@@ -223,6 +245,15 @@ export default function Invoice() {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [viewingInvoice, setViewingInvoice] = useState(null);
 
+  //state quản lý phân trang
+  const [pagination, setPagination] = useState({
+    current: 1, // AntD đếm trang từ 1
+    pageSize: 6, // Số dòng trên 1 trang
+    total: 0,   // Tổng số bản ghi (Backend trả về)
+    showSizeChanger: true, // Cho phép chọn số dòng trên 1 trang
+    pageSizeOptions: ['6', '10', '20', '50']
+  });
+
   // 1. Fetch dữ liệu phụ
   useEffect(() => {
     const fetchSelectData = async () => {
@@ -241,22 +272,31 @@ export default function Invoice() {
   }, []);
 
   // 2. Fetch danh sách Hóa đơn
-  const fetchInvoices = async () => {
+  const fetchInvoices = async (page = 1, size = 6) => {
     try {
       setIsLoading(true);
-      const params = { 
+const params = { 
         status: activeTab, 
         search: searchTerm || null,
-        customerId: selectedCustomerId || null
+        customerId: selectedCustomerId || null,
+        page: page - 1,
+        size: size
       };
-      
       if (dateRange && dateRange.length === 2) {
         params.startDate = dateRange[0].format('YYYY-MM-DD');
         params.endDate = dateRange[1].format('YYYY-MM-DD');
       }
 
-      const response = await axios.get(API_URL, { params });
-      setInvoices(response.data?.data || []);
+      const res = await axios.get(API_URL, { params });
+      const pageData = res.data.data; // object Page trả về từ Spring Boot
+
+      setInvoices(pageData.content); // Gán vào invoices (hoặc dùng setData và sửa Table lại)
+      
+      setPagination({
+        ...pagination,
+        current: page,
+        total: pageData.totalElements, 
+      });
     } catch (error) {
       console.log(error);
       message.error("Lỗi khi tải danh sách Hóa đơn!");
@@ -294,6 +334,12 @@ export default function Invoice() {
       message.error(error.response?.data?.message || "Lỗi khi lưu hóa đơn!"); 
     }
   };
+
+  //Hàm bắt sự kiện khi user click chuyển trang trên UI
+  const handleTableChange = (newPagination) => {
+    fetchInvoices(newPagination.current, newPagination.pageSize);
+  };
+
 
   // Hủy Hóa đơn
   const handleDelete = async (id) => {
@@ -338,7 +384,7 @@ export default function Invoice() {
 
   return (
     <ConfigProvider theme={{ algorithm: theme.darkAlgorithm, token: { colorBgContainer: '#0F172A', colorBorderSecondary: '#1E293B', colorText: '#cbd5e1' } }}>
-      <div className="flex flex-col h-full max-w-[1400px] mx-auto text-slate-200">
+      <div className="flex flex-col pb-10 max-w-[1400px] mx-auto text-slate-200">
         
         {/* HEADER */}
         <div className="flex items-center justify-between mb-6">
@@ -350,6 +396,8 @@ export default function Invoice() {
             <Plus size={18} /> Tạo hóa đơn
           </button>
         </div>
+
+        <VendorStats />
 
         {/* THANH TOGGLE TAB (4 Trạng thái) */}
         <div className="flex bg-[#1E293B] p-1 rounded-xl w-fit border border-slate-700 mb-6 overflow-x-auto">
@@ -416,6 +464,8 @@ export default function Invoice() {
           activeTab={activeTab}
           onEdit={handleOpenModal} 
           onDelete={handleDelete} 
+          pagination={pagination}
+          onChange={handleTableChange}
           onView={(record) => { setViewingInvoice(record); setIsDrawerOpen(true); }} 
         />
         

@@ -2,6 +2,8 @@ package com.warehouse.backend.repository;
 
 import com.warehouse.backend.entity.nghiepvu.Invoice;
 import com.warehouse.backend.entity.nghiepvu.OutboundIssue;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -18,6 +20,7 @@ public interface OutboundIssueRepository extends JpaRepository<OutboundIssue, St
     @Query("SELECT o FROM OutboundIssue o WHERE "+
             "(:status IS NULL OR o.status = :status) AND "+
             "(:search IS NULL OR LOWER(o.issueId) LIKE LOWER(CONCAT('%', :search, '%')))")
-    List<OutboundIssue> searchOutboundIssue (@Param("status") Integer status,
-                                             @Param("search") String search);
+    Page<OutboundIssue> searchOutboundIssue (@Param("status") Integer status,
+                                             @Param("search") String search ,
+                                             Pageable pageable);
 }

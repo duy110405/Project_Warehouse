@@ -5,8 +5,11 @@ import com.warehouse.backend.dto.response.ApiResponse;
 import com.warehouse.backend.dto.response.InvoiceResponse;
 import com.warehouse.backend.service.IInvoiceService;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
 
 @RestController
@@ -19,14 +22,18 @@ public class InvoiceController {
     }
 
     @GetMapping
-    public ApiResponse<List<InvoiceResponse>> getInvoices(@RequestParam(required = false) Integer status,
+    public ApiResponse<Page<InvoiceResponse>> getInvoices(@RequestParam(required = false) Integer status,
                                                           @RequestParam(required = false) String search,
-                                                          @RequestParam(required = false) String customerId) {
+                                                          @RequestParam(required = false) String customerId,
+                                                          @RequestParam(defaultValue = "0") int page, // Trang số mấy (Spring mặc định bắt đầu từ 0)
+                                                          @RequestParam(defaultValue = "10") int size ) {
         String finalSearch = (search == null || search.trim().isEmpty()) ? null : search.trim();
         String finalCustomer = (customerId == null || customerId.trim().isEmpty()) ? null : customerId.trim();
+        // Tạo object phân trang (Sắp xếp mới nhất lên đầu luôn)
+        Pageable pageable = PageRequest.of(page, size, Sort.by("invoiceDate").descending());
 
-        List<InvoiceResponse> data = invoiceService.getInvoices(status , finalSearch , finalCustomer);
-        return ApiResponse.<List<InvoiceResponse>>builder()
+        Page<InvoiceResponse> data = invoiceService.getInvoices(status , finalSearch , finalCustomer , pageable);
+        return ApiResponse.<Page<InvoiceResponse>>builder()
                 .code(200)
                 .message("Lấy danh sách hóa đơn thành công!")
                 .data(data)

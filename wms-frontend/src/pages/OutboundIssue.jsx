@@ -119,30 +119,41 @@ const IssueModal = ({ isOpen, onClose, form, onSubmit, isEditing, invoices, prod
             className="custom-dark-select min-h-[40px]" 
             showSearch 
             optionFilterProp="children"
+
             onChange={(selectedIds) => {
-              // LOGIC AUTO-FILL: Khi chọn Hóa đơn, tự động đổ Sản phẩm xuống bảng List bên dưới
-              let newDetails = [];
+              // Dùng Object để gom nhóm các sản phẩm trùng lặp
+              let groupedDetails = {}; 
               selectedIds.forEach(id => {
                 const inv = invoices.find(i => i.invoiceId === id);
                 if (inv && inv.invoiceDetails) {
                   inv.invoiceDetails.forEach(item => {
-                    newDetails.push({
-                      productId: item.product?.productId || item.productId,
-                      quantity: item.quantity,
-                      price: item.price,
-                      zoneId: null // Để trống cho Thủ kho tự điền
-                    });
+                    const pId = item.product?.productId || item.productId;
+                    // KỸ THUẬT CỘNG DỒN: Nếu sản phẩm đã tồn tại trong nhóm, chỉ cần cộng thêm số lượng
+                    if (groupedDetails[pId]) {
+                      groupedDetails[pId].quantity += item.quantity;
+                    } else {
+                      // Nếu chưa có, tạo dòng mới
+                      groupedDetails[pId] = {
+                        productId: pId,
+                        quantity: item.quantity,
+                        price: item.price,
+                        zoneId: null // Vẫn để trống chờ Thủ kho chọn
+                      };
+                    }
                   });
                 }
               });
-              // Set mảng vừa tạo đè lên cái Form.List bên dưới
-              form.setFieldsValue({ issueDetails: newDetails });
+
+              // Chuyển Object quay ngược lại thành Mảng (Array) và đẩy lên Form
+              form.setFieldsValue({ issueDetails: Object.values(groupedDetails) });
             }}
+
           >
             {/* Chỉ lấy Hóa đơn status = 1 (Đã thanh toán / Chờ xuất kho) để gợi ý */}
-            {invoices.filter(i => i.status === 1).map(i => (
+            {/* Ép mảng an toàn trước khi filter */}
+           {(Array.isArray(invoices) ? invoices : []).filter(i => i.status === 1).map(i => (
               <Select.Option key={i.invoiceId} value={i.invoiceId}>
-                {i.invoiceId} - Khách: {i.customer?.customerName}
+                 {i.invoiceId} - Khách: {i.customer?.customerName}
               </Select.Option>
             ))}
           </Select>
@@ -244,11 +255,11 @@ export default function OutboundIssue() {
         const [prodRes, zoneRes, inRes] = await Promise.all([ 
           axios.get(API_PRODUCT_URL), 
           axios.get(API_ZONE_URL), 
-          axios.get(API_INVOICE_URL) 
+          axios.get(API_INVOICE_URL , { params: { status: 1, page: 0, size: 100 } }) 
         ]);
         setProducts(prodRes.data?.data || []);
         setZones(zoneRes.data?.data || []);
-        setInvoices(inRes.data?.data || []);
+        setInvoices(inRes.data?.data?.content || []);
       } catch (error) { console.error("Lỗi data phụ:", error); }
     };
     fetchSelectData();

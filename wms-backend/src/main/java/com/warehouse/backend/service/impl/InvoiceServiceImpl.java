@@ -12,8 +12,10 @@ import com.warehouse.backend.mapper.InvoiceMapper;
 import com.warehouse.backend.repository.*;
 import com.warehouse.backend.service.IInvoiceService;
 import jakarta.transaction.Transactional;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
+import org.springframework.data.domain.Pageable;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -36,6 +38,7 @@ public class InvoiceServiceImpl implements IInvoiceService {
         this.userRepository = userRepository;
     }
 
+
     // Hàm tìm hóa đơn
     public Invoice findInvoiceById(String invoiceId){
         return invoiceRepository.findById(invoiceId)
@@ -56,10 +59,11 @@ public class InvoiceServiceImpl implements IInvoiceService {
 //    }
 
     @Override
-    public List<InvoiceResponse> getInvoices(Integer status, String search, String customerId){
-        return invoiceRepository.searchInvoice(status , search , customerId)
-                .stream().map(invoiceMapper::toInvoiceResponse).toList();
-
+    public Page<InvoiceResponse> getInvoices(Integer status, String search, String customerId, Pageable pageable) {
+        // Repository sẽ trả về Page<Invoice> thay vì List<Invoice>
+        Page<Invoice> invoicePage = invoiceRepository.searchInvoice(status, search, customerId, pageable);
+        // Dùng trực tiếp hàm .map() của Page để convert Entity sang Response
+        return invoicePage.map(invoiceMapper::toInvoiceResponse);
     }
 
     @Override
