@@ -24,7 +24,7 @@ const MenuItem = ({ icon, label, onClick }) => (
 // ============================================================================
 // 1. COMPONENT BẢNG PHIẾU NHẬP
 // ============================================================================
-const ReceiptTable = ({ materialReceipts, isLoading, onEdit, onDelete, onView, activeTab }) => {
+const ReceiptTable = ({ materialReceipts, isLoading, onEdit, onDelete, onView, activeTab , pagination, onChange }) => {
   const columns = [
     {
       title: 'Mã phiếu',
@@ -97,8 +97,8 @@ const ReceiptTable = ({ materialReceipts, isLoading, onEdit, onDelete, onView, a
   ];
 
   return (
-    <div className="bg-[#0F172A] border-x border-b border-slate-800 rounded-b-2xl overflow-hidden shadow-xl text-base">
-      <Table columns={columns} dataSource={materialReceipts} loading={isLoading} rowKey="materialReceiptId" pagination={{ pageSize: 6 }} className="custom-dark-table" />
+    <div className="bg-[#0F172A] border-x border-b border-slate-800 rounded-b-2xl shadow-xl text-base">
+      <Table columns={columns} dataSource={materialReceipts} loading={isLoading} rowKey="materialReceiptId" pagination={pagination} onChange={onChange} className="custom-dark-table" />
     </div>
   );
 }
@@ -224,6 +224,7 @@ export default function InboundReceipt() {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [viewingReceipt, setViewingReceipt] = useState(null);
 
+  const [pagination, setPagination] = useState({ current: 1, pageSize: 6, total: 0 }); // State quản lý phân trang
   // 1. Fetch dữ liệu phụ (Chạy 1 lần)
   useEffect(() => {
     const fetchSelectData = async () => {
@@ -238,13 +239,15 @@ export default function InboundReceipt() {
   }, []);
 
   // 2. Fetch danh sách phiếu (Cập nhật khi Tab hoặc Filter thay đổi)
-  const fetchReceipts = async () => {
+  const fetchReceipts = async (page = 1, size = 6) => {
     try {
       setIsLoading(true);
       const params = { 
         status: activeTab, // Filter theo tab (0 hoặc 1)
         search: searchTerm || null,
-        vendorId: selectedvendorId || null
+        vendorId: selectedvendorId || null,
+        page: page - 1,
+        size: size
       };
       
       // Định dạng ngày nếu có chọn
@@ -254,7 +257,14 @@ export default function InboundReceipt() {
       }
 
       const response = await axios.get(API_URL, { params });
-      setMaterialReceipts(response.data?.data || []);
+      const pageData = response.data?.pagination || {};
+      setMaterialReceipts(pageData.content || []);
+     setPagination({
+        ...pagination,
+        current: page,
+        total: pageData.totalElements, 
+      });
+
     } catch (error) {
       console.log(error);
       message.error("Lỗi khi tải danh sách phiếu nhập!");
@@ -266,6 +276,10 @@ export default function InboundReceipt() {
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
      fetchReceipts(); }, [activeTab, searchTerm, dateRange, selectedvendorId]);
+
+     const handleTableChange = (newPagination) => {
+      fetchReceipts(newPagination.current, newPagination.pageSize);
+    }
 
   // Các hàm CRUD
   const handleSubmit = async (values) => {
@@ -425,6 +439,8 @@ export default function InboundReceipt() {
           activeTab={activeTab} // Truyền activeTab xuống Bảng để ẩn/hiện nút Edit
           onEdit={handleOpenModal} 
           onDelete={handleDelete} 
+          pagination={pagination}
+          onChange={handleTableChange}
           onView={(record) => { setViewingReceipt(record); setIsDrawerOpen(true); }} 
         />
         

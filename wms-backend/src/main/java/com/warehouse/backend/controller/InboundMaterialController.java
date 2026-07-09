@@ -6,6 +6,10 @@ import com.warehouse.backend.dto.response.InboundReceiptResponse;
 import com.warehouse.backend.dto.response.MaterialReceiptResponse;
 import com.warehouse.backend.service.IMaterialReceiptService;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -20,17 +24,20 @@ public class InboundMaterialController {
     }
 
     @GetMapping
-    public ApiResponse<List<MaterialReceiptResponse>> getReceipts(
+    public ApiResponse<Page<MaterialReceiptResponse>> getReceipts(
             @RequestParam(required = false) Integer status,
             @RequestParam(required = false) String search,
-            @RequestParam(required = false) String vendorId
+            @RequestParam(required = false) String vendorId ,
+            @RequestParam(defaultValue = "0") int page, // Trang số mấy (Spring mặc định bắt đầu từ 0)
+            @RequestParam(defaultValue = "10") int size
     ) {
         // Xử lý chuỗi rỗng
         String finalSearch = (search == null || search.trim().isEmpty()) ? null : search.trim();
         String finalVendor = (vendorId == null || vendorId.trim().isEmpty()) ? null : vendorId.trim();
+        Pageable pageable = PageRequest.of(page, size, Sort.by("materialReceiptDate").descending());
         // Gọi hàm search có lọc status
-        List<MaterialReceiptResponse> data = materialReceiptService.searchReceipts(status, finalSearch, finalVendor);
-        return ApiResponse.<List<MaterialReceiptResponse>>builder()
+        Page<MaterialReceiptResponse> data = materialReceiptService.searchReceipts(status, finalSearch, finalVendor , pageable);
+        return ApiResponse.<Page<MaterialReceiptResponse>>builder()
                 .code(200)
                 .message("Lấy danh sách thành công")
                 .data(data)

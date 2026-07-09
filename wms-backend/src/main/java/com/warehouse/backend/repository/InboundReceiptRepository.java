@@ -2,6 +2,8 @@ package com.warehouse.backend.repository;
 
 import com.warehouse.backend.entity.hethong.User;
 import com.warehouse.backend.entity.nghiepvu.InboundReceipt;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -20,10 +22,11 @@ public interface InboundReceiptRepository extends JpaRepository<InboundReceipt, 
             "(:status IS NULL OR i.status = :status) AND " +
             "(:search IS NULL OR i.receiptId LIKE %:search%) AND " +
             "(:supplierId IS NULL OR i.supplier.supplierId = :supplierId)")
-    List<InboundReceipt> searchInboundReceipts(
+    Page<InboundReceipt> searchInboundReceipts(
             @Param("status") Integer status,
             @Param("search") String search,
-            @Param("supplierId") String supplierId
+            @Param("supplierId") String supplierId ,
+            Pageable pageable
     );
 
 }

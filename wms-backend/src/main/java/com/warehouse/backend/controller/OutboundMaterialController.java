@@ -6,6 +6,10 @@ import com.warehouse.backend.dto.response.InboundReceiptResponse;
 import com.warehouse.backend.dto.response.MaterialIssueResponse;
 import com.warehouse.backend.service.IMaterialIssueService;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -20,15 +24,18 @@ public class OutboundMaterialController {
     }
 
     @GetMapping
-    public ApiResponse<List<MaterialIssueResponse>> getMaterialIssues( @RequestParam(required = false) Integer status,
+    public ApiResponse<Page<MaterialIssueResponse>> getMaterialIssues( @RequestParam(required = false) Integer status,
                                                                        @RequestParam(required = false) String search,
-                                                                       @RequestParam(required = false) String supplierId) {
+                                                                       @RequestParam(required = false) String supplierId,
+                                                                       @RequestParam(defaultValue = "0") int page, // Trang số mấy (Spring mặc định bắt đầu từ 0)
+                                                                       @RequestParam(defaultValue = "10") int size) {
         // Xử lý chuỗi rỗng
         String finalSearch = (search == null || search.trim().isEmpty()) ? null : search.trim();
         String finalSupplier = (supplierId == null || supplierId.trim().isEmpty()) ? null : supplierId.trim();
+        Pageable pageable = PageRequest.of(page, size, Sort.by("materialIssueDate").descending());
         // Gọi hàm search có lọc status
-        List<MaterialIssueResponse> data = materialIssueService.getMaterialIssues(status ,finalSearch , finalSupplier);
-        return ApiResponse.<List<MaterialIssueResponse>>builder()
+        Page<MaterialIssueResponse> data = materialIssueService.getMaterialIssues(status ,finalSearch , finalSupplier , pageable);
+        return ApiResponse.<Page<MaterialIssueResponse>>builder()
                 .code(200)
                 .message("Lấy danh sách phiếu xuất nguyên liệu thành công!")
                 .data(data)

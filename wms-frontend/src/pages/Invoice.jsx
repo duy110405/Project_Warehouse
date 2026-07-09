@@ -250,8 +250,6 @@ export default function Invoice() {
     current: 1, // AntD đếm trang từ 1
     pageSize: 6, // Số dòng trên 1 trang
     total: 0,   // Tổng số bản ghi (Backend trả về)
-    showSizeChanger: true, // Cho phép chọn số dòng trên 1 trang
-    pageSizeOptions: ['6', '10', '20', '50']
   });
 
   // 1. Fetch dữ liệu phụ
@@ -275,7 +273,7 @@ export default function Invoice() {
   const fetchInvoices = async (page = 1, size = 6) => {
     try {
       setIsLoading(true);
-const params = { 
+      const params = { 
         status: activeTab, 
         search: searchTerm || null,
         customerId: selectedCustomerId || null,

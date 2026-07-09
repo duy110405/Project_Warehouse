@@ -2,6 +2,8 @@ package com.warehouse.backend.repository;
 
 import com.warehouse.backend.entity.nghiepvu.InboundMaterialReceipt;
 import com.warehouse.backend.entity.nghiepvu.InboundReceipt;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -20,10 +22,11 @@ public interface MaterialReceiptRepository extends JpaRepository<InboundMaterial
             "(:status IS NULL OR i.status = :status) AND " +
             "(:search IS NULL OR i.materialReceiptId LIKE %:search%) AND " +
             "(:vendorId IS NULL OR i.vendor.vendorId = :vendorId)")
-    List<InboundMaterialReceipt> searchInboundMaterialReceipts(
+    Page<InboundMaterialReceipt> searchInboundMaterialReceipts(
             @Param("status") Integer status,
             @Param("search") String search,
-            @Param("vendorId") String vendorId
+            @Param("vendorId") String vendorId ,
+            Pageable pageable
     );
 
 }

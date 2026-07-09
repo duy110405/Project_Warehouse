@@ -25,7 +25,7 @@ const MenuItem = ({ icon, label, onClick }) => (
 // ============================================================================
 // 1. COMPONENT BẢNG PHIẾU XUẤT
 // ============================================================================
-const OutboundTable = ({ outboundReceipts, isLoading, onEdit, onDelete, onView, activeTab }) => {
+const OutboundTable = ({ outboundReceipts, isLoading, onEdit, onDelete, onView, activeTab , pagination, onChange }) => {
   const columns = [
     {
       title: 'Mã phiếu xuất',
@@ -98,8 +98,8 @@ const OutboundTable = ({ outboundReceipts, isLoading, onEdit, onDelete, onView, 
   ];
 
   return (
-    <div className="bg-[#0F172A] border-x border-b border-slate-800 rounded-b-2xl overflow-hidden shadow-xl text-base">
-      <Table columns={columns} dataSource={outboundReceipts} loading={isLoading} rowKey="materialIssueId" pagination={{ pageSize: 6 }} className="custom-dark-table" />
+    <div className="bg-[#0F172A] border-x border-b border-slate-800 rounded-b-2xl shadow-xl text-base">
+      <Table columns={columns} dataSource={outboundReceipts} loading={isLoading} rowKey="materialIssueId" pagination={pagination} onChange={onChange} className="custom-dark-table" />
     </div>
   );
 }
@@ -234,6 +234,14 @@ export default function OutboundMaterial() {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [viewingReceipt, setViewingReceipt] = useState(null);
 
+   //state quản lý phân trang
+  const [pagination, setPagination] = useState({
+    current: 1, // AntD đếm trang từ 1
+    pageSize: 6, // Số dòng trên 1 trang
+    total: 0,   // Tổng số bản ghi (Backend trả về)
+  });
+  
+
   // 1. Fetch dữ liệu phụ (Chạy 1 lần)
   useEffect(() => {
     const fetchSelectData = async () => {   
@@ -254,13 +262,15 @@ export default function OutboundMaterial() {
   }, []);
 
   // 2. Fetch danh sách phiếu xuất
-  const fetchReceipts = async () => {
+  const fetchReceipts = async (page = 1, size = 6) => {
     try {
       setIsLoading(true);
       const params = { 
         status: activeTab, 
         search: searchTerm || null,
-        supplierId: selectedSupId || null
+        supplierId: selectedSupId || null,
+        page: page - 1,
+        size: size
       };
       
       if (dateRange && dateRange.length === 2) {
@@ -269,7 +279,15 @@ export default function OutboundMaterial() {
       }
 
       const response = await axios.get(API_URL, { params });
-      setOutboundReceipts(response.data?.data || []);
+      const pageData = response.data?.data ;
+      setOutboundReceipts(pageData.content);
+       
+      setPagination({
+        ...pagination,
+        current: page,
+        total: pageData.totalElements, 
+      });
+
     } catch (error) {
       console.log(error);
       message.error("Lỗi khi tải danh sách phiếu xuất!");
@@ -282,6 +300,12 @@ export default function OutboundMaterial() {
     // eslint-disable-next-line react-hooks/set-state-in-effect
      fetchReceipts(); 
   }, [activeTab, searchTerm, dateRange, selectedSupId]);
+
+
+   //Hàm bắt sự kiện khi user click chuyển trang trên UI
+  const handleTableChange = (newPagination) => {
+    fetchReceipts(newPagination.current, newPagination.pageSize);
+  };
 
   // Lưu hoặc Cập nhật phiếu
   const handleSubmit = async (values) => {
@@ -306,6 +330,7 @@ export default function OutboundMaterial() {
       message.error(error.response?.data?.message || "Lỗi khi lưu phiếu!"); 
     }
   };
+
 
   // Hủy phiếu
   const handleDelete = async (id) => {
@@ -411,7 +436,17 @@ export default function OutboundMaterial() {
         </div>
 
         {/* BẢNG DỮ LIỆU */}
-        <OutboundTable outboundReceipts={outboundReceipts} isLoading={isLoading} activeTab={activeTab} onEdit={handleOpenModal} onDelete={handleDelete} onView={(record) => { setViewingReceipt(record); setIsDrawerOpen(true); }} />
+        <OutboundTable 
+        outboundReceipts={outboundReceipts}
+         isLoading={isLoading} 
+         activeTab={activeTab} 
+         onEdit={handleOpenModal} 
+         onDelete={handleDelete} 
+         pagination={pagination}
+          onChange={handleTableChange}
+         onView={(record) => { setViewingReceipt(record); setIsDrawerOpen(true);
+
+        }} />
         
         {/* MODAL */}
         <OutboundModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} form={form} onSubmit={handleSubmit} isEditing={!!editingId} suppliers={suppliers} materials={materials} zones={zones} />

@@ -1,6 +1,8 @@
 package com.warehouse.backend.repository;
 
 import com.warehouse.backend.entity.nghiepvu.OutboundMaterialIssue;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -18,10 +20,11 @@ public interface MaterialIssueRepository extends JpaRepository<OutboundMaterialI
             "(:status IS NULL OR o.status = :status) AND " +
             "(:search IS NULL OR o.materialIssueId LIKE %:search%) AND " +
             "(:supplierId IS NULL OR o.supplier.supplierId = :supplierId)")
-    List<OutboundMaterialIssue> searchoutboundMaterialIssues(
+    Page<OutboundMaterialIssue> searchoutboundMaterialIssues(
             @Param("status") Integer status,
             @Param("search") String search,
-            @Param("supplierId") String supplierId
+            @Param("supplierId") String supplierId ,
+            Pageable pageable
     );
 }
 

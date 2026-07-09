@@ -11,6 +11,8 @@ import com.warehouse.backend.mapper.MaterialReceiptMapper;
 import com.warehouse.backend.repository.*;
 import com.warehouse.backend.service.IMaterialReceiptService;
 import jakarta.transaction.Transactional;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -50,11 +52,9 @@ public class MaterialReceiptServiceImpl implements IMaterialReceiptService {
     }
 
     @Override
-    public List<MaterialReceiptResponse> searchReceipts(Integer status, String search, String vendorId) {
-        return materialReceiptRepository.searchInboundMaterialReceipts(status, search, vendorId)
-                .stream()
-                .map(materialReceiptMapper::toMaterialReceiptResponse)
-                .toList();
+    public Page<MaterialReceiptResponse> searchReceipts(Integer status, String search, String vendorId , Pageable pageable) {
+       Page<InboundMaterialReceipt> receiptsMaterialPage = materialReceiptRepository.searchInboundMaterialReceipts(status, search, vendorId , pageable);
+        return receiptsMaterialPage.map(materialReceiptMapper::toMaterialReceiptResponse);
     }
 
     @Override

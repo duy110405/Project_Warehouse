@@ -13,6 +13,8 @@ import com.warehouse.backend.mapper.MaterialIssueMapper;
 import com.warehouse.backend.repository.*;
 import com.warehouse.backend.service.IMaterialIssueService;
 import jakarta.transaction.Transactional;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -61,15 +63,19 @@ public class MaterialIssueServiceImpl implements IMaterialIssueService {
     }
 
     @Override
-    public List<MaterialIssueResponse> getMaterialIssues(Integer status , String search,  String supplierId) {
-        return materialIssueRepository.searchoutboundMaterialIssues(status , search , supplierId)
-                .stream()
-                .map(materialIssueMapper::toMaterialIssueResponse)
-                .toList();
+    public Page<MaterialIssueResponse> getMaterialIssues(Integer status , String search, String supplierId , Pageable pageable) {
+      Page<OutboundMaterialIssue> outboundMaterialIssuesPage = materialIssueRepository.searchoutboundMaterialIssues(
+              status,
+              search,
+              supplierId,
+              pageable
+      );
+      return outboundMaterialIssuesPage.map(materialIssueMapper::toMaterialIssueResponse);
     }
 
     @Override
     public MaterialIssueResponse getMaterialIssueById(String materialIssueId) {
+
         OutboundMaterialIssue materialIssue = findMaterialIssueById(materialIssueId);
         return materialIssueMapper.toMaterialIssueResponse(materialIssue);
     }

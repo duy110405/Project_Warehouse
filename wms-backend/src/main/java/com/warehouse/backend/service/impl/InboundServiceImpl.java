@@ -13,6 +13,8 @@ import com.warehouse.backend.mapper.InboundMapper;
 import com.warehouse.backend.repository.*;
 import com.warehouse.backend.service.IInboundService;
 import jakarta.transaction.Transactional;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -278,10 +280,9 @@ public class InboundServiceImpl implements IInboundService {
     }
 
     @Override
-    public List<InboundReceiptResponse> searchReceipts(Integer status, String search, String supplierId) {
-        return inboundReceiptRepository.searchInboundReceipts(status, search, supplierId)
-                .stream()
-                .map(inboundMapper::toInboundResponse)
-                .toList();
+    public Page<InboundReceiptResponse> searchReceipts(Integer status, String search, String supplierId, Pageable pageable) {
+        Page<InboundReceipt> receiptsPage = inboundReceiptRepository.searchInboundReceipts(status, search, supplierId, pageable);
+        return receiptsPage.map(inboundMapper::toInboundResponse);
     }
+
 }

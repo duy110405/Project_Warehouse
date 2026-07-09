@@ -14,7 +14,7 @@ const { RangePicker } = DatePicker;
 // ============================================================================
 // 1. COMPONENT BẢNG PHIẾU XUẤT
 // ============================================================================
-const IssueTable = ({ issues, isLoading, onEdit, onDelete, onView, activeTab }) => {
+const IssueTable = ({ issues, isLoading, onEdit, onDelete, onView, activeTab , pagination, onChange }) => {
   const columns = [
     {
       title: 'Mã phiếu xuất',
@@ -87,8 +87,8 @@ const IssueTable = ({ issues, isLoading, onEdit, onDelete, onView, activeTab }) 
   ];
 
   return (
-    <div className="bg-[#0F172A] border-x border-b border-slate-800 rounded-b-2xl overflow-hidden shadow-xl text-base">
-      <Table columns={columns} dataSource={issues} loading={isLoading} rowKey="issueId" pagination={{ pageSize: 6 }} className="custom-dark-table" />
+    <div className="bg-[#0F172A] border-x border-b border-slate-800 rounded-b-2xl shadow-xl text-base">
+      <Table columns={columns} dataSource={issues} loading={isLoading} rowKey="issueId" pagination={pagination} onChange={onChange} className="custom-dark-table" />
     </div>
   );
 }
@@ -249,6 +249,8 @@ export default function OutboundIssue() {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [viewingIssue, setViewingIssue] = useState(null);
 
+  const [pagination, setPagination] = useState({ current: 1, pageSize: 6, total: 0 });
+
   useEffect(() => {
     const fetchSelectData = async () => {
       try {
@@ -265,12 +267,14 @@ export default function OutboundIssue() {
     fetchSelectData();
   }, []);
 
-  const fetchIssues = async () => {
+  const fetchIssues = async (page = 1, size = 6) => {
     try {
       setIsLoading(true);
       const params = { 
         status: activeTab,
         search: searchTerm || null,
+        page: page - 1, // API thường sử dụng chỉ số bắt đầu từ 0
+        size: size
       };
       
       if (dateRange && dateRange.length === 2) {
@@ -279,7 +283,15 @@ export default function OutboundIssue() {
       }
 
       const response = await axios.get(API_URL, { params });
-      setIssues(response.data?.data || []);
+      const pageData = response.data?.data || {};
+      setIssues(pageData.content || []);
+      
+      setPagination({
+        ...pagination,
+        current: page,
+        total: pageData.totalElements, 
+      });
+
     } catch (error) {
       console.log(error);
       message.error("Lỗi khi tải danh sách phiếu xuất!");
@@ -292,6 +304,10 @@ export default function OutboundIssue() {
     // eslint-disable-next-line react-hooks/set-state-in-effect
      fetchIssues(); 
   }, [activeTab, searchTerm, dateRange]);
+
+  const handleTableChange = (newPagination) => {
+    fetchIssues(newPagination.current, newPagination.pageSize);
+  }
 
   const handleSubmit = async (values) => {
     try {
@@ -410,6 +426,8 @@ export default function OutboundIssue() {
           activeTab={activeTab} 
           onEdit={handleOpenModal} 
           onDelete={handleDelete} 
+          pagination={pagination}
+          onChange={handleTableChange}
           onView={(record) => { setViewingIssue(record); setIsDrawerOpen(true); }} 
         />
         

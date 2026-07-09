@@ -28,7 +28,7 @@ public class OutboundController {
                                                                       @RequestParam(defaultValue = "0") int page, // Trang số mấy (Spring mặc định bắt đầu từ 0)
                                                                       @RequestParam(defaultValue = "10") int size ){
         String finalSearch = (search == null || search.trim().isEmpty()) ? null : search.trim();
-        Pageable pageable = PageRequest.of(page, size, Sort.by("outboundDate").descending());
+        Pageable pageable = PageRequest.of(page, size, Sort.by("issueDate").descending());
         Page<OutboundIssueResponse> data = outboundService.getOutboundIssuess(status , finalSearch , pageable);
         return ApiResponse.<Page<OutboundIssueResponse>>builder()
                 .code(200)
