@@ -4,6 +4,7 @@ import com.warehouse.backend.entity.nghiepvu.Invoice;
 import com.warehouse.backend.entity.nghiepvu.OutboundIssue;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -16,7 +17,8 @@ public interface OutboundIssueRepository extends JpaRepository<OutboundIssue, St
     @Query("SELECT MAX(ob.issueId) FROM OutboundIssue ob WHERE ob.issueId LIKE 'PX%'")
     String findMaxIssueId();
 
-    // ĐÃ SỬA LẠI DÒNG LIKE DÙNG CONCAT VÀ BẮT CHỮ HOA/THƯỜNG BẰNG LOWER()
+
+    @EntityGraph(attributePaths = {"user"})
     @Query("SELECT o FROM OutboundIssue o WHERE "+
             "(:status IS NULL OR o.status = :status) AND "+
             "(:search IS NULL OR LOWER(o.issueId) LIKE LOWER(CONCAT('%', :search, '%')))")

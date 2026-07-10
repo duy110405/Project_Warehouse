@@ -4,6 +4,7 @@ import com.warehouse.backend.entity.nghiepvu.InboundMaterialReceipt;
 import com.warehouse.backend.entity.nghiepvu.InboundReceipt;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -18,6 +19,7 @@ public interface MaterialReceiptRepository extends JpaRepository<InboundMaterial
 
 
     // LỌC:
+    @EntityGraph(attributePaths = {"vendor", "user"})
     @Query("SELECT i FROM InboundMaterialReceipt i WHERE " +
             "(:status IS NULL OR i.status = :status) AND " +
             "(:search IS NULL OR i.materialReceiptId LIKE %:search%) AND " +

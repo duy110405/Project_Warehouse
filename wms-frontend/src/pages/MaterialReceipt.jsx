@@ -257,7 +257,7 @@ export default function InboundReceipt() {
       }
 
       const response = await axios.get(API_URL, { params });
-      const pageData = response.data?.pagination || {};
+      const pageData = response.data?.data || {};
       setMaterialReceipts(pageData.content || []);
      setPagination({
         ...pagination,

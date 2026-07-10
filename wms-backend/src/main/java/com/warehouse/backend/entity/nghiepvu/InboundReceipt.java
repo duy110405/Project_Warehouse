@@ -6,6 +6,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import org.hibernate.annotations.BatchSize;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -42,6 +43,7 @@ private User user;
 
     // Dùng orphanRemoval = true để nếu xóa 1 dòng chi tiết khỏi list, DB cũng tự xóa nó
     @OneToMany(mappedBy = "inboundReceipt", cascade = CascadeType.ALL, orphanRemoval = true)
+    @BatchSize(size = 100)
     private List<ReceiptDetail> receiptDetails = new ArrayList<>();
 
 }

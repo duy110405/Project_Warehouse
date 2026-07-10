@@ -6,6 +6,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import org.hibernate.annotations.BatchSize;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -43,5 +44,6 @@ public class OutboundMaterialIssue {
 
     // Một Phếu Xuất kho có nhiều dòng chi tiết
     @OneToMany(mappedBy = "outboundMaterialIssue", cascade = CascadeType.ALL , orphanRemoval = true)
+    @BatchSize(size = 100)
     private List<MaterialIssueDetail> materialIssueDetails = new ArrayList<>();
 }

@@ -2,6 +2,7 @@ package com.warehouse.backend.repository;
 
 import com.warehouse.backend.entity.nghiepvu.Invoice;
 import org.springframework.data.domain.Page;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -14,6 +15,11 @@ import java.util.List;
 public interface InvoiceRepository extends JpaRepository<Invoice, String> {
     @Query("SELECT MAX(inv.invoiceId) FROM Invoice inv ")
     String findMaxInvoiceId();
+
+    //@EntityGraph hoạt động giống hệt JOIN FETCH,
+    // nó báo cho Hibernate biết phải dùng lệnh LEFT OUTER JOIN dưới SQL để lấy sẵn dữ liệu bảng Customer và User
+    // lên trong một câu truy vấn duy nhất.
+    @EntityGraph(attributePaths = {"customer", "user"})
 
     @Query("SELECT i FROM Invoice i WHERE "+
      "(:status IS NULL OR i.status = :status) AND "+

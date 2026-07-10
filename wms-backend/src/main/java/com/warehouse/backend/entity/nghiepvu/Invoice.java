@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import org.hibernate.annotations.BatchSize;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -48,5 +49,6 @@ public class Invoice {
 
     // Một hóa đơn có nhiều dòng chi tiết
     @OneToMany(mappedBy = "invoice", cascade = CascadeType.ALL , orphanRemoval = true)
+    @BatchSize(size = 100)
     private List<InvoiceDetail> invoiceDetails = new ArrayList<>();
 }

@@ -139,7 +139,6 @@ const InvoiceModal = ({ isOpen, onClose, form, onSubmit, isEditing, customers, p
       </Form.Item>
 
       <div className="grid grid-cols-2 gap-4">
-        {/* Chọn Khách hàng (Customer) thay vì Nhà cung cấp */}
         <Form.Item name="customerId" label={<span className="text-slate-300">Khách hàng</span>} rules={[{ required: true, message: 'Vui lòng chọn Khách hàng' }]}>
           <Select placeholder="Chọn khách hàng..." className="h-[40px] custom-dark-select" showSearch optionFilterProp="children">
             {customers.map(c => <Select.Option key={c.customerId || c.id} value={c.customerId || c.id}>{c.customerName || c.name}</Select.Option>)}

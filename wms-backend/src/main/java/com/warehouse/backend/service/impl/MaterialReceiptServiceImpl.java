@@ -51,7 +51,7 @@ public class MaterialReceiptServiceImpl implements IMaterialReceiptService {
         return String.format("PNNL%03d", nextNumber);
     }
 
-    @Override
+     @Override
     public Page<MaterialReceiptResponse> searchReceipts(Integer status, String search, String vendorId , Pageable pageable) {
        Page<InboundMaterialReceipt> receiptsMaterialPage = materialReceiptRepository.searchInboundMaterialReceipts(status, search, vendorId , pageable);
         return receiptsMaterialPage.map(materialReceiptMapper::toMaterialReceiptResponse);

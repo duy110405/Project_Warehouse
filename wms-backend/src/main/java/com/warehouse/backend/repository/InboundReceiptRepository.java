@@ -4,6 +4,7 @@ import com.warehouse.backend.entity.hethong.User;
 import com.warehouse.backend.entity.nghiepvu.InboundReceipt;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -18,6 +19,7 @@ public interface InboundReceiptRepository extends JpaRepository<InboundReceipt, 
     String findMaxReceiptId();
 
     // LỌC:
+    @EntityGraph(attributePaths = {"supplier", "user"})
     @Query("SELECT i FROM InboundReceipt i WHERE " +
             "(:status IS NULL OR i.status = :status) AND " +
             "(:search IS NULL OR i.receiptId LIKE %:search%) AND " +

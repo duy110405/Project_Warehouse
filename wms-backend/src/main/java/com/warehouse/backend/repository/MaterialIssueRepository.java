@@ -3,6 +3,7 @@ package com.warehouse.backend.repository;
 import com.warehouse.backend.entity.nghiepvu.OutboundMaterialIssue;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -16,6 +17,7 @@ public interface MaterialIssueRepository extends JpaRepository<OutboundMaterialI
     String findMaxMaterialIssueId();
 
     // LỌC:
+    @EntityGraph(attributePaths = {"user"})
     @Query("SELECT o FROM OutboundMaterialIssue o WHERE " +
             "(:status IS NULL OR o.status = :status) AND " +
             "(:search IS NULL OR o.materialIssueId LIKE %:search%) AND " +
